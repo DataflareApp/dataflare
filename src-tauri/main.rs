@@ -23,7 +23,7 @@ mod menu;
 use database::ConnectionStore;
 use lifecycle::{AppCheckUpdate, ConnectionsSearch, LicenseActivate, StateCache};
 use tauri::async_runtime::{block_on, spawn};
-use tauri::{Manager, RunEvent, WindowEvent, generate_handler};
+use tauri::{generate_handler, Manager, RunEvent, WindowEvent};
 use window_state::WindowStateManager;
 
 fn main() {
@@ -42,6 +42,7 @@ fn main() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_updater::Builder::new().build());

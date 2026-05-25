@@ -31,6 +31,7 @@ tauri-plugin-dialog = "2.7.0"
 tauri-plugin-fs = "2.5.0"
 tauri-plugin-process = "2.3.1"
 tauri-plugin-clipboard-manager = "2.3.2"
+tauri-plugin-http = "2.5.9"
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }

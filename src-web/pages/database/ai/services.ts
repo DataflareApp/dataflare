@@ -1,6 +1,7 @@
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
+import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
 import {
     ChatAddToolApproveResponseFunction,
     ChatRequestOptions,
@@ -94,12 +95,17 @@ const createLanguageModel = (config: ProviderConfig, modelID: string): LanguageM
                 headers: {
                     'anthropic-dangerous-direct-browser-access': 'true',
                     'dangerouslyAllowBrowser': 'true'
-                }
+                },
+                fetch: tauriFetch
             })
             return anthropic(modelID)
         }
         case ProviderType.GoogleGemini: {
-            const googleGemini = createGoogleGenerativeAI({ apiKey: config.apiKey, baseURL })
+            const googleGemini = createGoogleGenerativeAI({
+                apiKey: config.apiKey,
+                baseURL,
+                fetch: tauriFetch
+            })
             return googleGemini(modelID)
         }
         case ProviderType.DeepSeek:
@@ -115,7 +121,8 @@ const createLanguageModel = (config: ProviderConfig, modelID: string): LanguageM
             const openai = createOpenAICompatible({
                 name: 'openai-compatible',
                 apiKey: config.apiKey,
-                baseURL: baseURL ?? defaultBaseURL(config.type)
+                baseURL: baseURL ?? defaultBaseURL(config.type),
+                fetch: tauriFetch
             })
             return openai(modelID)
         }
