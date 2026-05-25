@@ -1,5 +1,6 @@
+import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
 import z, { ZodType } from 'zod'
-import { Http, ProviderConfig, ProviderModelConfig, ProviderType } from '../../../tauri'
+import { ProviderConfig, ProviderModelConfig, ProviderType } from '../../../tauri'
 
 export const defaultBaseURL = (type: ProviderType): string => {
     return {
@@ -28,11 +29,11 @@ export const normalizeBaseURL = <T>(url: string, emptyFallback: T): string | T =
 
 export const fetchModels = async (config: ProviderConfig): Promise<ProviderModelConfig[]> => {
     const fetchJSON = async <T extends ZodType>(url: string, schema: T, headers?: Record<string, string>) => {
-        const res = await Http.fetch(url, { method: 'GET', headers })
+        const res = await tauriFetch(url, { method: 'GET', headers })
         if (res.status !== 200) {
             throw `StatusCode: ${res.status}\nFrom: ${url}`
         }
-        const parsed = schema.safeParse(res.json())
+        const parsed = schema.safeParse(await res.json())
         if (!parsed.success) {
             const issue = parsed.error.issues[0]
             const path = issue.path.length > 0 ? ` at '${issue.path.join('.')}'` : ''
@@ -101,7 +102,12 @@ export const fetchModels = async (config: ProviderConfig): Promise<ProviderModel
                         })
                 )
             })
-            const headers = { 'x-api-key': config.apiKey, 'anthropic-version': '2023-06-01' }
+            const headers = {
+                'x-api-key': config.apiKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true',
+                'dangerouslyAllowBrowser': 'true'
+            }
             return fetchJSON(`${baseURL}/models`, schema, headers).then((json) => json.data)
         }
         case ProviderType.GoogleGemini: {
