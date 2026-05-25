@@ -1,4 +1,5 @@
-import { getPassword, setPassword, deletePassword, Http } from '../tauri'
+import { fetch as tauriFetch } from '@tauri-apps/plugin-http'
+import { getPassword, setPassword, deletePassword } from '../tauri'
 
 export interface License {
     key: string
@@ -66,7 +67,7 @@ export class LicenseApi {
         }
         return new Promise(async (success, error) => {
             try {
-                let res = await Http.fetch(url.toString(), {
+                let res = await tauriFetch(url.toString(), {
                     method: data.method,
                     headers: {
                         'Content-Type': 'application/json'
@@ -74,10 +75,10 @@ export class LicenseApi {
                     body
                 })
                 if (res.status !== 200) {
-                    const rst: { message: string } = res.json()
+                    const rst: { message: string } = await res.json()
                     return error(rst.message)
                 }
-                success(res.json())
+                success(await res.json())
             } catch (err: any) {
                 error(err.toString())
             }

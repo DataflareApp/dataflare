@@ -2397,7 +2397,6 @@ dependencies = [
  "proxy",
  "query",
  "rand 0.9.2",
- "reqwest 0.0.0",
  "ring",
  "rusqlite",
  "serde",

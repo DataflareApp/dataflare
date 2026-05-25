@@ -48,7 +48,6 @@ sqlstmt = { path = "./src-crates/sqlstmt" }
 kvdb = { path = "./src-crates/kvdb" }
 backup = { path = "./src-crates/backup" }
 proxy = { path = "./src-crates/proxy" }
-reqwest = { path = "./src-crates/reqwest" }
 client-store = { path = "./src-crates/client-store" }
 dir = { path = "./src-crates/dir" }
 whoami = "1.6.0"

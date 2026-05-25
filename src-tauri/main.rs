@@ -7,7 +7,6 @@ mod backup;
 mod client;
 mod database;
 mod device;
-mod http;
 mod ipc;
 mod keychain;
 mod lifecycle;
@@ -23,7 +22,7 @@ mod menu;
 use database::ConnectionStore;
 use lifecycle::{AppCheckUpdate, ConnectionsSearch, LicenseActivate, StateCache};
 use tauri::async_runtime::{block_on, spawn};
-use tauri::{generate_handler, Manager, RunEvent, WindowEvent};
+use tauri::{Manager, RunEvent, WindowEvent, generate_handler};
 use window_state::WindowStateManager;
 
 fn main() {
@@ -62,8 +61,6 @@ fn main() {
         // Device
         device::hostname,
         device::font_families,
-        // HTTP
-        http::fetch,
         // Keychain
         keychain::set_password,
         keychain::get_password,
