@@ -132,7 +132,7 @@ impl Connection {
                 .into_iter()
                 .map(|meta| QueryColumn {
                     name: meta.name,
-                    datatype: meta.r#type.to_lowercase(),
+                    datatype: meta.r#type,
                 })
                 .collect::<Vec<_>>();
             let rows = query
@@ -258,13 +258,15 @@ mod tests {
             .collect()
     }
 
+    const PASSWORD: &str = "";
+
     fn connection() -> Connection {
         Connection::open_with(Config {
             https: false,
             host: "localhost".into(),
             port: 8123,
             user: "default".into(),
-            password: "".into(),
+            password: PASSWORD.into(),
             database: "".into(),
             proxy: None,
         })
@@ -277,7 +279,7 @@ mod tests {
             host: "localhost".into(),
             port: 8123,
             user: "default".into(),
-            password: "".into(),
+            password: PASSWORD.into(),
             database: database.into(),
             proxy: None,
         })
@@ -423,19 +425,46 @@ mod tests {
             .unwrap();
 
         assert_eq!(result.rows.len(), 1);
+        let cols = &result.columns;
         let row = &result.rows[0];
+
+        assert_eq!(cols[0].datatype, "Bool");
         assert_eq!(row[0], Value::Bool(true));
+
+        assert_eq!(cols[1].datatype, "Bool");
         assert_eq!(row[1], Value::Bool(false));
+
+        assert_eq!(cols[2].datatype, "Int8");
         assert_eq!(row[2], Value::I8(127));
+
+        assert_eq!(cols[3].datatype, "UInt8");
         assert_eq!(row[3], Value::U8(255));
+
+        assert_eq!(cols[4].datatype, "Int16");
         assert_eq!(row[4], Value::I16(32767));
+
+        assert_eq!(cols[5].datatype, "UInt16");
         assert_eq!(row[5], Value::U16(65535));
+
+        assert_eq!(cols[6].datatype, "Int32");
         assert_eq!(row[6], Value::I32(2147483647));
+
+        assert_eq!(cols[7].datatype, "UInt32");
         assert_eq!(row[7], Value::U32(4294967295));
+
+        assert_eq!(cols[8].datatype, "Int64");
         assert_eq!(row[8], Value::I64(9223372036854775807));
+
+        assert_eq!(cols[9].datatype, "UInt64");
         assert_eq!(row[9], Value::U64(18446744073709551615));
+
+        assert_eq!(cols[10].datatype, "Float32");
         assert_eq!(row[10], Value::F32(1.5));
+
+        assert_eq!(cols[11].datatype, "Float64");
         assert_eq!(row[11], Value::F64(1.5));
+
+        assert_eq!(cols[12].datatype, "String");
         assert_eq!(row[12], Value::String("hello world".into()));
     }
 
@@ -455,10 +484,16 @@ mod tests {
             .unwrap();
 
         assert_eq!(result.rows.len(), 1);
+        let cols = &result.columns;
         let row = &result.rows[0];
         assert_eq!(row[0], Value::Null);
+        assert_eq!(cols[0].datatype, "Nullable(Int32)");
+
         assert_eq!(row[1], Value::Null);
+        assert_eq!(cols[1].datatype, "Nullable(String)");
+
         assert_eq!(row[2], Value::Null);
+        assert_eq!(cols[2].datatype, "Nullable(UInt8)");
     }
 
     #[tokio::test]
@@ -495,8 +530,8 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(result.columns[0].datatype, "int32");
-        assert_eq!(result.columns[1].datatype, "nullable(uint64)");
+        assert_eq!(result.columns[0].datatype, "Int32");
+        assert_eq!(result.columns[1].datatype, "Nullable(UInt64)");
     }
 
     #[tokio::test]
