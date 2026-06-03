@@ -144,6 +144,15 @@ export interface ClickHouseConfig {
     }
 }
 
+export interface ChDbConfig {
+    type: SqlDatabaseType.ChDb
+    options: {
+        path: string
+        readonly: boolean
+        initial: string | null
+    }
+}
+
 export interface DatabendConfig {
     type: SqlDatabaseType.Databend
     options: {
@@ -364,6 +373,7 @@ export type SqlDatabaseConfig =
     | ManticoreSearchConfig
     | MsSqlConfig
     | ClickHouseConfig
+    | ChDbConfig
     | DatabendConfig
     | BigQueryConfig
     | TrinoConfig
@@ -392,6 +402,7 @@ export const enum SqlDatabaseType {
     ManticoreSearch = 'Manticore Search',
     MsSql = 'MSSQL',
     ClickHouse = 'ClickHouse',
+    ChDb = 'chDB',
     Databend = 'Databend',
     BigQuery = 'BigQuery',
     Trino = 'Trino',
@@ -414,6 +425,7 @@ export const enum KvDatabaseType {
 
 export const ALL_DATABASE_TYPE: DatabaseType[] = [
     SqlDatabaseType.BigQuery,
+    SqlDatabaseType.ChDb,
     SqlDatabaseType.ClickHouse,
     SqlDatabaseType.CloudflareD1,
     KvDatabaseType.CloudflareWorkersKv,

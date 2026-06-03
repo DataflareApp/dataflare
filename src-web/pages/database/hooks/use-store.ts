@@ -79,6 +79,7 @@ const isKv = (type: DatabaseType): boolean => {
         case SqlDatabaseType.ManticoreSearch:
         case SqlDatabaseType.MsSql:
         case SqlDatabaseType.ClickHouse:
+        case SqlDatabaseType.ChDb:
         case SqlDatabaseType.Databend:
         case SqlDatabaseType.Databricks:
         case SqlDatabaseType.BigQuery:

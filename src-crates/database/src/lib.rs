@@ -1,4 +1,5 @@
 mod bigquery;
+mod chdb;
 mod clickhouse;
 mod d1;
 mod databend;
@@ -20,6 +21,7 @@ mod utils;
 mod workers_analytics_engine;
 
 use bigquery::BigQueryConnection;
+use chdb::ChDbConnection;
 use clickhouse::ClickHouseConnection;
 use d1::D1Connection;
 use databend::DatabendConnection;
@@ -60,6 +62,7 @@ pub enum Database {
     MySql(MySqlConnection),
     MsSql(MsSqlConnection),
     ClickHouse(ClickHouseConnection),
+    ChDb(ChDbConnection),
     Databend(DatabendConnection),
     BigQuery(BigQueryConnection),
     Trino(TrinoConnection),
@@ -91,6 +94,7 @@ impl Database {
             }
             ConnectionConfig::MSSQL(config) => MsSqlConnection::test(config).await,
             ConnectionConfig::ClickHouse(config) => ClickHouseConnection::test(config).await,
+            ConnectionConfig::ChDb(config) => ChDbConnection::test(config).await,
             ConnectionConfig::Databend(config) => DatabendConnection::test(config).await,
             ConnectionConfig::BigQuery(config) => BigQueryConnection::test(config).await,
             ConnectionConfig::Trino(config) => TrinoConnection::test(config).await,
@@ -133,6 +137,7 @@ impl Database {
             }
             ConnectionConfig::MSSQL(config) => MsSqlConnection::connect(config).await,
             ConnectionConfig::ClickHouse(config) => ClickHouseConnection::connect(config).await,
+            ConnectionConfig::ChDb(config) => ChDbConnection::connect(config).await,
             ConnectionConfig::Databend(config) => DatabendConnection::connect(config).await,
             ConnectionConfig::BigQuery(config) => BigQueryConnection::connect(config).await,
             ConnectionConfig::Trino(config) => TrinoConnection::connect(config).await,
@@ -168,6 +173,7 @@ impl Database {
             Self::MySql(db) => db.select(sql).await,
             Self::MsSql(db) => db.select(sql).await,
             Self::ClickHouse(db) => db.select(sql).await,
+            Self::ChDb(db) => db.select(sql).await,
             Self::Databend(db) => db.select(sql).await,
             Self::BigQuery(db) => db.select(sql).await,
             Self::Trino(db) => db.select(sql).await,
@@ -192,6 +198,7 @@ impl Database {
             Self::MySql(db) => db.execute(sql).await,
             Self::MsSql(db) => db.execute(sql).await,
             Self::ClickHouse(db) => db.execute(sql).await,
+            Self::ChDb(db) => db.execute(sql).await,
             Self::Databend(db) => db.execute(sql).await,
             Self::BigQuery(db) => db.execute(sql).await,
             Self::Trino(db) => db.execute(sql).await,
@@ -216,6 +223,7 @@ impl Database {
             Self::MySql(db) => db.transaction(sqls).await,
             Self::MsSql(db) => db.transaction(sqls).await,
             Self::ClickHouse(db) => db.transaction(sqls).await,
+            Self::ChDb(db) => db.transaction(sqls).await,
             Self::Databend(db) => db.transaction(sqls).await,
             Self::BigQuery(db) => db.transaction(sqls).await,
             Self::Trino(db) => db.transaction(sqls).await,
@@ -240,6 +248,7 @@ impl Database {
             Self::MySql(db) => db.query(sql).await,
             Self::MsSql(db) => db.query(sql).await,
             Self::ClickHouse(db) => db.query(sql).await,
+            Self::ChDb(db) => db.query(sql).await,
             Self::Databend(db) => db.query(sql).await,
             Self::BigQuery(db) => db.query(sql).await,
             Self::Trino(db) => db.query(sql).await,
@@ -264,6 +273,7 @@ impl Database {
             Self::MySql(db) => db.batch_insert(insert).await,
             Self::MsSql(db) => db.batch_insert(insert).await,
             Self::ClickHouse(db) => db.batch_insert(insert).await,
+            Self::ChDb(db) => db.batch_insert(insert).await,
             Self::Databend(db) => db.batch_insert(insert).await,
             Self::BigQuery(db) => db.batch_insert(insert).await,
             Self::Trino(db) => db.batch_insert(insert).await,

@@ -156,6 +156,9 @@ const databaseName = (type: SqlDatabaseType): string => {
         case SqlDatabaseType.Presto: {
             return 'PrestoDB'
         }
+        case SqlDatabaseType.ChDb: {
+            return 'ClickHouse(chDB)'
+        }
         case SqlDatabaseType.Postgres:
         case SqlDatabaseType.CockroachDB:
         case SqlDatabaseType.QuestDB:

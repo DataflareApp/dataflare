@@ -18,6 +18,7 @@ import { useConnections } from './hooks'
 import { ConnectionList } from './list'
 import { NewConnectionMenu } from './new'
 import { BigQueryConnection } from './options-editor/bigquery'
+import { ChDbConnection } from './options-editor/chdb'
 import { ClickHouseConnection } from './options-editor/clickhouse'
 import { CloudflareD1Connection } from './options-editor/cloudflare-d1'
 import { CloudflareKvConnection } from './options-editor/cloudflare-kv'
@@ -127,6 +128,7 @@ const CurrentConnection = (props: ConnectionEditorOptions<any>): JSX.Element => 
         [SqlDatabaseType.ManticoreSearch]: <ManticoreSearchConnection {...props} />,
         [SqlDatabaseType.MsSql]: <MsSqlConnection {...props} />,
         [SqlDatabaseType.ClickHouse]: <ClickHouseConnection {...props} />,
+        [SqlDatabaseType.ChDb]: <ChDbConnection {...props} />,
         [SqlDatabaseType.Databend]: <DatabendConnection {...props} />,
         [SqlDatabaseType.Databricks]: <DatabricksConnection {...props} />,
         [SqlDatabaseType.BigQuery]: <BigQueryConnection {...props} />,

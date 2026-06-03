@@ -25,6 +25,7 @@ r2sql = { path = "../r2sql" }
 mysql = { path = "../mysql" }
 pgsq = { path = "../pgsq" }
 duckdb = { path = "../duckdb" }
+chdb = { path = "../chdb" }
 clickhouse = { path = "../clickhouse" }
 databend = { path = "../databend" }
 bigquery = { path = "../bigquery" }

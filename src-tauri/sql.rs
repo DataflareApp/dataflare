@@ -20,7 +20,9 @@ fn to_dialect(db: SqlDatabaseType) -> Box<dyn Dialect> {
             Box::new(MySqlDialect {})
         }
         SqlDatabaseType::MSSQL => Box::new(MsSqlDialect {}),
-        SqlDatabaseType::ClickHouse | SqlDatabaseType::Databend => Box::new(ClickHouseDialect {}),
+        SqlDatabaseType::ClickHouse | SqlDatabaseType::ChDb | SqlDatabaseType::Databend => {
+            Box::new(ClickHouseDialect {})
+        }
         SqlDatabaseType::DuckDB => Box::new(DuckDbDialect {}),
         SqlDatabaseType::BigQuery => Box::new(BigQueryDialect {}),
         // Trino / Presto are ANSI SQL compliant query engines: https://trino.io/docs/current/language.html

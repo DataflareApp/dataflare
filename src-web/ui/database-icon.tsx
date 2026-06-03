@@ -102,6 +102,7 @@ export const ConnectionIcon = ({
                 />
             )
         case SqlDatabaseType.ClickHouse:
+        case SqlDatabaseType.ChDb:
             return (
                 <ClickHouseIcon
                     data-selected={isSelected || undefined}

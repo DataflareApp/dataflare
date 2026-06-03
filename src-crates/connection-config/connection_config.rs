@@ -18,6 +18,9 @@ pub enum ConnectionConfig {
     ManticoreSearch(ManticoreSearchConfig),
     MSSQL(MsSqlConfig),
     ClickHouse(ClickHouseConfig),
+    #[serde(rename = "chDB")]
+    #[strum(serialize = "chDB")]
+    ChDb(ChDbConfig),
     Databend(DatabendConfig),
     BigQuery(BigQueryConfig),
     Trino(TrinoConfig),
@@ -74,6 +77,8 @@ pub enum SqlDatabaseType {
     ManticoreSearch,
     MSSQL,
     ClickHouse,
+    #[serde(rename = "chDB")]
+    ChDb,
     Databend,
     BigQuery,
     Trino,
@@ -115,6 +120,13 @@ pub struct ClickHouseConfig {
     pub database: String,
     pub readonly: bool,
     pub proxy: Option<ProxyConfig>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChDbConfig {
+    pub path: String,
+    pub readonly: bool,
+    pub initial: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

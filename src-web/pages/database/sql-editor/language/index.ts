@@ -39,6 +39,7 @@ export const setMonarchTokensProvider = async (language: LanguageHighLight) => {
         case SqlDatabaseType.Postgres:
         case SqlDatabaseType.CockroachDB:
         case SqlDatabaseType.ClickHouse:
+        case SqlDatabaseType.ChDb:
         case SqlDatabaseType.QuestDB:
         case SqlDatabaseType.Databend: {
             def = (await import('./postgres')).default

@@ -1638,6 +1638,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "chdb"
+version = "0.0.0"
+dependencies = [
+ "dylib",
+ "query",
+ "tokio",
+]
+
+[[package]]
 name = "chrono"
 version = "0.4.39"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2412,6 +2421,7 @@ dependencies = [
  "batch-insert",
  "bigquery",
  "bytes",
+ "chdb",
  "clickhouse",
  "client",
  "cloudflare-d1",

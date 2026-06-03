@@ -22,6 +22,7 @@ export class Escape {
             case SqlDatabaseType.DuckDB:
             case SqlDatabaseType.CockroachDB:
             case SqlDatabaseType.ClickHouse:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.Presto:
@@ -85,6 +86,7 @@ export class Escape {
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.ClickHouse:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.Databricks:
             case SqlDatabaseType.Presto:
             case SqlDatabaseType.Trino:
@@ -130,6 +132,7 @@ export class Escape {
             case SqlDatabaseType.CockroachDB:
             case SqlDatabaseType.DuckDB:
             case SqlDatabaseType.ClickHouse:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
             case SqlDatabaseType.BigQuery:

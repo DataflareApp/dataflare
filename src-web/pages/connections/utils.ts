@@ -24,6 +24,7 @@ import {
     DuckDbConfig,
     ConnectProtocol,
     ClickHouseConfig,
+    ChDbConfig,
     DatabendConfig,
     TrinoConfig,
     TrinoAuthType,
@@ -200,6 +201,16 @@ function defaultConfig(type: DatabaseType): DatabaseConfig {
                     database: '',
                     readonly: false,
                     proxy: null
+                }
+            }
+        }
+        case SqlDatabaseType.ChDb: {
+            return {
+                type,
+                options: {
+                    path: '',
+                    readonly: false,
+                    initial: null
                 }
             }
         }
@@ -487,6 +498,11 @@ export const toConnectionURL = async (conn: Connection) => {
             opt.path = config.options.path
             break
         }
+        case SqlDatabaseType.ChDb: {
+            opt.scheme = 'chdb'
+            opt.path = config.options.path
+            break
+        }
         case SqlDatabaseType.Turso: {
             opt.scheme = 'turso'
             switch (config.options.database.type) {
@@ -744,6 +760,12 @@ export const parseConnectionURL = async (url: string) => {
         }
         case 'duckdb': {
             let conn = createConnectionConfig(SqlDatabaseType.DuckDB) as Connection<DuckDbConfig>
+            applyQuery(conn)
+            conn.config.options.path = opt.path
+            return conn
+        }
+        case 'chdb': {
+            let conn = createConnectionConfig(SqlDatabaseType.ChDb) as Connection<ChDbConfig>
             applyQuery(conn)
             conn.config.options.path = opt.path
             return conn

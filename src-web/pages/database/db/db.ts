@@ -116,6 +116,7 @@ class Db {
             case SqlDatabaseType.WorkersAnalyticsEngine:
             case SqlDatabaseType.R2Sql:
             case SqlDatabaseType.CockroachDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -150,6 +151,7 @@ class Db {
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.MsSql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -188,6 +190,7 @@ class Db {
             case SqlDatabaseType.Trino: {
                 return `CREATE SCHEMA ${this.escape.id(schema)};`
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery: {
@@ -215,6 +218,7 @@ class Db {
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.MsSql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -238,6 +242,7 @@ class Db {
                 await this.execute(`ALTER SCHEMA ${f} RENAME TO ${t};`)
                 return null
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 await this.execute(`RENAME DATABASE ${f} TO ${t};`)
                 return null
@@ -275,6 +280,7 @@ class Db {
         switch (this.type) {
             case SqlDatabaseType.Postgres:
             case SqlDatabaseType.CockroachDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Presto:
@@ -320,6 +326,7 @@ class Db {
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.QuestDB:
@@ -363,6 +370,7 @@ class Db {
                 }
                 return null
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery: {
@@ -489,6 +497,7 @@ class Db {
             case SqlDatabaseType.ManticoreSearch: {
                 return true
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.WorkersAnalyticsEngine:
             case SqlDatabaseType.R2Sql:
@@ -555,6 +564,7 @@ class Db {
                     ? `CREATE TABLE ${newTable} LIKE ${table} WITH DATA;`
                     : `CREATE TABLE ${newTable} LIKE ${table};`
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.WorkersAnalyticsEngine:
             case SqlDatabaseType.R2Sql:
@@ -572,6 +582,7 @@ class Db {
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.MsSql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -607,6 +618,7 @@ class Db {
             }
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend: {
                 sql = `SELECT DATABASE(), schema_name FROM INFORMATION_SCHEMA.SCHEMATA ORDER BY schema_name;`
@@ -661,6 +673,7 @@ class Db {
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.MsSql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -730,6 +743,7 @@ class Db {
             }
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend: {
                 sql = `SELECT DATABASE(), schema_name FROM INFORMATION_SCHEMA.SCHEMATA ORDER BY schema_name;`
@@ -869,6 +883,7 @@ WHERE c.catalog_name = current_catalog()
 ORDER BY c.schema_name, t.table_name;`
                 break
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 sql = `
 SELECT
@@ -1065,6 +1080,7 @@ SELECT DISTINCT 'index', index_name FROM ${set}.INFORMATION_SCHEMA.SEARCH_INDEXE
                 }
                 return struct
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 sql = `
 SELECT 'schema' AS type, schema_name AS name FROM INFORMATION_SCHEMA.SCHEMATA
@@ -1303,6 +1319,7 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
                     ])
                 ).flat()
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 return (await import('./static/clickhouse-keywords')).default
             }
@@ -1386,6 +1403,7 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
                 )
                 return rows.map(([val]) => val)
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 const rows = await this.select<[string]>(`SELECT DISTINCT name FROM system.functions;`)
                 return rows.map(([val]) => val)
@@ -1468,6 +1486,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.MsSql: {
                 return (await import('./static/mssql-datatypes')).default
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 return (await import('./static/clickhouse-datatypes')).default
             }
@@ -1510,6 +1529,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.WorkersAnalyticsEngine:
             case SqlDatabaseType.R2Sql:
             case SqlDatabaseType.MsSql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.QuestDB:
@@ -1548,6 +1568,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.QuestDB:
@@ -1617,6 +1638,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.Trino: {
                 return [DeleteTableType.Delete, DeleteTableType.Truncate, DeleteTableType.Drop]
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.QuestDB: {
                 return [DeleteTableType.Truncate, DeleteTableType.Drop]
@@ -1648,6 +1670,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             }
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.QuestDB:
             // Workers Analytics Engine / R2 SQL not supported
@@ -1706,6 +1729,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
                 sql = `ALTER SCHEMA ${to} TRANSFER ${from}.${table};`
                 break
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 sql = `RENAME TABLE ${from}.${table} TO ${to}.${table};`
                 break
@@ -1739,6 +1763,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.MsSql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 return true
             }
@@ -1856,6 +1881,7 @@ WHERE
     table_schema = ${schema} AND table_name = ${table} ORDER BY ordinal_position;`
                 break
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 sql = `
 SELECT 
@@ -2019,6 +2045,7 @@ WHERE
                     case SqlDatabaseType.QuestDB:
                     case SqlDatabaseType.MySql:
                     case SqlDatabaseType.MariaDB:
+                    case SqlDatabaseType.ChDb:
                     case SqlDatabaseType.ClickHouse:
                     case SqlDatabaseType.Databend:
                     case SqlDatabaseType.Databricks:
@@ -2067,6 +2094,7 @@ WHERE
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.ManticoreSearch:
             case SqlDatabaseType.MsSql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -2124,6 +2152,7 @@ WHERE
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -2241,6 +2270,7 @@ SELECT column_name, referenced_table_schema, referenced_table_name, referenced_c
                 break
             }
             // Foreign keys not supported
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery:
@@ -2381,6 +2411,7 @@ SELECT table_schema, table_name, column_name, referenced_column_name FROM foreig
                 sql = `SELECT kcu.table_schema, kcu.table_name, kcu.column_name, ccu.column_name FROM information_schema.key_column_usage AS kcu JOIN information_schema.referential_constraints AS rc ON kcu.constraint_catalog = rc.constraint_catalog AND kcu.constraint_schema = rc.constraint_schema AND kcu.constraint_name = rc.constraint_name JOIN information_schema.key_column_usage AS ccu ON ccu.constraint_catalog = rc.unique_constraint_catalog AND ccu.constraint_schema = rc.unique_constraint_schema AND ccu.constraint_name = rc.unique_constraint_name AND ccu.ordinal_position = kcu.ordinal_position WHERE ccu.table_catalog = current_catalog() AND ccu.table_schema = ${schema} AND ccu.table_name = ${table};`
                 break
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery:
@@ -2547,6 +2578,7 @@ WHERE
                 break
             }
             // Foreign keys not supported
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery:
@@ -2659,6 +2691,7 @@ WHERE
             // Can query column_name: SELECT * from duckdb_constraints;
             case SqlDatabaseType.DuckDB:
             // ???
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -2782,6 +2815,7 @@ WHERE
             // TODO: DuckDB currently can only get explicitly defined indexes, no good way to directly get the index list, leaving empty for now
             case SqlDatabaseType.DuckDB:
             // ???
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -2987,6 +3021,7 @@ ORDER BY
     c.table_name, c.ordinal_position;`
                 break
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 sql = `
 SELECT
@@ -3184,6 +3219,7 @@ ORDER BY c.table_name, c.ordinal_position;`
             case SqlDatabaseType.R2Sql:
             case SqlDatabaseType.DuckDB:
             // Uncertain
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery:
@@ -3274,6 +3310,7 @@ ORDER BY ROUTINE_NAME;`
             case SqlDatabaseType.WorkersAnalyticsEngine:
             case SqlDatabaseType.R2Sql:
             case SqlDatabaseType.DuckDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.QuestDB:
             // ???
@@ -3317,6 +3354,7 @@ ORDER BY ROUTINE_NAME;`
             case SqlDatabaseType.MsSql:
             // TODO: DuckDB can actually support duckdb_extensions()
             case SqlDatabaseType.DuckDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3372,6 +3410,7 @@ ORDER BY e.name;`
             case SqlDatabaseType.ManticoreSearch:
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.DuckDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3417,6 +3456,7 @@ ORDER BY e.name;`
             case SqlDatabaseType.CockroachDB:
             // DuckDB doesn't support triggers yet https://github.com/duckdb/duckdb/issues/750
             case SqlDatabaseType.DuckDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3562,6 +3602,7 @@ ORDER BY table_name;`
             }
             case SqlDatabaseType.CockroachDB:
             case SqlDatabaseType.DuckDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3629,6 +3670,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
             case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3684,6 +3726,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
             case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3745,6 +3788,7 @@ ORDER BY table_name;`
                 return `DROP SEARCH INDEX ${this.escape.id(indexName)} ON ${this.escape.entry(entry)};`
             }
             // This should never be called
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3775,6 +3819,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.ManticoreSearch:
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.DuckDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3807,6 +3852,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.ManticoreSearch:
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.DuckDB:
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.Databricks:
@@ -3881,6 +3927,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.Trino: {
                 return `UPDATE ${t} SET ${v} WHERE ${w};`
             }
+            case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse: {
                 return `ALTER TABLE ${t} UPDATE ${v} WHERE ${w};`
             }
@@ -3906,6 +3953,7 @@ ORDER BY table_name;`
                 case SqlDatabaseType.CloudflareD1:
                 case SqlDatabaseType.WorkersAnalyticsEngine:
                 case SqlDatabaseType.R2Sql:
+                case SqlDatabaseType.ChDb:
                 case SqlDatabaseType.ClickHouse:
                 case SqlDatabaseType.Databend:
                 case SqlDatabaseType.BigQuery:
