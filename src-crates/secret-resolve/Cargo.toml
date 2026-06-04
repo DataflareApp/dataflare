@@ -1,9 +1,9 @@
 [package]
-name = "password-resolve"
+name = "secret-resolve"
 edition.workspace = true
 
 [lib]
-path = "password_resolve.rs"
+path = "secret_resolve.rs"
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
