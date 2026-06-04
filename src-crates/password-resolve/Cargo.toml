@@ -1,0 +1,14 @@
+[package]
+name = "password-resolve"
+edition.workspace = true
+
+[lib]
+path = "password_resolve.rs"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+
+[dependencies]
+thiserror = { workspace = true }
+tokio = { workspace = true }
+dotenvy = "0.15.7"
