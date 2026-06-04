@@ -5,6 +5,7 @@ use futures_util::FutureExt;
 use reqwest::{CustomProxyConnector, CustomProxyStream};
 use russh::ChannelStream;
 use russh::client::Msg;
+use secret_resolve::Secret;
 use serde::{Deserialize, Serialize};
 pub use ssh::{SshAuth, SshProxyConfig};
 use std::net::Ipv4Addr;
@@ -129,5 +130,25 @@ impl ProxyConfig {
                 })
             }
         }
+    }
+
+    pub async fn secret_resolve(config: &mut Option<Self>) -> Result<(), secret_resolve::Error> {
+        let Some(config) = config else {
+            return Ok(());
+        };
+        match config {
+            ProxyConfig::Ssh(ssh) => {
+                match &mut ssh.auth {
+                    SshAuth::Password { password } => {
+                        *password = Secret::resolve(&password).await?;
+                    }
+                    SshAuth::Key { password, .. } => {
+                        *password = Secret::resolve_option(password.take()).await?;
+                    }
+                    SshAuth::Agent { .. } => {}
+                };
+            }
+        }
+        Ok(())
     }
 }

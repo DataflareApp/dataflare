@@ -301,6 +301,17 @@ export const translationText = {
         [Language.zhCN]: `显示密码`,
         [Language.ja]: 'パスワードを表示'
     },
+    secretResolveMsg: {
+        [Language.en]:
+            'To let Dataflare load passwords or credentials from external sources, please use the following specific formats:',
+        [Language.de]:
+            'Um Dataflare das Laden von Passwörtern oder Anmeldeinformationen aus externen Quellen zu ermöglichen, verwenden Sie bitte die folgenden spezifischen Formate:',
+        [Language.frFR]:
+            'Pour permettre à Dataflare de charger les mots de passe ou les identifiants à partir de sources externes, veuillez utiliser les formats spécifiques suivants :',
+        [Language.zhCN]: '若要让 Dataflare 从外部加载密码或凭证，请使用以下特定格式：',
+        [Language.ja]:
+            'Dataflareが外部ソースからパスワードや資格情報をロードできるようにするには、次の特定の形式を使用してください：'
+    },
     showSuggestions: {
         [Language.en]: `Show suggestions`,
         [Language.de]: 'Zeige Vorschläge',

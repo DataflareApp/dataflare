@@ -50,6 +50,7 @@ backup = { path = "./src-crates/backup" }
 proxy = { path = "./src-crates/proxy" }
 client-store = { path = "./src-crates/client-store" }
 dir = { path = "./src-crates/dir" }
+secret-resolve = { path = "./src-crates/secret-resolve" }
 whoami = "1.6.0"
 font-kit = "0.13.2"
 ring = "0.17.14"

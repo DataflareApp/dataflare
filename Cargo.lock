@@ -1889,6 +1889,7 @@ version = "0.0.0"
 dependencies = [
  "pgsq",
  "proxy",
+ "secret-resolve",
  "serde",
  "strum",
 ]
@@ -2500,6 +2501,7 @@ dependencies = [
  "rand 0.10.1",
  "ring",
  "rusqlite",
+ "secret-resolve",
  "serde",
  "serde_json",
  "serde_rusqlite",
@@ -6161,15 +6163,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "password-resolve"
-version = "0.0.0"
-dependencies = [
- "dotenvy",
- "thiserror 2.0.18",
- "tokio",
-]
-
-[[package]]
 name = "pathdiff"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6790,6 +6783,7 @@ dependencies = [
  "futures-util",
  "reqwest 0.0.0",
  "russh",
+ "secret-resolve",
  "serde",
  "thiserror 2.0.18",
  "tokio",
@@ -8018,6 +8012,15 @@ dependencies = [
  "hybrid-array",
  "subtle",
  "zeroize",
+]
+
+[[package]]
+name = "secret-resolve"
+version = "0.0.0"
+dependencies = [
+ "dotenvy",
+ "thiserror 2.0.18",
+ "tokio",
 ]
 
 [[package]]

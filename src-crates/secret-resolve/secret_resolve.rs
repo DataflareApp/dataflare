@@ -1,4 +1,15 @@
-use std::env::{self, VarError};
+//! # Secret Resolver Library
+//!
+//! This library provides a secure mechanism for resolving secrets from multiple sources:
+//! - **`env:`** - Resolves environment variables or keys from `.env` files
+//! - **`file:`** - Reads secrets from local files
+//! - **`exec:`** - Executes shell commands to retrieve secrets
+//! - **Plain text** - Returns plain text values as-is
+//!
+//! TODO:
+//! Read from the keychain? 'keychain: service/account'
+//! Read from popups or other secure input methods? 'ask: prompt message'
+use std::env;
 use std::io;
 use std::time::Duration;
 use tokio::fs;
@@ -16,71 +27,56 @@ const MAX_FILE_SIZE: u64 = 1024 * 1024;
 
 const EXEC_TIMEOUT: Duration = Duration::from_secs(30);
 
+// List of sensitive commands restricted to mitigate accidental misuse or basic security risks
+// While not a bulletproof security barrier, this serves as a safeguard against common mistakes
+const FORBIDDEN_COMMANDS: &'static [&'static str] = &[
+    "rm", "rmdir", "dd", "mkfs", "reboot", "shutdown", "poweroff", "halt", "sudo", "su", "mount",
+    "umount", "chown", "chmod", "chroot", "killall", "kill", "fork", "forkbomb",
+    // For Windows
+    "del", "erase", "rd", "format", "diskpart", "runas", "taskkill", "tskill", "deltree", "fsutil",
+    "vssadmin", "wbadmin", "bcdedit", "takeown", "icacls",
+];
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("IO error for {path}: {source}")]
+    #[error("IO error for `{path}`: {source}")]
     Io { path: String, source: io::Error },
-    #[error("File too large: {path}")]
+    #[error("File too large: `{path}`")]
     FileTooLarge { path: String },
 
-    #[error("Environment variable not found: {name}, source: {source}")]
-    EnvVarNotFound { name: String, source: VarError },
-    #[error("Key not found in environment file: {key} (file: {path})")]
+    #[error("Environment variable `{name}` not found")]
+    EnvVarNotFound { name: String },
+    #[error("Environment variable `{key}` not found in file `{path}`")]
     EnvFileKeyNotFound { path: String, key: String },
 
-    #[error("Failed to run command: {command}")]
+    #[error("Failed to run command: `{command}`")]
     CommandFailed { command: String, source: io::Error },
-    #[error("Command timed out: {command}")]
+    #[error("Command timed out: `{command}`")]
     CommandTimedOut { command: String },
-    #[error("Command exited with non-zero status: {command}, code: {code:?}, stderr: {stderr}")]
+    #[error("Command produced no output: `{command}`")]
+    CommandNoOutput { command: String },
+    #[error("Command exited with non-zero status: `{command}`, code: {code:?}, stderr: {stderr}")]
     CommandNonZeroExit {
         command: String,
         code: Option<i32>,
         stderr: String,
     },
-}
-
-pub trait SecretResolvable {
-    type Output;
-    fn secret_resolve(self) -> impl Future<Output = Result<Self::Output, Error>>;
-}
-
-impl<'a> SecretResolvable for &'a str {
-    type Output = String;
-    async fn secret_resolve(self) -> Result<Self::Output, Error> {
-        Ok(Secret::inner_resolve(self).await?)
-    }
-}
-
-impl SecretResolvable for String {
-    type Output = String;
-    async fn secret_resolve(self) -> Result<Self::Output, Error> {
-        Ok(Secret::inner_resolve(&self).await?)
-    }
-}
-
-impl<'a> SecretResolvable for &'a String {
-    type Output = String;
-    async fn secret_resolve(self) -> Result<Self::Output, Error> {
-        Ok(Secret::inner_resolve(self).await?)
-    }
-}
-
-impl SecretResolvable for Option<String> {
-    type Output = Option<String>;
-    async fn secret_resolve(self) -> Result<Self::Output, Error> {
-        match self {
-            Some(s) => s.secret_resolve().await.map(Some),
-            None => Ok(None),
-        }
-    }
+    #[error("Dangerous command not allowed: `{command}`")]
+    DangerousCommand { command: String },
 }
 
 pub struct Secret;
 
 impl Secret {
-    pub async fn resolve<T: SecretResolvable>(secret: T) -> Result<T::Output, Error> {
-        secret.secret_resolve().await
+    pub async fn resolve(secret: impl AsRef<str>) -> Result<String, Error> {
+        Self::inner_resolve(secret.as_ref()).await
+    }
+
+    pub async fn resolve_option(secret: Option<impl AsRef<str>>) -> Result<Option<String>, Error> {
+        match secret {
+            Some(s) => Self::inner_resolve(s.as_ref()).await.map(Some),
+            None => Ok(None),
+        }
     }
 
     async fn inner_resolve(secret: &str) -> Result<String, Error> {
@@ -99,9 +95,8 @@ impl Secret {
 
     async fn resolve_env(rest: &str) -> Result<String, Error> {
         let Some((path, key)) = rest.split_once('#') else {
-            let v = env::var(rest).map_err(|err| Error::EnvVarNotFound {
+            let v = env::var(rest).map_err(|_| Error::EnvVarNotFound {
                 name: rest.to_string(),
-                source: err,
             })?;
             return Ok(v);
         };
@@ -145,6 +140,17 @@ impl Secret {
     }
 
     async fn resolve_exec(command: &str) -> Result<String, Error> {
+        for forbidden in FORBIDDEN_COMMANDS {
+            if command.starts_with(forbidden) {
+                let after = &command[forbidden.len()..];
+                if after.is_empty() || after.chars().next().map_or(false, char::is_whitespace) {
+                    return Err(Error::DangerousCommand {
+                        command: command.to_string(),
+                    });
+                }
+            }
+        }
+
         let (shell, flag) = SHELL;
         let output = Command::new(shell).arg(flag).arg(command).output();
 
@@ -167,6 +173,11 @@ impl Secret {
         }
         let stdout = String::from_utf8_lossy(&output.stdout);
         let rst = stdout.trim_end().to_string();
+        if rst.is_empty() {
+            return Err(Error::CommandNoOutput {
+                command: command.into(),
+            });
+        }
         Ok(rst)
     }
 }
@@ -201,8 +212,13 @@ mod tests {
     #[tokio::test]
     async fn test_resolve_option() {
         assert_eq!(Secret::resolve("123").await.unwrap(), "123");
-        assert_eq!(Secret::resolve("123".to_string()).await.unwrap(), "123");
-        assert_eq!(Secret::resolve(None).await.unwrap(), None);
+        assert_eq!(
+            Secret::resolve_option(Some("123".to_string()))
+                .await
+                .unwrap(),
+            Some("123".to_string())
+        );
+        assert_eq!(Secret::resolve_option(None::<String>).await.unwrap(), None);
     }
 
     #[tokio::test]
@@ -300,6 +316,15 @@ mod tests {
 
         let result = Secret::resolve("exec:nonexistent_command").await;
         assert!(matches!(result, Err(Error::CommandNonZeroExit { .. })));
+    }
+
+    #[tokio::test]
+    async fn test_resolve_exec_no_output() {
+        let result = Secret::resolve("exec: sleep 1").await;
+        assert!(matches!(result, Err(Error::CommandNoOutput { .. })));
+
+        let result = Secret::resolve("exec: echo ''").await;
+        assert!(matches!(result, Err(Error::CommandNoOutput { .. })));
     }
 
     // #[tokio::test]

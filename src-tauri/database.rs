@@ -23,6 +23,8 @@ pub enum Error {
     Io(#[from] std::io::Error),
     #[error(transparent)]
     Fbon(#[from] fbon::SerError),
+    #[error("Secret resolve error: {0}")]
+    SecretResolve(#[from] secret_resolve::Error),
 }
 
 type Result<T, E = Error> = std::result::Result<T, E>;
@@ -38,6 +40,7 @@ impl Serialize for Error {
 
 #[command]
 pub async fn test(config: ConnectionConfig) -> Result<Option<String>> {
+    let config = config.secret_resolve().await?;
     let version = Database::test(config).await?;
     Ok(version)
 }
@@ -48,6 +51,7 @@ pub async fn connect(
     window: Window,
     config: ConnectionConfig,
 ) -> Result<()> {
+    let config = config.secret_resolve().await?;
     store.connect(window.label().into(), config).await
 }
 
