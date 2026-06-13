@@ -1,5 +1,8 @@
+#[cfg(all(target_os = "windows", feature = "portable"))]
+use crate::AppDataDir;
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::path::PathBuf;
 use tauri::{AppHandle, Manager, command};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -45,22 +48,12 @@ const ERROR_MESSAGE: &str = "Get app config dir failed";
 #[command]
 pub fn set_theme(app: AppHandle, theme: Theme) {
     theme.apply(&app);
-    let p = app
-        .path()
-        .app_data_dir()
-        .expect(ERROR_MESSAGE)
-        .join(dir::THEME_FILE);
-    let _ = fs::write(p, theme.to_string());
+    let _ = fs::write(theme_path(&app), theme.to_string());
 }
 
 #[command]
 pub fn get_theme(app: AppHandle) -> Theme {
-    let p = app
-        .path()
-        .app_data_dir()
-        .expect(ERROR_MESSAGE)
-        .join(dir::THEME_FILE);
-    fs::read_to_string(p)
+    fs::read_to_string(theme_path(&app))
         .map(Theme::from)
         .unwrap_or(Theme::Auto)
 }
@@ -68,6 +61,19 @@ pub fn get_theme(app: AppHandle) -> Theme {
 pub fn restore_theme(app: &AppHandle) {
     let theme = get_theme(app.clone());
     theme.apply(app);
+}
+
+fn theme_path(app: &AppHandle) -> PathBuf {
+    #[cfg(all(target_os = "windows", feature = "portable"))]
+    {
+        return app.state::<AppDataDir>().path().join(dir::THEME_FILE);
+    }
+
+    #[cfg(not(all(target_os = "windows", feature = "portable")))]
+    app.path()
+        .app_data_dir()
+        .expect(ERROR_MESSAGE)
+        .join(dir::THEME_FILE)
 }
 
 #[cfg(target_os = "macos")]

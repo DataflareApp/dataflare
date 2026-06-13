@@ -2,6 +2,9 @@
 name = "dir"
 edition.workspace = true
 
+[features]
+portable = []
+
 [lib]
 path = "dir.rs"
 

@@ -97,6 +97,11 @@ jobs:
         run: |
           pnpm build --target ${{ matrix.job.target }}
 
+      - name: Build Portable App
+        if: runner.os == 'Windows'
+        run: |
+          pnpm build --target ${{ matrix.job.target }} --features portable --no-bundle
+
       - name: Organize App files (macOS)
         if: runner.os == 'macOS'
         run: |
@@ -124,6 +129,8 @@ jobs:
           mv target/${{ matrix.job.target }}/release/bundle/nsis/Dataflare_${{ env.APP_VERSION }}_${{ matrix.job.arch }}-setup.nsis.zip ${{ matrix.job.bundle }}/Dataflare.zip
           echo '{"version":"${{ env.APP_VERSION }}","url":"https://assets.dataflare.app/${{ matrix.job.bundle }}/Dataflare.zip","signature":"'$(cat target/${{ matrix.job.target }}/release/bundle/nsis/Dataflare_${{ env.APP_VERSION }}_${{ matrix.job.arch }}-setup.nsis.zip.sig)'"}' > ${{ matrix.job.bundle }}/latest.json
           cp ${{ matrix.job.bundle }}/Dataflare-Setup.exe ${{ matrix.job.bundle }}/Dataflare-Setup-${{ env.APP_VERSION }}.exe
+          cp target/${{ matrix.job.target }}/release/dataflare.exe ${{ matrix.job.bundle }}/Dataflare-Portable.exe
+          cp target/${{ matrix.job.target }}/release/dataflare.exe ${{ matrix.job.bundle }}/Dataflare-Portable-${{ env.APP_VERSION }}.exe
 
       - name: Upload to R2
         uses: wyhaya/upload-cloudflare-r2@9ac9d847e87f5674ed5f14c11a2f0f44d8a5c368

@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import useSWRMutation from 'swr/mutation'
 import { useTranslation } from '../../../i18n'
-import { getWaitAppRestart, setAppUpdateAvailable, setWaitAppRestart } from '../../../tauri'
+import { getWaitAppRestart, isPortable, setAppUpdateAvailable, setWaitAppRestart } from '../../../tauri'
 import { Button, IconButton, IconRefresh, showMessageBox } from '../../../ui'
+import { LATEST_RELEASE_URL, openURL } from '../../../utils/opener'
 
 export const UpdateSettings = () => {
     const { t } = useTranslation()
@@ -69,13 +70,21 @@ const InstallUpdate = ({
     onInstallSuccess: () => void
 }) => {
     const { t, tf } = useTranslation()
-    const { error, isMutating, trigger } = useSWRMutation('install-update', () => {
+    const { error, isMutating, trigger } = useSWRMutation('install-update', async () => {
+        if (await isPortable()) {
+            openURL(LATEST_RELEASE_URL)
+            return false
+        }
         // NOTE: On Windows, this restarts immediately after installation
-        return update.downloadAndInstall()
+        await update.downloadAndInstall()
+        return true
     })
 
     const onInstallUpdate = async () => {
-        await trigger()
+        const installed = await trigger()
+        if (!installed) {
+            return
+        }
         onInstallSuccess()
         // NOTE: Windows will not reach this point
         showMessageBox(tf('newVersionInstalled', update.version), t('restartMessage'), 'success', [

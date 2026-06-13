@@ -16,6 +16,10 @@ export const getAppUpdateAvailable = () => {
     return invoke<boolean | null>('get_app_update_available')
 }
 
+export const isPortable = () => {
+    return invoke<boolean>('is_portable')
+}
+
 export const setLicenseActivated = () => {
     return invoke('set_license_activated')
 }

@@ -4,6 +4,9 @@ version = "0.0.0"
 edition.workspace = true
 publish = false
 
+[features]
+portable = ["dir/portable"]
+
 [[bin]]
 name = "dataflare"
 path = "src-tauri/main.rs"
