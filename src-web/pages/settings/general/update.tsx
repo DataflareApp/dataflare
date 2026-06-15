@@ -71,6 +71,8 @@ const InstallUpdate = ({
 }) => {
     const { t, tf } = useTranslation()
     const { error, isMutating, trigger } = useSWRMutation('install-update', async () => {
+        // TODO: Implement portable update self
+        // https://github.com/mitsuhiko/self-replace
         if (await isPortable()) {
             openURL(PORTABLE_UPDATE_URL)
             return false
