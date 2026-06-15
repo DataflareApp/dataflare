@@ -3,7 +3,6 @@ mod error;
 mod utils;
 mod widget;
 
-use dir::CLIENT_DATABASE_FILE;
 pub use error::Error;
 pub use utils::{Id, JsonArray, JsonMap};
 pub use widget::{WidgetConfig, WidgetItem};
@@ -79,9 +78,7 @@ pub struct AgentItem {
 }
 
 impl Client {
-    pub async fn connect(dir: &Path) -> Result<Self> {
-        let path = dir.join(CLIENT_DATABASE_FILE);
-
+    pub async fn connect(path: &Path) -> Result<Self> {
         #[cfg(debug_assertions)]
         println!("Client Data: {:?}", path);
 
@@ -543,7 +540,7 @@ mod tests {
             std::fs::remove_dir_all(&dir).unwrap();
         }
         std::fs::create_dir_all(&dir).unwrap();
-        let client = Client::connect(&dir).await.unwrap();
+        let client = Client::connect(&dir.join("test.db")).await.unwrap();
         let cid1 = client
             .create_connection("Conn 1".into(), sqlite_config())
             .await

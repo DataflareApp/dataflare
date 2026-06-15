@@ -2,7 +2,7 @@ import { openUrl } from '@tauri-apps/plugin-opener'
 import { showMessageBox } from '../ui'
 
 export const RELEASE_URL = 'https://github.com/DataflareApp/dataflare/blob/main/CHANGELOG.md'
-export const LATEST_RELEASE_URL = 'https://dataflare.app/download?windows-portable-update'
+export const PORTABLE_UPDATE_URL = 'https://dataflare.app/download?portable-update'
 export const BUG_FEEDBACK_URL = 'https://github.com/DataflareApp/dataflare/issues'
 export const GITHUB_REPOSITORY_URL = 'https://github.com/DataflareApp/dataflare'
 export const LICENSE_MANAGER_URL = 'https://dataflare.app/license-manager'

@@ -53,7 +53,7 @@ pub fn get_app_update_available(sc: State<AppCheckUpdate>) -> Option<bool> {
 
 #[command]
 pub fn is_portable() -> bool {
-    cfg!(all(target_os = "windows", feature = "portable"))
+    cfg!(feature = "portable")
 }
 
 pub struct LicenseActivate(pub StateCache);

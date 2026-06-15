@@ -40,8 +40,8 @@ async fn main() {
 }
 
 async fn run(cli: Cli) -> Result<()> {
-    let data_dir = dir::app_dir();
-    let client = Client::connect(&data_dir).await?;
+    let data_path = dir::client_database_path();
+    let client = Client::connect(&data_path).await?;
     match cli.command {
         Command::List => list_connections(&client).await?,
         Command::Query { id, sql } => run_query(&client, &id, sql).await?,

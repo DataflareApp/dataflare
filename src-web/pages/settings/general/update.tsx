@@ -7,7 +7,7 @@ import useSWRMutation from 'swr/mutation'
 import { useTranslation } from '../../../i18n'
 import { getWaitAppRestart, isPortable, setAppUpdateAvailable, setWaitAppRestart } from '../../../tauri'
 import { Button, IconButton, IconRefresh, showMessageBox } from '../../../ui'
-import { LATEST_RELEASE_URL, openURL } from '../../../utils/opener'
+import { openURL, PORTABLE_UPDATE_URL } from '../../../utils/opener'
 
 export const UpdateSettings = () => {
     const { t } = useTranslation()
@@ -72,7 +72,7 @@ const InstallUpdate = ({
     const { t, tf } = useTranslation()
     const { error, isMutating, trigger } = useSWRMutation('install-update', async () => {
         if (await isPortable()) {
-            openURL(LATEST_RELEASE_URL)
+            openURL(PORTABLE_UPDATE_URL)
             return false
         }
         // NOTE: On Windows, this restarts immediately after installation

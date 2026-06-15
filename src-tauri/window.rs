@@ -1,5 +1,3 @@
-#[cfg(all(target_os = "windows", feature = "portable"))]
-use crate::AppDataDir;
 use crate::client::{
     Client, ConnectionItemResult, Error as ClientError, connection_list, create_connection,
 };
@@ -58,9 +56,9 @@ pub async fn show_connections_window(app: AppHandle) -> Result<(), String> {
     .disable_drag_drop_handler()
     .enable_clipboard_access()
     .use_https_scheme(true);
-    #[cfg(all(target_os = "windows", feature = "portable"))]
+    #[cfg(feature = "portable")]
     {
-        builder = builder.data_directory(app.state::<AppDataDir>().webview());
+        builder = builder.data_directory(dir::webview_dir());
     }
     #[cfg(target_os = "macos")]
     {
@@ -104,16 +102,16 @@ pub async fn show_settings_window(app: AppHandle, tab: Option<String>) -> Result
     .disable_drag_drop_handler()
     .enable_clipboard_access()
     .use_https_scheme(true);
-    #[cfg(all(target_os = "windows", feature = "portable"))]
-    {
-        builder = builder.data_directory(app.state::<AppDataDir>().webview());
-    }
 
     if let Some(tab) = tab {
         let script = format!(r#"window.__DEFAULT_TAB = '{tab}'"#);
         builder = builder.initialization_script(script);
     }
 
+    #[cfg(feature = "portable")]
+    {
+        builder = builder.data_directory(dir::webview_dir());
+    }
     #[cfg(target_os = "macos")]
     {
         builder = builder
@@ -147,9 +145,9 @@ pub async fn show_activate_window(app: AppHandle) -> Result<(), String> {
     .disable_drag_drop_handler()
     .enable_clipboard_access()
     .use_https_scheme(true);
-    #[cfg(all(target_os = "windows", feature = "portable"))]
+    #[cfg(feature = "portable")]
     {
-        builder = builder.data_directory(app.state::<AppDataDir>().webview());
+        builder = builder.data_directory(dir::webview_dir());
     }
     #[cfg(target_os = "macos")]
     {
@@ -186,9 +184,9 @@ pub async fn show_backup_window(
             .enable_clipboard_access()
             .use_https_scheme(true)
             .initialization_script(script);
-    #[cfg(all(target_os = "windows", feature = "portable"))]
+    #[cfg(feature = "portable")]
     {
-        builder = builder.data_directory(app.state::<AppDataDir>().webview());
+        builder = builder.data_directory(dir::webview_dir());
     }
     #[cfg(target_os = "macos")]
     {
@@ -246,9 +244,9 @@ pub async fn new_database_window(
             .enable_clipboard_access()
             .use_https_scheme(true)
             .initialization_script(script);
-    #[cfg(all(target_os = "windows", feature = "portable"))]
+    #[cfg(feature = "portable")]
     {
-        builder = builder.data_directory(app.state::<AppDataDir>().webview());
+        builder = builder.data_directory(dir::webview_dir());
     }
     #[cfg(target_os = "macos")]
     {

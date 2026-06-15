@@ -21,26 +21,9 @@ mod menu;
 
 use database::ConnectionStore;
 use lifecycle::{AppCheckUpdate, ConnectionsSearch, LicenseActivate, StateCache};
-#[cfg(all(target_os = "windows", feature = "portable"))]
-use std::path::{Path, PathBuf};
 use tauri::async_runtime::{block_on, spawn};
 use tauri::{Manager, RunEvent, WindowEvent, generate_handler};
 use window_state::WindowStateManager;
-
-#[cfg(all(target_os = "windows", feature = "portable"))]
-pub struct AppDataDir(PathBuf);
-
-#[cfg(all(target_os = "windows", feature = "portable"))]
-impl AppDataDir {
-    pub fn path(&self) -> &Path {
-        &self.0
-    }
-
-    #[cfg(all(target_os = "windows", feature = "portable"))]
-    pub fn webview(&self) -> PathBuf {
-        self.0.join(dir::WEBVIEW_DIR)
-    }
-}
 
 fn main() {
     let mut builder = tauri::Builder::default();
@@ -194,28 +177,12 @@ fn main() {
     }
 
     builder = builder.setup(|app| {
-        #[cfg(all(target_os = "windows", feature = "portable"))]
-        let dir = {
-            let dir = dir::app_dir();
-            if !dir.exists() {
-                let _ = std::fs::create_dir_all(&dir);
-            }
-            app.manage(AppDataDir(dir.clone()));
-            dir
-        };
-        #[cfg(not(all(target_os = "windows", feature = "portable")))]
-        let dir = {
-            let dir = app.path().app_data_dir()?;
-            if !dir.exists() {
-                let _ = std::fs::create_dir_all(&dir);
-            }
-            dir
-        };
         {
-            app.manage(WindowStateManager::new(&dir));
+            app.manage(WindowStateManager::new());
         }
         {
-            let state = block_on(client::Client::connect(&dir))?;
+            let data_path = dir::client_database_path();
+            let state = block_on(client::Client::connect(&data_path))?;
             app.manage(state);
         }
         native::restore_theme(app.app_handle());

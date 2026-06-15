@@ -123,8 +123,8 @@ fn write_label<W: Write>(writer: &mut W, label: &str) -> Result<()> {
 }
 
 impl WindowStateManager {
-    pub fn new(dir: &Path) -> Self {
-        let path = dir.join(dir::WINDOW_STATE_FILE);
+    pub fn new() -> Self {
+        let path = dir::window_state_path();
         let map = Self::read_from_path(&path).unwrap_or_else(|_| HashMap::new());
 
         #[cfg(debug_assertions)]
