@@ -1,0 +1,20 @@
+[workspace]
+
+[package]
+name = "libpglite"
+edition = "2024"
+
+[lib]
+name = "pglite"
+crate-type = ["cdylib"]
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = "symbols"
+
+[dependencies]
+hex = "0.4.3"
+pglite-rs = { git = "https://github.com/wyhaya/pglite-rs", branch = "add-simple-query-api", default-features = false, features = ["pgcrypto", "pgvector"] }
+postgres-types = "0.2.14"
+tokio = { version = "1.52.3", features = ["rt"] }
