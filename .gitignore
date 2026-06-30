@@ -19,5 +19,6 @@ output.sql
 build.sh
 build.ps1
 test-db/
+.pglite-data/
 
 /release/

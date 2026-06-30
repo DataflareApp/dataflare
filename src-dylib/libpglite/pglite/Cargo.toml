@@ -1,0 +1,19 @@
+[package]
+name = "pglite"
+edition = "2024"
+
+[build-dependencies]
+sha2 = "0.11.0"
+tar = "0.4.46"
+xz2 = "0.1.7"
+
+[dependencies]
+bytes = "1.12.0"
+getrandom = "0.4.3"
+include_dir = "0.7.4"
+pgwire = { version = "0.40.4", default-features = false }
+postgres-types = { workspace = true }
+tempfile = "3.27.0"
+thiserror = "2.0.18"
+wasmtime = { version = "46.0.1", default-features = false, features = ["cranelift", "parallel-compilation", "runtime"] }
+wasmtime-wasi = { version = "46.0.1", default-features = false, features = ["p1"] }

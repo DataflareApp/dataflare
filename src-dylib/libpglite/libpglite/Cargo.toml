@@ -1,0 +1,12 @@
+[package]
+name = "libpglite"
+edition = "2024"
+
+[lib]
+name = "pglite"
+crate-type = ["cdylib"]
+
+[dependencies]
+hex = "0.4.3"
+pglite = { path = "../pglite" }
+postgres-types = { workspace = true }

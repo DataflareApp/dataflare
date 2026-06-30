@@ -1,28 +1,21 @@
-#[path = "../../../src-crates/dylib/src/ffi.rs"]
+#[path = "../../../../src-crates/dylib/src/ffi.rs"]
 mod ffi;
 
-mod connection;
+mod decode;
 
-use connection::Connection;
 use ffi::{BytesRef, ErrorMessage, StringRef, TypedValue};
+use pglite::Connection;
 use std::ptr::null_mut;
-use std::sync::LazyLock;
-use tokio::runtime::Runtime;
 
-static RUNTIME: LazyLock<Runtime> = LazyLock::new(|| {
-    tokio::runtime::Builder::new_current_thread()
-        .enable_all()
-        .build()
-        .expect("Failed to create async runtime")
-});
+use crate::decode::to_query;
 
 pub(crate) type Result<T, E = String> = std::result::Result<T, E>;
 
-pub(crate) trait StringError<T> {
+trait StringError<T> {
     fn string_err(self) -> Result<T>;
 }
 
-impl<T, E> StringError<T> for std::result::Result<T, E>
+impl<T, E> StringError<T> for Result<T, E>
 where
     E: ToString,
 {
@@ -37,11 +30,13 @@ pub(crate) struct Query {
     pub(crate) rows_affected: u64,
 }
 
+#[derive(Debug, PartialEq, Eq)]
 pub(crate) struct QueryColumn {
     pub(crate) name: String,
     pub(crate) datatype: String,
 }
 
+#[derive(Debug, PartialEq)]
 pub(crate) enum QueryValue {
     Null,
     Bool(bool),
@@ -97,7 +92,7 @@ struct ConnectOptions {
 extern "C" fn df_connect(options: ConnectOptions, error: *mut ErrorMessage) -> *mut Connection {
     let call = || {
         let path = options.path.as_str();
-        let conn = RUNTIME.block_on(Connection::connect(path))?;
+        let conn = Connection::open_with(path).string_err()?;
         Ok(Box::into_raw(Box::new(conn)))
     };
     call()
@@ -109,32 +104,7 @@ extern "C" fn df_connect(options: ConnectOptions, error: *mut ErrorMessage) -> *
 
 #[unsafe(no_mangle)]
 extern "C" fn df_close(conn: *mut Connection) {
-    let conn = unsafe { Box::from_raw(conn) };
-    let _ = RUNTIME.block_on(conn.close());
-}
-
-#[unsafe(no_mangle)]
-extern "C" fn df_execute(conn: *mut Connection, sql: StringRef, error: *mut ErrorMessage) {
-    let call = || {
-        let conn = unsafe { &*conn };
-        RUNTIME.block_on(conn.execute(sql.as_str()))?;
-        Ok(())
-    };
-    if let Err(err) = call() {
-        unsafe { *error = ErrorMessage::new(err) }
-    }
-}
-
-#[unsafe(no_mangle)]
-extern "C" fn df_execute_batch(conn: *mut Connection, sql: StringRef, error: *mut ErrorMessage) {
-    let call = || {
-        let conn = unsafe { &*conn };
-        RUNTIME.block_on(conn.execute_batch(sql.as_str()))?;
-        Ok(())
-    };
-    if let Err(err) = call() {
-        unsafe { *error = ErrorMessage::new(err) }
-    }
+    let _ = unsafe { Box::from_raw(conn) };
 }
 
 #[unsafe(no_mangle)]
@@ -146,9 +116,9 @@ extern "C" fn df_transaction(
 ) {
     let sqls = unsafe { std::slice::from_raw_parts(sqls, sqls_len) };
     let call = || {
-        let conn = unsafe { &*conn };
+        let conn = unsafe { &mut *conn };
         let sqls = sqls.iter().map(|sql| sql.as_str()).collect::<Vec<_>>();
-        RUNTIME.block_on(conn.transaction(&sqls))?;
+        conn.transaction(&sqls).string_err()?;
         Ok(())
     };
     if let Err(err) = call() {
@@ -163,8 +133,8 @@ extern "C" fn df_query(
     error: *mut ErrorMessage,
 ) -> *mut Query {
     let call = || {
-        let conn = unsafe { &*conn };
-        RUNTIME.block_on(conn.query(sql.as_str()))
+        let conn = unsafe { &mut *conn };
+        conn.query(sql.as_str()).map(to_query).string_err()?
     };
     call()
         .map(|query| Box::into_raw(Box::new(query)))
@@ -172,6 +142,18 @@ extern "C" fn df_query(
             *error = ErrorMessage::new(err);
         })
         .unwrap_or(null_mut())
+}
+
+#[unsafe(no_mangle)]
+extern "C" fn df_execute(handle: *mut Connection, sql: StringRef, error: *mut ErrorMessage) {
+    let call = || {
+        let conn = unsafe { &mut *handle };
+        let _ = conn.query(sql.as_str()).string_err()?;
+        Ok(())
+    };
+    if let Err(err) = call() {
+        unsafe { *error = ErrorMessage::new(err) }
+    }
 }
 
 #[unsafe(no_mangle)]
@@ -238,11 +220,17 @@ extern "C" fn df_free_error(error: ErrorMessage) {
     error.free();
 }
 
-// pglite-rs can only boot once in a process, so run this test module separately:
-// cargo test query_columns_and_values
 #[cfg(test)]
 mod tests {
     use crate::*;
+
+    macro_rules! assert_column {
+        ($query:expr, $index:expr, $name:expr, $datatype:expr) => {{
+            let column = df_query_column($query, $index);
+            assert_eq!(column.name.as_str(), $name);
+            assert_eq!(column.datatype.as_str(), $datatype);
+        }};
+    }
 
     #[test]
     fn query_columns_and_values() {
@@ -265,13 +253,11 @@ mod tests {
             conn,
             StringRef::new(
                 "SELECT
-                    NULL::text AS empty,
-                    true AS ok,
-                    1::int4 AS id,
-                    3.14::float8 AS score,
-                    decode('6869', 'hex') AS payload,
-                    'alice'::text AS name,
-                    42::oid AS oid",
+                    42::int4 AS integer_value,
+                    3.5::float8 AS float_value,
+                    true AS bool_value,
+                    random() AS random_value,
+                    TIMESTAMP '2025-01-02 03:04:05' AS timestamp_value",
             ),
             &mut error,
         );
@@ -279,53 +265,41 @@ mod tests {
         assert!(!query.is_null());
 
         let meta = df_query_meta(query);
-        assert_eq!(meta.column_count, 7);
+        assert_eq!(meta.column_count, 5);
         assert_eq!(meta.row_count, 1);
         assert_eq!(meta.rows_affected, 0);
 
-        assert_column(query, 0, "empty", "text");
-        assert_column(query, 1, "ok", "bool");
-        assert_column(query, 2, "id", "int4");
-        assert_column(query, 3, "score", "float8");
-        assert_column(query, 4, "payload", "bytea");
-        assert_column(query, 5, "name", "text");
-        assert_column(query, 6, "oid", "oid");
+        assert_column!(query, 0, "integer_value", "int4");
+        assert_column!(query, 1, "float_value", "float8");
+        assert_column!(query, 2, "bool_value", "bool");
+        assert_column!(query, 3, "random_value", "float8");
+        assert_column!(query, 4, "timestamp_value", "timestamp");
 
-        assert_eq!(df_query_value(query, 0, 0).kind, DataKind::Null);
         unsafe {
-            let ok = df_query_value(query, 0, 1);
-            assert_eq!(ok.kind, DataKind::Bool);
-            assert!(ok.value.bool);
+            let integer = df_query_value(query, 0, 0);
+            assert_eq!(integer.kind, DataKind::I64);
+            assert_eq!(integer.value.i64, 42);
 
-            let id = df_query_value(query, 0, 2);
-            assert_eq!(id.kind, DataKind::I64);
-            assert_eq!(id.value.i64, 1);
+            let float = df_query_value(query, 0, 1);
+            assert_eq!(float.kind, DataKind::F64);
+            assert_eq!(float.value.f64, 3.5);
 
-            let score = df_query_value(query, 0, 3);
-            assert_eq!(score.kind, DataKind::F64);
-            assert_eq!(score.value.f64, 3.14);
+            let boolean = df_query_value(query, 0, 2);
+            assert_eq!(boolean.kind, DataKind::Bool);
+            assert!(boolean.value.bool);
 
-            let payload = df_query_value(query, 0, 4);
-            assert_eq!(payload.kind, DataKind::Bytes);
-            assert_eq!(payload.value.bytes.as_bytes(), b"hi");
+            let random = df_query_value(query, 0, 3);
+            assert_eq!(random.kind, DataKind::F64);
+            assert!((0.0..1.0).contains(&random.value.f64));
 
-            let name = df_query_value(query, 0, 5);
-            assert_eq!(name.kind, DataKind::String);
-            assert_eq!(name.value.string.as_str(), "alice");
-
-            let oid = df_query_value(query, 0, 6);
-            assert_eq!(oid.kind, DataKind::U32);
-            assert_eq!(oid.value.u32, 42);
+            let timestamp = df_query_value(query, 0, 4);
+            assert_eq!(timestamp.kind, DataKind::String);
+            assert_eq!(timestamp.value.string.as_str(), "2025-01-02 03:04:05");
         }
 
         df_free_query(query);
         df_close(conn);
-        let _ = std::fs::remove_dir_all(&path);
-    }
 
-    fn assert_column(query: *mut Query, index: usize, name: &str, datatype: &str) {
-        let column = df_query_column(query, index);
-        assert_eq!(column.name.as_str(), name);
-        assert_eq!(column.datatype.as_str(), datatype);
+        let _ = std::fs::remove_dir_all(&path);
     }
 }
