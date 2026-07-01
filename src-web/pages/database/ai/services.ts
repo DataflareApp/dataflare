@@ -115,6 +115,7 @@ const createLanguageModel = (config: ProviderConfig, modelID: string): LanguageM
         case ProviderType.Ollama:
         case ProviderType.OpenAI:
         case ProviderType.OpenRouter:
+        case ProviderType.Requesty:
         case ProviderType.VercelAIGateway:
         case ProviderType.xAI:
         case ProviderType.OpenAICompatible: {

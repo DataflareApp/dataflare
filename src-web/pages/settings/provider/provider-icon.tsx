@@ -110,6 +110,18 @@ export const ProviderIcon = ({ type, selected }: { type: ProviderType; selected?
                 </svg>
             )
         }
+        // Requesty is an OpenAI-compatible provider (like OpenRouter); reuse the
+        // generic server icon since there is no dedicated Requesty asset imported.
+        case ProviderType.Requesty: {
+            return (
+                <IconServer
+                    data-selected={selected || undefined}
+                    size={16}
+                    strokeWidth={1.5}
+                    className='shrink-0 text-primary data-[selected]:text-white'
+                />
+            )
+        }
         case ProviderType.VercelAIGateway: {
             return (
                 <svg

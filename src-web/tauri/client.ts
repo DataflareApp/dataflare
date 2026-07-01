@@ -166,6 +166,7 @@ export const enum ProviderType {
     Ollama = 'Ollama',
     OpenAI = 'OpenAI',
     OpenRouter = 'OpenRouter',
+    Requesty = 'Requesty',
     VercelAIGateway = 'Vercel AI Gateway',
     xAI = 'xAI',
     OpenAICompatible = 'OpenAI Compatible'
@@ -181,6 +182,7 @@ export const ALL_PROVIDER_TYPES = [
     ProviderType.Ollama,
     ProviderType.OpenAI,
     ProviderType.OpenRouter,
+    ProviderType.Requesty,
     ProviderType.VercelAIGateway,
     ProviderType.xAI,
     ProviderType.OpenAICompatible
@@ -196,6 +198,7 @@ export type ProviderConfig =
     | OllamaConfig
     | OpenAIConfig
     | OpenRouterConfig
+    | RequestyConfig
     | VercelAIGatewayConfig
     | xAIConfig
     | OpenAICompatibleConfig
@@ -214,6 +217,7 @@ export type MistralConfig = BaseProviderConfig & { type: ProviderType.Mistral }
 export type OllamaConfig = BaseProviderConfig & { type: ProviderType.Ollama }
 export type OpenAIConfig = BaseProviderConfig & { type: ProviderType.OpenAI }
 export type OpenRouterConfig = BaseProviderConfig & { type: ProviderType.OpenRouter }
+export type RequestyConfig = BaseProviderConfig & { type: ProviderType.Requesty }
 export type VercelAIGatewayConfig = BaseProviderConfig & { type: ProviderType.VercelAIGateway }
 export type xAIConfig = BaseProviderConfig & { type: ProviderType.xAI }
 export type OpenAICompatibleConfig = BaseProviderConfig & { type: ProviderType.OpenAICompatible }
