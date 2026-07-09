@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 import { useFuzzySearch } from '../../../hooks/use-fuzzy-search'
 import { useTranslation } from '../../../i18n'
-import { ClientData, REFRESH_CONNECTIONS, TauriGlobalEvent } from '../../../tauri'
+import { ClientData, REFRESH_CONNECTIONS, listen } from '../../../tauri'
 import { ConnectionIcon } from '../../../ui'
 import { db } from '../db/db'
 import { useQuerys } from '../hooks/use-querys'
@@ -29,7 +29,7 @@ const useConnections = () => {
         return ClientData.connectionList()
     })
     useEffect(() => {
-        const un = TauriGlobalEvent.listen(REFRESH_CONNECTIONS, () => {
+        const un = listen(REFRESH_CONNECTIONS, () => {
             mutate(undefined)
         })
         return () => {

@@ -11,7 +11,7 @@ import {
     newDatabaseWindow,
     setConnectionsSearch,
     getConnectionsSearch,
-    TauriGlobalEvent,
+    listen,
     REFRESH_CONNECTIONS,
     showBackupWindow
 } from '../../tauri'
@@ -36,7 +36,7 @@ export const ConnectionList = ({ select, onChangeSelect, onDelete }: Props) => {
             setSearch(value, true)
         })
         // After opening a database via URL/Path, if it doesn't exist, a new connection is auto-created; refresh here
-        const promise = TauriGlobalEvent.listen(REFRESH_CONNECTIONS, () => mutate())
+        const promise = listen(REFRESH_CONNECTIONS, () => mutate())
         return () => {
             promise.then((un) => un())
         }

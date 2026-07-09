@@ -5,7 +5,7 @@ import {
     ClientData,
     REFRESH_AGENTS,
     REFRESH_AI_MODELS,
-    TauriGlobalEvent,
+    listen,
     Chat,
     SqlDatabaseType,
     ChatConfig,
@@ -115,7 +115,7 @@ export const useProviders = () => {
     })
 
     useEffect(() => {
-        const un = TauriGlobalEvent.listen(REFRESH_AI_MODELS, () => {
+        const un = listen(REFRESH_AI_MODELS, () => {
             mutate()
         })
         return () => {
@@ -133,7 +133,7 @@ export const useAgents = () => {
     })
 
     useEffect(() => {
-        const un = TauriGlobalEvent.listen(REFRESH_AGENTS, () => {
+        const un = listen(REFRESH_AGENTS, () => {
             mutate()
         })
         return () => {

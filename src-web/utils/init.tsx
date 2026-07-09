@@ -4,7 +4,6 @@ import { ReactNode, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { SWRConfig } from 'swr'
 import { restoreWindowZoom } from '../hooks/use-zoom'
-import { TauriGlobalEvent } from '../tauri'
 import { MessageBox } from '../ui'
 import { isLinux, isWindows } from './os'
 
@@ -32,15 +31,6 @@ export const render = async (children: ReactNode, external?: ReactNode) => {
 
     const root = createRoot(container)
     root.render(App)
-
-    // NOTE: The function returned in useEffect runs on unmount
-    // But for cleaning up listeners, listen returns an async function, so cleanup is slower than unlistenAll here
-    // This is not a big issue though, it just means the last listener cleanup in useEffect is redundant
-    const un = await getCurrentWindow().onCloseRequested(async () => {
-        root.unmount()
-        await TauriGlobalEvent.unlistenAll()
-        await un()
-    })
 }
 
 // Show Window
