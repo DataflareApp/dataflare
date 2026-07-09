@@ -9,7 +9,7 @@ import {
 } from '@tabler/icons-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from '../../i18n'
-import { SettingsTab, SWITCH_SETTINGS_TAB, TauriGlobalEvent } from '../../tauri'
+import { SettingsTab, SWITCH_SETTINGS_TAB, listen } from '../../tauri'
 import { Titlebar } from '../../ui'
 import { AgentSettings } from './agent'
 import { EditorSettings } from './editor'
@@ -25,11 +25,11 @@ export const Settings = () => {
     const [selectedTab, setSelectedTab] = useState(defaultTab)
 
     useEffect(() => {
-        const listen = TauriGlobalEvent.listen<SettingsTab>(SWITCH_SETTINGS_TAB, (event) => {
+        const unlisten = listen<SettingsTab>(SWITCH_SETTINGS_TAB, (event) => {
             setSelectedTab(event.payload)
         })
         return () => {
-            listen.then((unlisten) => unlisten())
+            unlisten.then((unlisten) => unlisten())
         }
     }, [])
 

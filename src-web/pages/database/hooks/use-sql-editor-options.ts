@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { REFRESH_EDITOR_FONT_OPTIONS, TauriGlobalEvent, emit } from '../../../tauri'
+import { REFRESH_EDITOR_FONT_OPTIONS, listen, emit } from '../../../tauri'
 import { parseIntNumber } from '../../../utils/number'
 import type { EditorFontOptions } from '../sql-editor'
 
@@ -82,6 +82,6 @@ export const setWordWrap = (wordWrap: EditorFontOptions['wordWrap']) => {
     emit(REFRESH_EDITOR_FONT_OPTIONS)
 }
 
-TauriGlobalEvent.listen(REFRESH_EDITOR_FONT_OPTIONS, () => {
+listen(REFRESH_EDITOR_FONT_OPTIONS, () => {
     useEditorFontOptions.setState(buildState())
 })

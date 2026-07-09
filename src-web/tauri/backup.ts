@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 import { ProxyConfig } from './database'
-import { TauriGlobalEvent } from './event'
+import { listen } from './event'
 
 export class DatabaseBackup {
     static backupCommand(config: BackupConfig): Promise<string> {
@@ -9,7 +9,7 @@ export class DatabaseBackup {
 
     static async startBackup(config: BackupConfig, path: string, callback: (message: BackupMessage) => void) {
         const taskID = await invoke<number>('start_backup', { config, path })
-        const unlisten = await TauriGlobalEvent.listen<BackupMessage>(`backup-task-${taskID}`, (event) => {
+        const unlisten = await listen<BackupMessage>(`backup-task-${taskID}`, (event) => {
             callback(event.payload)
         })
         return {

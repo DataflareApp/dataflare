@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { create } from 'zustand'
-import { REFRESH_TRANSFORM_RULES, TauriGlobalEvent, ClientData, emit } from '../../../tauri'
+import { REFRESH_TRANSFORM_RULES, listen, ClientData, emit } from '../../../tauri'
 
 export const TransformRule = z.enum(['MS_TO_UTC', 'MS_TO_LOCAL', 'S_TO_UTC', 'S_TO_LOCAL'])
 
@@ -89,7 +89,7 @@ export const useColumnTransformStore = create<{
         loadCompiledRules().then((rules) => set({ rules }))
     }
     reload()
-    TauriGlobalEvent.listen(REFRESH_TRANSFORM_RULES, reload)
+    listen(REFRESH_TRANSFORM_RULES, reload)
     return {
         rules: [],
         reload

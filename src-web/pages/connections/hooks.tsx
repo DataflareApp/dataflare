@@ -2,12 +2,7 @@ import { useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { create } from 'zustand'
 import { ClientData, Connection, DatabaseConfig, showActivateWindow } from '../../tauri'
-import {
-    getLicenseActivated,
-    LICENSE_ACTIVATE_SUCCESS,
-    setLicenseActivated,
-    TauriGlobalEvent
-} from '../../tauri'
+import { getLicenseActivated, LICENSE_ACTIVATE_SUCCESS, setLicenseActivated, listen } from '../../tauri'
 import { LicenseApi, LicenseStorage } from '../../utils/license'
 
 export const useConnections = () => {
@@ -70,7 +65,7 @@ getLicenseActivated()
         }
 
         // Received activation success event
-        const unlisten = TauriGlobalEvent.listen(LICENSE_ACTIVATE_SUCCESS, () => {
+        const unlisten = listen(LICENSE_ACTIVATE_SUCCESS, () => {
             useActivateStore.setState({ activated: true })
             unlisten.then((un) => un())
         })

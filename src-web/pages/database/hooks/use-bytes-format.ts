@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { REFRESH_BYTES_FORMAT, TauriGlobalEvent, emit } from '../../../tauri'
+import { REFRESH_BYTES_FORMAT, listen, emit } from '../../../tauri'
 
 export const enum BytesFormat {
     BytesSize = 'Bytes size',
@@ -43,6 +43,6 @@ export const setBytesFormat = (bytesFormat: BytesFormat) => {
     emit(REFRESH_BYTES_FORMAT)
 }
 
-TauriGlobalEvent.listen(REFRESH_BYTES_FORMAT, () => {
+listen(REFRESH_BYTES_FORMAT, () => {
     useBytesFormat.setState(buildState())
 })

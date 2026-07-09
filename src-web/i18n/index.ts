@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { REFRESH_TRANSLATION, TauriGlobalEvent, emit } from '../tauri'
+import { REFRESH_TRANSLATION, listen, emit } from '../tauri'
 import { translationFn, translationText } from './translation'
 import { Language } from './translation'
 
@@ -131,7 +131,7 @@ export const setFormatTableNumber = (enabled: boolean) => {
     emit(REFRESH_TRANSLATION)
 }
 
-TauriGlobalEvent.listen(REFRESH_TRANSLATION, () => {
+listen(REFRESH_TRANSLATION, () => {
     currentLanguage = Storage.language
     useTranslation.setState(buildState())
 })
