@@ -1770,6 +1770,7 @@ dependencies = [
  "dir",
  "hex",
  "query",
+ "secret-resolve",
  "thiserror 2.0.18",
  "tokio",
 ]

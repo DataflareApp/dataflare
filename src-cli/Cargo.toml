@@ -10,6 +10,7 @@ path = "cli.rs"
 dir = { path = "../src-crates/dir" }
 database = { path = "../src-crates/database" }
 client-store = { path = "../src-crates/client-store" }
+secret-resolve = { path = "../src-crates/secret-resolve" }
 thiserror = { workspace = true }
 hex = { workspace = true }
 query = { path = "../src-crates/query" }

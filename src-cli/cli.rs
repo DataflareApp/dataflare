@@ -3,6 +3,7 @@ use client_store::{Client, ConnectionItemResult};
 use comfy_table::{ContentArrangement, Table};
 use database::Database;
 use query::Value;
+use secret_resolve::ResolveSecrets;
 
 #[derive(Parser)]
 struct Cli {
@@ -26,6 +27,8 @@ enum Error {
     Client(#[from] client_store::Error),
     #[error(transparent)]
     Database(#[from] database::Error),
+    #[error("Secret resolve error: {0}")]
+    SecretResolve(#[from] secret_resolve::Error),
     #[error(transparent)]
     Io(#[from] std::io::Error),
 }
@@ -90,7 +93,8 @@ async fn list_connections(client: &Client) -> Result<()> {
 }
 
 async fn run_query(client: &Client, id: &str, sql: String) -> Result<()> {
-    let connection = find_connection(client, id).await?;
+    let mut connection = find_connection(client, id).await?;
+    connection.config.resolve_secrets().await?;
     let database = Database::connect(connection.config).await?;
     let query = database.sql_query(sql).await?;
     let cols_len = query.columns.len();
