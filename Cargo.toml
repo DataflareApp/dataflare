@@ -57,7 +57,7 @@ secret-resolve = { path = "./src-crates/secret-resolve" }
 whoami = "1.6.0"
 font-kit = "0.13.2"
 ring = "0.17.14"
-keyring = "2.0"
+keyring = "4.1.4"
 indexmap = { version = "2.2", features = ["serde"] }
 
 [target."cfg(target_os = \"macos\")".dependencies]

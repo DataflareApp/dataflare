@@ -23,24 +23,9 @@ export const LicenseStorage = {
                 return null
             }
             return { key: items[0], token: items[1] }
-        } catch (_) {}
-
-        // If retrieval from keychain fails, try getting from local storage for backward compatibility
-        // Previous versions stored key and token in localStorage
-        const key = localStorage.getItem('licenseKey')
-        const token = localStorage.getItem('licenseToken')
-        if (key === null || token === null) {
+        } catch (_) {
             return null
         }
-
-        // Write it back to the keychain
-        try {
-            await LicenseStorage.save({ key, token })
-            localStorage.removeItem('licenseKey')
-            localStorage.removeItem('licenseToken')
-        } catch (_) {}
-
-        return { key, token }
     }
 }
 
