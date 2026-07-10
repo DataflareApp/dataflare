@@ -30,5 +30,4 @@ aws-credential-types = "1.2.11"
 aws-sdk-s3 = { version = "1.119.0", features = ["behavior-version-latest"] }
 rustls = "0.23.35"
 regex = "1.11.1"
-ron = "0.10.1"
 mime_guess = "2.0.5"

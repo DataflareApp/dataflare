@@ -587,7 +587,7 @@ impl RedisResponse {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug)]
 enum RawValue {
     Ok,
     Nil,
@@ -661,11 +661,6 @@ impl From<Value> for RawValue {
 
 impl RawValue {
     fn to_debug_string(&self) -> String {
-        use ron::ser::{PrettyConfig, to_string_pretty};
-        let pretty = PrettyConfig::new()
-            .separate_tuple_members(true)
-            .enumerate_arrays(true);
-        to_string_pretty(&self, pretty)
-            .unwrap_or_else(|err| return format!("Failed to serialize RawValue: {err:#?}"))
+        format!("{self:#?}")
     }
 }
