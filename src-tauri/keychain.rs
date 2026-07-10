@@ -14,7 +14,7 @@ pub fn get_password(user: String) -> Result<String, String> {
 
 #[command]
 pub fn delete_password(user: String) -> Result<(), String> {
-    entry(user)?.delete_password().map_err(|e| e.to_string())
+    entry(user)?.delete_credential().map_err(|e| e.to_string())
 }
 
 // NOTE:
@@ -51,7 +51,7 @@ impl MacDebugEntry {
     pub fn get_password(&self) -> Result<String, std::io::Error> {
         std::fs::read_to_string(self.user())
     }
-    pub fn delete_password(&self) -> Result<(), std::io::Error> {
+    pub fn delete_credential(&self) -> Result<(), std::io::Error> {
         std::fs::remove_file(self.user())
     }
 }
