@@ -1310,7 +1310,6 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
     public async databaseKeywords(): Promise<string[]> {
         switch (this.type) {
             case SqlDatabaseType.Sqlite:
-            case SqlDatabaseType.Turso:
             case SqlDatabaseType.Rqlite:
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.SqlCipher:
@@ -1319,6 +1318,17 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
                     await Promise.all([
                         import('./static/common-combination-keywords').then((mod) => mod.default),
                         import('./static/sqlite-keywords').then((mod) => mod.default)
+                    ])
+                ).flat()
+            }
+            case SqlDatabaseType.Turso: {
+                // These additions target local Turso. libSQL and remote connections may receive
+                // unsupported keywords because the connection variants cannot be distinguished here.
+                return (
+                    await Promise.all([
+                        import('./static/common-combination-keywords').then((mod) => mod.default),
+                        import('./static/sqlite-keywords').then((mod) => mod.default),
+                        import('./static/turso-local-keywords').then((mod) => mod.default)
                     ])
                 ).flat()
             }
