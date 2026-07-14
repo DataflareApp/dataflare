@@ -519,4 +519,36 @@ mod tests {
 
         df_close(conn);
     }
+
+    #[test]
+    fn test_fts() {
+        let conn = conn();
+        let mut error = ErrorMessage::null();
+
+        df_execute_batch(
+            conn,
+            StringRef::new(
+                "create table docs (id integer primary key, title text, body text);\
+                 create index docs_fts on docs using fts (title, body);\
+                 insert into docs values (1, 'Turso', 'database engine');\
+                 insert into docs values (2, 'Dataflare', 'database client');\
+                 insert into docs values (3, 'Other', 'unrelated content');",
+            ),
+            &mut error,
+        );
+        assert!(error.is_null(), "{}", error.as_str());
+
+        let query = df_query(
+            conn,
+            StringRef::new("select id from docs where (title, body) match 'database' order by id"),
+            &mut error,
+        );
+        assert!(error.is_null(), "{}", error.as_str());
+        assert_eq!(df_query_meta(query).row_count, 2);
+        assert_eq!(unsafe { df_query_value(query, 0, 0).value.i64 }, 1);
+        assert_eq!(unsafe { df_query_value(query, 1, 0).value.i64 }, 2);
+
+        df_free_query(query);
+        df_close(conn);
+    }
 }

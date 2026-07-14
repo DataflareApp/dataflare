@@ -16,7 +16,7 @@ impl Connection {
         path: impl AsRef<str>,
         encryption: Option<EncryptionOpts>,
     ) -> Result<Self, TursoError> {
-        let features = "encryption,attach,custom_types,autovacuum,index_method,views,generated_columns,vacuum,without_rowid";
+        let features = "encryption,attach,custom_types,autovacuum,index_method,views,generated_columns,vacuum,without_rowid,mvcc_passive_checkpoint";
         let config = TursoDatabaseConfig {
             path: path.as_ref().into(),
             experimental_features: Some(features.into()),
@@ -29,6 +29,7 @@ impl Connection {
         let db = TursoDatabase::new(config);
         let _ = db.open()?;
         let conn = db.connect()?;
+        conn.set_load_extension_enabled(true);
         conn.set_busy_timeout(Duration::from_secs(10));
         Ok(Self { inner: conn })
     }
@@ -41,7 +42,7 @@ impl Connection {
 
         let mut columns = Vec::with_capacity(cols);
         for i in 0..cols {
-            let name = stmt.column_name(i).unwrap().into();
+            let name = stmt.column_name(i).unwrap();
             let datatype = stmt.column_decltype(i).unwrap_or_default();
             columns.push(QueryColumn { name, datatype });
         }
