@@ -34,6 +34,10 @@ impl Connection {
         Ok(Self { inner: conn })
     }
 
+    pub fn close(&self) -> Result<(), TursoError> {
+        self.inner.close()
+    }
+
     pub fn query(&self, sql: impl AsRef<str>) -> Result<Query, TursoError> {
         let mut stmt = Statement::new(self.inner.prepare_single(sql)?);
         let stmt = stmt.as_mut();
@@ -162,4 +166,64 @@ impl Statement {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_close_checkpoints_and_preserves_data() {
+        let path = std::env::temp_dir()
+            .join(format!("test_close_{}.db", std::process::id()))
+            .display()
+            .to_string();
+        let conn = Connection::connect(&path, None).unwrap();
+
+        conn.query(r#"CREATE TABLE "test" ("id" uuid NOT NULL, PRIMARY KEY ("id"))"#)
+            .unwrap();
+        conn.query(r#"INSERT INTO "test" ("id") VALUES ('019f5fd8-b101-76a4-9440-07d5d5398411')"#)
+            .unwrap();
+        conn.close().unwrap();
+        drop(conn);
+
+        let wal_path = format!("{path}-wal");
+        let wal_empty = match std::fs::metadata(&wal_path) {
+            Ok(meta) => meta.len() == 0,
+            Err(_) => true,
+        };
+        assert!(wal_empty);
+
+        let conn = Connection::connect(&path, None).unwrap();
+        let query = conn.query("SELECT count(*) FROM test").unwrap();
+        match &query.rows[0][0] {
+            QueryValue::I64(value) => assert_eq!(*value, 1),
+            value => panic!("unexpected value: {value:?}"),
+        }
+        conn.close().unwrap();
+
+        let _ = std::fs::remove_file(&path);
+        let _ = std::fs::remove_file(wal_path);
+        let _ = std::fs::remove_file(format!("{path}-shm"));
+    }
+
+    #[test]
+    fn test_fts() {
+        let conn = Connection::connect(":memory:", None).unwrap();
+        conn.execute_batch(
+            "create table docs (id integer primary key, title text, body text);\
+             create index docs_fts on docs using fts (title, body);\
+             insert into docs values (1, 'Turso', 'database engine');\
+             insert into docs values (2, 'Dataflare', 'database client');\
+             insert into docs values (3, 'Other', 'unrelated content');",
+        )
+        .unwrap();
+
+        let query = conn
+            .query("select id from docs where (title, body) match 'database' order by id")
+            .unwrap();
+        assert_eq!(query.rows.len(), 2);
+        match (&query.rows[0][0], &query.rows[1][0]) {
+            (QueryValue::I64(1), QueryValue::I64(2)) => {}
+            values => panic!("unexpected values: {values:?}"),
+        }
+        conn.close().unwrap();
+    }
+}
