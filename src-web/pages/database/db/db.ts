@@ -1523,11 +1523,20 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
     public async databaseDataTypes(): Promise<string[]> {
         switch (this.type) {
             case SqlDatabaseType.Sqlite:
-            case SqlDatabaseType.Turso:
             case SqlDatabaseType.Rqlite:
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1: {
+                return (await import('./static/sqlite-datatypes')).default
+            }
+            case SqlDatabaseType.Turso: {
+                // Currently, only local Turso supports PRAGMA list_types; libSQL and Turso Remote do not yet support it.
+                try {
+                    const rows = await this.select<[string]>('PRAGMA list_types;')
+                    if (rows.length !== 0) {
+                        return rows.map(([val]) => val.split('(', 1)[0])
+                    }
+                } catch {}
                 return (await import('./static/sqlite-datatypes')).default
             }
             case SqlDatabaseType.DuckDB: {
