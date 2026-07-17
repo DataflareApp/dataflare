@@ -14,4 +14,6 @@ codegen-units = 1
 strip = "symbols"
 
 [dependencies]
-turso_sdk_kit = { version = "0.7.0", features = ["fts"] }
+# 2026-06-16
+# Fix: https://github.com/tursodatabase/turso/issues/7466
+turso_sdk_kit = { git = "https://github.com/tursodatabase/turso", rev = "63185d2ac5a4cd5b51a02ffc03fc48b8beded40d", features = ["fts"] }
