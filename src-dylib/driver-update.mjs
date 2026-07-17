@@ -10,7 +10,7 @@ import crypto from 'crypto'
 // src-crates/pglite/src/lib.rs
 
 const name = 'turso'
-const version = '20260715'
+const version = '20260717'
 
 const base = 'https://assets.dataflare.app/drivers/'
 const items = [
