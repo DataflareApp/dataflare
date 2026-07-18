@@ -1,3 +1,22 @@
+## v3.1.4
+
+**Published:** `2026-07-18T09:58:44Z`
+
+**Changes**
+
+- Upgrade `Turso` to v0.7.0
+- Enable extension loading for local `Turso`
+- Add full-text search support for local `Turso`
+- Improve `Turso` data type suggestions
+- Improve `Turso` keyword suggestions
+- Resolve secrets in CLI database connections
+- Improve portable update notifications
+- Upgrade keyring and remove legacy license storage
+- Upgrade `russh` to v0.62.1
+- Upgrade pnpm to v11.10.0
+- Remove the unused RON dependency from the Redis driver
+- Simplify Tauri event listener cleanup
+
 ## v3.1.3
 
 **Published:** `2026-07-01T12:58:02Z`
