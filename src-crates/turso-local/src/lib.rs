@@ -20,7 +20,7 @@ const TURSO_SHA256: &str = "467b440980ab1e3dc448c69a9539781d8d0a3ceffb16cfdd8a4b
 const TURSO_SHA256: &str = "7bdef9c1ce41d264d68dd9a03c0059f526a7b51bd3b22771a329f31152c66763";
 #[cfg(all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"))]
 const TURSO_SHA256: &str = "8026ada20ffdcc18bc0e0f902e836302eaff22ae58485aa9d90716d782dee84f";
-#[cfg(all(target_os = "windows", target_arch = "aarch64", target_env ="msvc"))]
+#[cfg(all(target_os = "windows", target_arch = "aarch64", target_env = "msvc"))]
 const TURSO_SHA256: &str = "55fedd0082899a2fcb5a01356105e51e419e53a6217cdda49096bae434dbab81";
 #[cfg(all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"))]
 const TURSO_SHA256: &str = "7a068e811a686522ec2103c7e8b60ea8aaa68dc816e79441042c40d9bdaa34dd";
