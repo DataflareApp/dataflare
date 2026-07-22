@@ -1,5 +1,6 @@
 use crate::{Query, QueryColumn, QueryValue};
 use std::{sync::Arc, time::Duration};
+use turso_sdk_kit::IoBackend;
 use turso_sdk_kit::rsapi::{
     EncryptionOpts, Numeric, TursoConnection, TursoDatabase, TursoDatabaseConfig, TursoError,
     TursoStatement, TursoStatusCode, Value as TursoValue,
@@ -22,7 +23,7 @@ impl Connection {
             experimental_features: Some(features.into()),
             async_io: false,
             encryption,
-            vfs: None,
+            vfs: IoBackend::Default,
             io: None,
             db_file: None,
         };
