@@ -1,3 +1,12 @@
+## v3.1.5
+
+**Published:** `2026-07-22T23:00:00Z`
+
+**Changes**
+
+- Upgrade `DuckDB` to v1.5.5
+- Upgrade `Turso` to v0.8.0-pre.1
+
 ## v3.1.4
 
 **Published:** `2026-07-18T09:58:44Z`
