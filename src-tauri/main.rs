@@ -6,6 +6,7 @@
 mod backup;
 mod client;
 mod database;
+mod demo;
 mod device;
 mod ipc;
 mod keychain;
@@ -182,8 +183,20 @@ fn main() {
         }
         {
             let data_path = dir::client_database_path();
-            let state = block_on(client::Client::connect(&data_path))?;
-            app.manage(state);
+            let create_demo_conn = !data_path.try_exists().unwrap_or(true);
+
+            let client = block_on(async {
+                let client = client::Client::connect(&data_path).await?;
+                if create_demo_conn {
+                    let rst = demo::initialize(&client, &data_path).await;
+                    if let Err(err) = rst {
+                        eprintln!("Failed to initialize demo connection: {err}");
+                    }
+                }
+                Ok::<_, client::Error>(client)
+            })?;
+
+            app.manage(client);
         }
         native::restore_theme(app.app_handle());
 
