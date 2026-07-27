@@ -17,7 +17,7 @@ import {
 } from '../../tauri'
 import { ConnectionIcon, SearchInput, showMessageBox, ScrollView, Message } from '../../ui'
 import { isMacOS } from '../../utils/os'
-import { useConnections } from './hooks'
+import { useConnections, DEMO_CONNECTION_ID } from './hooks'
 
 interface Props {
     select: string | null
@@ -202,7 +202,7 @@ export const ConnectionList = ({ select, onChangeSelect, onDelete }: Props) => {
                                     }}
                                     data-selected={selected || undefined}
                                     data-context-menu={contextMenuSelect === item.cid || undefined}
-                                    className='mb-1 flex h-9 items-center gap-2 rounded bg-zinc-100 px-3 text-sm outline-1 outline-offset-2 outline-theme data-[selected]:bg-theme data-[context-menu]:outline dark:bg-neutral-800'
+                                    className='relative mb-1 flex h-9 items-center gap-2 rounded bg-zinc-100 px-3 text-sm outline-1 outline-offset-2 outline-theme data-[selected]:bg-theme data-[context-menu]:outline dark:bg-neutral-800'
                                     title={item.name}
                                     onClick={(e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
                                         if (isMacOS ? e.metaKey : e.ctrlKey) {
@@ -221,6 +221,7 @@ export const ConnectionList = ({ select, onChangeSelect, onDelete }: Props) => {
                                     >
                                         {item.name}
                                     </span>
+                                    {item.cid === DEMO_CONNECTION_ID && <DemoConnectionTag />}
                                 </Reorder.Item>
                             )
                         })}
@@ -228,5 +229,13 @@ export const ConnectionList = ({ select, onChangeSelect, onDelete }: Props) => {
                 </ScrollView>
             )}
         </>
+    )
+}
+
+const DemoConnectionTag = () => {
+    return (
+        <span className='pointer-events-none absolute -left-1 -top-1 rounded bg-yellow-500 px-1 text-[8px] leading-3 text-white'>
+            Demo
+        </span>
     )
 }

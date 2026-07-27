@@ -97,8 +97,17 @@ impl Client {
     }
 
     pub async fn create_connection(&self, name: String, config: ConnectionConfig) -> Result<Id> {
-        let config = encrypt(&config)?;
         let cid = gen_id();
+        self.create_connection_with_id(cid, name, config).await
+    }
+
+    pub async fn create_connection_with_id(
+        &self,
+        cid: Id,
+        name: String,
+        config: ConnectionConfig,
+    ) -> Result<Id> {
+        let config = encrypt(&config)?;
         let sql = r#"INSERT INTO connection (cid, name, config, sort) VALUES (?1, ?2, ?3, (SELECT COALESCE(MAX(sort), 0) + 1 FROM connection))"#;
         self.get().await.execute(sql, (&cid, name, config))?;
         Ok(cid)
