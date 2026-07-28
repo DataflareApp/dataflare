@@ -1,6 +1,6 @@
 [
     {
-        "width": 468,
+        "width": 612,
         "height": 288,
         "x": 324,
         "y": 0,
@@ -60,8 +60,8 @@
         }
     },
     {
-        "width": 384,
-        "height": 288,
+        "width": 432,
+        "height": 300,
         "x": 0,
         "y": 300,
         "config": {
@@ -95,9 +95,9 @@
         }
     },
     {
-        "width": 396,
-        "height": 288,
-        "x": 396,
+        "width": 612,
+        "height": 300,
+        "x": 444,
         "y": 300,
         "config": {
             "name": "Top Artists by Revenue",
