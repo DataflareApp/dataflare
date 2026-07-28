@@ -93,8 +93,6 @@ getLicenseActivated()
         console.error(`Failed to get license activation status: ${err}`)
     })
 
-export const DEMO_CONNECTION_ID = '00000000-0000-0000-0000-000000000000'
-
 export const useCheckCreateConnection = () => {
     const { activated } = useActivateStore()
     const { data: connections } = useConnections()
@@ -106,7 +104,10 @@ export const useCheckCreateConnection = () => {
             if (connections === undefined) {
                 return true
             }
+
             const FREE_CONNECTIONS_COUNT = 2
+            const DEMO_CONNECTION_ID = '00000000-0000-0000-0000-000000000000'
+
             const connectionCount = connections.filter(
                 (connection) => connection.cid !== DEMO_CONNECTION_ID
             ).length
