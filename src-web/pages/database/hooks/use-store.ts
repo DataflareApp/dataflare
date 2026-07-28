@@ -9,6 +9,7 @@ import {
     SqlDatabaseType
 } from '../../../tauri'
 import { db, TableType } from '../db/db'
+import { openDefaultDemoTabs } from '../demo'
 import { tabEqual, TabsMru } from '../utils/tab'
 
 let counterID = 0
@@ -48,6 +49,7 @@ export const useDbStore = create<{
                         connectID,
                         connectedID: connectID
                     })
+                    openDefaultDemoTabs(connection.cid)
                 }
             } catch (error: any) {
                 if (connectID === counterID) {

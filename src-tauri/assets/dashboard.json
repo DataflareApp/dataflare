@@ -1,0 +1,112 @@
+[
+    {
+        "width": 468,
+        "height": 288,
+        "x": 324,
+        "y": 0,
+        "config": {
+            "name": "Monthly Sales Trend",
+            "source": "SELECT\n    strftime('%Y-%m', InvoiceDate) AS Month,\n    ROUND(SUM(Total), 2) AS Revenue,\n    COUNT(*) AS Orders\nFROM Invoice\nGROUP BY strftime('%Y-%m', InvoiceDate)\nORDER BY Month;",
+            "interval": 0,
+            "options": {
+                "type": "composed",
+                "config": {
+                    "axis": {
+                        "x": {
+                            "hidden": false
+                        },
+                        "y": {
+                            "hidden": false
+                        }
+                    },
+                    "layout": "horizontal",
+                    "categoryDataKey": "Month",
+                    "bars": [],
+                    "lines": [
+                        {
+                            "dataKey": "Orders",
+                            "stroke": "#f59e0b",
+                            "type": "monotone"
+                        }
+                    ],
+                    "areas": [
+                        {
+                            "dataKey": "Revenue",
+                            "fill": "#3b82f6",
+                            "type": "monotone"
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    {
+        "width": 312,
+        "height": 288,
+        "x": 0,
+        "y": 0,
+        "config": {
+            "name": "Revenue by Country",
+            "source": "SELECT\n    BillingCountry AS Country,\n    ROUND(SUM(Total), 2) AS Revenue\nFROM Invoice\nGROUP BY BillingCountry\nORDER BY Revenue DESC\nLIMIT 5;",
+            "interval": 0,
+            "options": {
+                "type": "pie",
+                "config": {
+                    "nameKey": "Country",
+                    "dataKey": "Revenue",
+                    "startColorIndex": 0
+                }
+            }
+        }
+    },
+    {
+        "width": 384,
+        "height": 288,
+        "x": 0,
+        "y": 300,
+        "config": {
+            "name": "Top Genres",
+            "source": "SELECT\n    CASE Genre.Name\n        WHEN 'Alternative & Punk' THEN 'Alt/Punk'\n        ELSE Genre.Name\n    END AS Genre,\n    SUM(InvoiceLine.Quantity) AS TracksSold\nFROM InvoiceLine\nJOIN Track ON Track.TrackId = InvoiceLine.TrackId\nJOIN Genre ON Genre.GenreId = Track.GenreId\nGROUP BY Genre.GenreId, Genre.Name\nORDER BY TracksSold DESC\nLIMIT 6;",
+            "interval": 0,
+            "options": {
+                "type": "composed",
+                "config": {
+                    "axis": {
+                        "x": {
+                            "hidden": false
+                        },
+                        "y": {
+                            "hidden": false
+                        }
+                    },
+                    "layout": "horizontal",
+                    "categoryDataKey": "Genre",
+                    "bars": [
+                        {
+                            "dataKey": "TracksSold",
+                            "barSize": 24,
+                            "fill": "#8b5cf6"
+                        }
+                    ],
+                    "lines": [],
+                    "areas": []
+                }
+            }
+        }
+    },
+    {
+        "width": 396,
+        "height": 288,
+        "x": 396,
+        "y": 300,
+        "config": {
+            "name": "Top Artists by Revenue",
+            "source": "SELECT\n    Artist.Name AS Artist,\n    COUNT(DISTINCT Invoice.InvoiceId) AS Orders,\n    SUM(InvoiceLine.Quantity) AS TracksSold,\n    ROUND(SUM(InvoiceLine.UnitPrice * InvoiceLine.Quantity), 2) AS Revenue\nFROM Artist\nJOIN Album ON Album.ArtistId = Artist.ArtistId\nJOIN Track ON Track.AlbumId = Album.AlbumId\nJOIN InvoiceLine ON InvoiceLine.TrackId = Track.TrackId\nJOIN Invoice ON Invoice.InvoiceId = InvoiceLine.InvoiceId\nGROUP BY Artist.ArtistId, Artist.Name\nORDER BY Revenue DESC, Artist.Name\nLIMIT 10;",
+            "interval": 0,
+            "options": {
+                "type": "table",
+                "config": {}
+            }
+        }
+    }
+]

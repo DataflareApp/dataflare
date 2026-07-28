@@ -4,6 +4,8 @@ import { DatabaseConfig, KvDatabaseConfig, SqlDatabaseConfig } from './database'
 
 export { z } from 'zod'
 
+export const DEMO_CONNECTION_ID = '00000000-0000-0000-0000-000000000000'
+
 export interface Connection<T extends DatabaseConfig = DatabaseConfig> {
     cid: string
     name: string
