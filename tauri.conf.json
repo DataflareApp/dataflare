@@ -40,7 +40,22 @@
         "macOS": {
             "providerShortName": null,
             "signingIdentity": null,
-            "entitlements": "./entitlements.plist"
+            "entitlements": "./entitlements.plist",
+            "dmg": {
+                "background": "./icons/dmg-background.png",
+                "windowSize": {
+                    "width": 660,
+                    "height": 400
+                },
+                "appPosition": {
+                    "x": 180,
+                    "y": 170
+                },
+                "applicationFolderPosition": {
+                    "x": 480,
+                    "y": 170
+                }
+            }
         },
         "windows": {
             "digestAlgorithm": "sha256",
