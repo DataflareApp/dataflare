@@ -1,3 +1,12 @@
+## v3.1.6
+
+**Published:** `2026-07-28T08:00:00Z`
+
+**Changes**
+
+- Fix the macOS App icon
+- Add a built-in Chinook demo database with a getting-started query and dashboard
+
 ## v3.1.5
 
 **Published:** `2026-07-22T23:00:00Z`
