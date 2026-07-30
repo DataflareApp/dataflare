@@ -15,3 +15,4 @@ Dataflare is a database GUI client written in Tauri.
 ### For Rust
 
 - For paths that are used multiple times within a mod, they should be imported using a `use` declaration
+- By default, do not use `--release` flag
