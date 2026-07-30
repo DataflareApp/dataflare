@@ -29,6 +29,8 @@ pub enum WidgetOptions {
     ComposedChart(ComposedChartConfig),
     #[serde(rename = "pie")]
     PieChart(PieChartConfig),
+    #[serde(rename = "metric")]
+    Metric(MetricConfig),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -51,6 +53,15 @@ pub struct PieChartConfig {
     nameKey: String,
     dataKey: String,
     startColorIndex: u16,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MetricConfig {
+    prefix: String,
+    suffix: String,
+    color: String,
+    fontSize: u16,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

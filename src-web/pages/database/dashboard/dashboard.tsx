@@ -23,7 +23,12 @@ import {
     Message
 } from '../../../ui'
 import { MAX_ZOOM, MIN_ZOOM, ZoomSlider } from '../schema-manager/zoom'
-import { defaultComposedChartConfig, defaultPieChartConfig, defaultTableConfig } from './config'
+import {
+    defaultComposedChartConfig,
+    defaultMetricConfig,
+    defaultPieChartConfig,
+    defaultTableConfig
+} from './config'
 import { WidgetEditor } from './editor'
 import { useWidgetNodes } from './hooks'
 import { DashboardProps } from './index'
@@ -202,6 +207,7 @@ const NewWidgetButton = ({ onSetData }: { onSetData: (data: EditorWidgetData) =>
             {[
                 [t('composedChart'), defaultComposedChartConfig] as const,
                 [t('pieChart'), defaultPieChartConfig] as const,
+                [t('metric'), defaultMetricConfig] as const,
                 [t('table'), defaultTableConfig] as const
             ].map(([name, fn], i) => {
                 return (

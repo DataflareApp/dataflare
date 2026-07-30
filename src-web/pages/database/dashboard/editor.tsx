@@ -12,6 +12,7 @@ import {
     Layout,
     LineItem,
     LineType,
+    MetricConfig,
     ComposedChartConfig,
     PieChartConfig,
     WidgetConfig,
@@ -197,10 +198,55 @@ export const WidgetEditor = ({ widgetConfig, onSave }: Props): ReactNode => {
                                 onChange={updateData}
                             />
                         )}
+                        {config.options.type === WidgetType.Metric && (
+                            <MetricDataEditor data={config.options.config} onChange={updateData} />
+                        )}
                     </ScrollView>
                 )}
             </div>
         </SplitView>
+    )
+}
+
+const MetricDataEditor = ({
+    data,
+    onChange
+}: {
+    data: MetricConfig
+    onChange: <K extends keyof MetricConfig>(key: K, value: MetricConfig[K]) => void
+}) => {
+    return (
+        <>
+            <Box name={t('prefix')}>
+                <TextInput
+                    className='mt-2 w-full'
+                    value={data.prefix}
+                    onChange={(val) => onChange('prefix', val)}
+                />
+            </Box>
+            <Box name={t('suffix')}>
+                <TextInput
+                    className='mt-2 w-full'
+                    value={data.suffix}
+                    onChange={(val) => onChange('suffix', val)}
+                />
+            </Box>
+            <Box name={t('fontSize')}>
+                <Slider
+                    className='mt-2'
+                    min={14}
+                    max={72}
+                    step={2}
+                    value={data.fontSize}
+                    onChange={(val) => onChange('fontSize', val)}
+                    onRenderValue={(val) => `${val}px`}
+                />
+            </Box>
+            <Box
+                name={t('color')}
+                titleChildren={<ColorSelect value={data.color} onChange={(val) => onChange('color', val)} />}
+            />
+        </>
     )
 }
 

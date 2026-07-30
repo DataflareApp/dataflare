@@ -45,10 +45,15 @@ export interface WidgetBaseConfig {
 export const enum WidgetType {
     Table = 'table',
     ComposedChart = 'composed',
-    PieChart = 'pie'
+    PieChart = 'pie',
+    Metric = 'metric'
 }
 
-export type WidgetConfig = WidgetTableConfig | WidgetComposedChartConfig | WidgetPieChartConfig
+export type WidgetConfig =
+    | WidgetTableConfig
+    | WidgetComposedChartConfig
+    | WidgetPieChartConfig
+    | WidgetMetricConfig
 
 export interface WidgetTableConfig extends WidgetBaseConfig {
     options: {
@@ -69,6 +74,20 @@ export interface WidgetPieChartConfig extends WidgetBaseConfig {
         type: WidgetType.PieChart
         config: PieChartConfig
     }
+}
+
+export interface WidgetMetricConfig extends WidgetBaseConfig {
+    options: {
+        type: WidgetType.Metric
+        config: MetricConfig
+    }
+}
+
+export interface MetricConfig {
+    prefix: string
+    suffix: string
+    color: string
+    fontSize: number
 }
 
 export interface ComposedChartConfig {

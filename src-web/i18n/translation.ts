@@ -1974,6 +1974,27 @@ export const translationText = {
         [Language.zhCN]: `新建小组件`,
         [Language.ja]: '新規ウィジェット'
     },
+    metric: {
+        [Language.en]: `Metric`,
+        [Language.de]: `Kennzahl`,
+        [Language.frFR]: `Indicateur`,
+        [Language.zhCN]: `指标`,
+        [Language.ja]: '指標'
+    },
+    prefix: {
+        [Language.en]: `Prefix`,
+        [Language.de]: `Präfix`,
+        [Language.frFR]: `Préfixe`,
+        [Language.zhCN]: `前缀`,
+        [Language.ja]: 'プレフィックス'
+    },
+    suffix: {
+        [Language.en]: `Suffix`,
+        [Language.de]: `Suffix`,
+        [Language.frFR]: `Suffixe`,
+        [Language.zhCN]: `后缀`,
+        [Language.ja]: 'サフィックス'
+    },
     composedChart: {
         [Language.en]: `Composed Chart`,
         [Language.de]: `Kombiniertes Diagramm`,

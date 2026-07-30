@@ -1,6 +1,7 @@
 import {
     Layout,
     WidgetComposedChartConfig,
+    WidgetMetricConfig,
     WidgetPieChartConfig,
     WidgetTableConfig,
     WidgetType
@@ -61,6 +62,23 @@ export const defaultPieChartConfig = (): WidgetPieChartConfig => {
                 nameKey: '',
                 dataKey: '',
                 startColorIndex: randomPieColorIndex()
+            }
+        }
+    }
+}
+
+export const defaultMetricConfig = (): WidgetMetricConfig => {
+    return {
+        name: 'New Metric',
+        source: '\n\n',
+        interval: DEFAULT_INTERVAL,
+        options: {
+            type: WidgetType.Metric,
+            config: {
+                prefix: '',
+                suffix: '',
+                color: CHART_COLORS[randomPieColorIndex()],
+                fontSize: 24
             }
         }
     }

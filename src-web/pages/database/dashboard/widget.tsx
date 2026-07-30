@@ -1,8 +1,8 @@
-import { IconChartAreaLine, IconChartPie, IconDots } from '@tabler/icons-react'
+import { IconChartAreaLine, IconChartPie, IconDots, IconTrendingUp } from '@tabler/icons-react'
 import { NodeResizeControl, NodeProps } from '@xyflow/react'
 import { memo } from 'react'
-import { useTranslation, t } from '../../../i18n'
-import { WidgetConfig, WidgetType, Query } from '../../../tauri'
+import { useTranslation } from '../../../i18n'
+import { MetricConfig, WidgetConfig, WidgetType, Query } from '../../../tauri'
 import {
     IconButton,
     IconRefresh,
@@ -14,11 +14,13 @@ import {
     showMessageBox,
     showRenameDialog,
     ErrorMessage,
-    Loading
+    Loading,
+    Message
 } from '../../../ui'
 import { TableType } from '../db/db-types'
 import { TableIcon } from '../icon'
 import { Table } from '../table'
+import { displayDatabaseValue } from '../table/utils'
 import { useWidgetNodes, useWidgetQuery } from './hooks'
 
 const MIN_SIZE = 192
@@ -157,9 +159,58 @@ export const WidgetContent = memo(
             case WidgetType.PieChart: {
                 return <PieChart query={query} config={config.options.config} />
             }
+            case WidgetType.Metric: {
+                return <Metric query={query} config={config.options.config} />
+            }
         }
     }
 )
+
+const Metric = ({ query, config }: { query: Query; config: MetricConfig }): React.JSX.Element => {
+    const { t, numberUtil } = useTranslation()
+
+    if (query.rows.length === 0 || query.columns.length === 0) {
+        return <Message text={t('noRows')} />
+    }
+
+    const value = query.rows[0][0]
+
+    let text: string
+    switch (typeof value) {
+        case 'string': {
+            text = value
+            break
+        }
+        case 'number':
+        case 'bigint': {
+            text = numberUtil.format(value)
+            break
+        }
+        default: {
+            const MAX = 256
+            text = displayDatabaseValue(value)
+            if (text.length > MAX) {
+                text = text.slice(0, MAX) + '…'
+            }
+            break
+        }
+    }
+
+    const start = config.prefix.trimStart()
+    const end = config.suffix.trimEnd()
+    const displayText = `${start}${text}${end}`
+
+    return (
+        <div className='flex size-full items-center justify-center p-4'>
+            <span
+                className='block max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-jb tabular-nums'
+                style={{ color: config.color, fontSize: config.fontSize }}
+            >
+                {displayText}
+            </span>
+        </div>
+    )
+}
 
 const WidgetIcon = ({ type }: { type: WidgetType }): React.JSX.Element => {
     switch (type) {
@@ -171,6 +222,9 @@ const WidgetIcon = ({ type }: { type: WidgetType }): React.JSX.Element => {
         }
         case WidgetType.PieChart: {
             return <IconChartPie size={16} stroke={1.5} className='text-teal-500' />
+        }
+        case WidgetType.Metric: {
+            return <IconTrendingUp size={16} stroke={1.5} className='text-green-500' />
         }
     }
 }
