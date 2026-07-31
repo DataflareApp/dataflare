@@ -151,16 +151,6 @@ const MenuItems = ({
             <DropdownMenuItem
                 onClick={() =>
                     switchTabTo({
-                        type: TabType.Dashboard
-                    })
-                }
-            >
-                {t('dashboard')}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-                onClick={() =>
-                    switchTabTo({
                         type: TabType.SchemaManager,
                         defaultSchema: schema
                     })

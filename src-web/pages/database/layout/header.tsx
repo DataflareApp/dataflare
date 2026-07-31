@@ -1,16 +1,14 @@
-import { IconExclamationCircle, IconLoader2, IconPlugConnected, IconSearch } from '@tabler/icons-react'
+import { IconExclamationCircle, IconLoader2, IconPlugConnected } from '@tabler/icons-react'
 import { useTranslation } from '../../../i18n'
 import { showConnectionsWindow } from '../../../tauri'
 import { Button, IconButton, ConnectionIcon, Popover } from '../../../ui'
 import { keyboardTitleChars, KeyModifier } from '../../../utils/keyboard-char'
-import { useCommandSearch } from '../command-search'
 import { useDbStore } from '../hooks/use-store'
 import { ManageDatabase } from './database'
 
 export const Header = () => {
     const { t } = useTranslation()
     const { connect, connectError, connection, connectID, connectedID } = useDbStore()
-    const showCommandSearch = useCommandSearch((state) => state.showCommandSearch)
 
     return (
         <>
@@ -61,12 +59,6 @@ export const Header = () => {
                         <IconPlugConnected size={16} strokeWidth={1.5} />
                     </IconButton>
                     <ManageDatabase />
-                    <IconButton
-                        title={keyboardTitleChars(t('quickSearch'), [KeyModifier.Meta, 'P'])}
-                        onClick={showCommandSearch}
-                    >
-                        <IconSearch size={16} strokeWidth={1.5} />
-                    </IconButton>
                 </div>
             </div>
         </>

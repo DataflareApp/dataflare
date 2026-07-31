@@ -1,4 +1,4 @@
-import { IconMessage, IconMessageFilled } from '@tabler/icons-react'
+import { IconLayoutDashboard, IconMessage, IconMessageFilled, IconSearch } from '@tabler/icons-react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { memo, useMemo } from 'react'
 import { useShortcutMeta, useShortcutMetaNumber } from '../../../hooks/use-shortcut'
@@ -7,8 +7,8 @@ import { Connection, showConnectionsWindow } from '../../../tauri'
 import { Direction, IconButton, Persistent, Pin, SplitView, Titlebar } from '../../../ui'
 import { keyboardTitleChars, KeyModifier } from '../../../utils/keyboard-char'
 import { ChatPanel, initChatPanelStatus, useChatPanel } from '../ai'
-import { CommnadSearch } from '../command-search'
-import { TabNavigate, useConnection, useDbStore, useIsKv, useTabsStore } from '../hooks/use-store'
+import { CommnadSearch, useCommandSearch } from '../command-search'
+import { TabNavigate, TabType, useConnection, useDbStore, useIsKv, useTabsStore } from '../hooks/use-store'
 import { KeysList } from '../keys-list'
 import { QueryList } from '../query-list'
 import { Settings } from '../settings'
@@ -32,6 +32,7 @@ export const Main = () => {
     const activeTab = useTabsStore((state) => state.activeTab)
     const resetTabs = useTabsStore((state) => state.resetTabs)
     const { chatPanelOpened, toggleChatPanel } = useChatPanel()
+    const showCommandSearch = useCommandSearch((state) => state.showCommandSearch)
 
     const title = useMemo(() => {
         if (activeTab === null) {
@@ -40,7 +41,7 @@ export const Main = () => {
         return `${getTabTitle(activeTab)} — ${connection.name}`
     }, [activeTab, connection])
 
-    useShortcutMeta('w,n,i,[,]', (key, shift) => {
+    useShortcutMeta('w,n,i,d,[,]', (key, shift) => {
         switch (key) {
             case 'w': {
                 if (activeTab === null) {
@@ -58,6 +59,10 @@ export const Main = () => {
                 shift && toggleChatPanel()
                 break
             }
+            case 'd': {
+                shift && switchTabTo({ type: TabType.Dashboard })
+                break
+            }
             case '[': {
                 !shift && switchTabTo(TabNavigate.Prev)
                 break
@@ -71,11 +76,19 @@ export const Main = () => {
 
     useShortcutMetaNumber(switchTabTo)
 
+    const quickSearchTitle = keyboardTitleChars(t('quickSearch'), [KeyModifier.Meta, 'P'])
     const chatTitle = keyboardTitleChars(t('aiAssistant'), [KeyModifier.Shift, KeyModifier.Meta, 'I'])
+    const dashboardTitle = keyboardTitleChars(t('dashboard'), [KeyModifier.Shift, KeyModifier.Meta, 'D'])
 
     return (
         <div className='flex h-full flex-col'>
             <Titlebar title={title} titleSemibold={false}>
+                <IconButton title={quickSearchTitle} onClick={showCommandSearch}>
+                    <IconSearch size={16} strokeWidth={1.5} />
+                </IconButton>
+                <IconButton title={dashboardTitle} onClick={() => switchTabTo({ type: TabType.Dashboard })}>
+                    <IconLayoutDashboard size={16} strokeWidth={1.5} />
+                </IconButton>
                 <IconButton title={chatTitle} onClick={() => toggleChatPanel()}>
                     {chatPanelOpened ? (
                         <IconMessageFilled size={16} strokeWidth={1.5} />
