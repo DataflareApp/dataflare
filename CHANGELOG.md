@@ -1,3 +1,14 @@
+## v3.1.7
+
+**Published:** `2026-07-31T09:00:00Z`
+
+**Changes**
+
+- Add `Metric` and `Progress` dashboard widgets
+- Move `dashboard` and `quick search` actions to the title bar
+- Upgrade `Turso` to v0.8.0-pre.2
+- Improve the macOS DMG layout
+
 ## v3.1.6
 
 **Published:** `2026-07-28T08:00:00Z`
