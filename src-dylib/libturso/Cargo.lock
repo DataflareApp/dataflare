@@ -2287,9 +2287,9 @@ dependencies = [
 
 [[package]]
 name = "turso_core"
-version = "0.8.0-pre.1"
+version = "0.8.0-pre.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a29ab6d5a49ba2c756279891a7fa160e3460af167983f283b9a55e3747be03a"
+checksum = "126a369027e3f8d5736f871267e9a79fe18e081cf4023b520d3a45097bc9e841"
 dependencies = [
  "aegis",
  "aes",
@@ -2358,9 +2358,9 @@ dependencies = [
 
 [[package]]
 name = "turso_ext"
-version = "0.8.0-pre.1"
+version = "0.8.0-pre.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed8f1265e0b6ee172063cdc93099f7f1a0f1a7af140bd16c47aa563c65d36e2e"
+checksum = "2cca983d5255440f8074a017c1bebe4bb387f079a43fedc179f3de1e6f3e3def"
 dependencies = [
  "chrono",
  "getrandom 0.4.2",
@@ -2369,9 +2369,9 @@ dependencies = [
 
 [[package]]
 name = "turso_macros"
-version = "0.8.0-pre.1"
+version = "0.8.0-pre.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86ed2bab22e6d8ff94f1e966525fb14f192737977475ae57bcd0fc4c021b3589"
+checksum = "0cd0d06b919b0c6a517451c05a855368fecf101eeb87b4eaf299a3daa97ad2e2"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2380,9 +2380,9 @@ dependencies = [
 
 [[package]]
 name = "turso_parser"
-version = "0.8.0-pre.1"
+version = "0.8.0-pre.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2bdac2a5acfeb180bf7e86369fdfd40ae08a893c8e1c642d85e72a85c9dbf4df"
+checksum = "d6c143277cc1387ba02aed82856a20c43108f8aaa4caf55201f73b229db08fcf"
 dependencies = [
  "bitflags",
  "memchr",
@@ -2395,9 +2395,9 @@ dependencies = [
 
 [[package]]
 name = "turso_sdk_kit"
-version = "0.8.0-pre.1"
+version = "0.8.0-pre.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a97954dbc713a658419930c5ac81ac8d440c6b4e5eecbbc98d691e14f4294caf"
+checksum = "18a3a833a9757e14890e7be3f91b9bededc068a4038aabf065db283205977507"
 dependencies = [
  "bindgen",
  "env_logger",
@@ -2412,9 +2412,9 @@ dependencies = [
 
 [[package]]
 name = "turso_sdk_kit_macros"
-version = "0.8.0-pre.1"
+version = "0.8.0-pre.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49a0c40d0b7b1e2dde0b97551ea1942ea7577b10a9a008cf80f3499a788cd984"
+checksum = "3f7bd6f95e5701fc19f354c2c008a6bbd91a45261973b1bb53c84846869a0a0f"
 dependencies = [
  "proc-macro2",
  "quote",
