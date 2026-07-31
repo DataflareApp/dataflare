@@ -33,6 +33,7 @@ export const Main = () => {
     const resetTabs = useTabsStore((state) => state.resetTabs)
     const { chatPanelOpened, toggleChatPanel } = useChatPanel()
     const showCommandSearch = useCommandSearch((state) => state.showCommandSearch)
+    const isKv = useIsKv()
 
     const title = useMemo(() => {
         if (activeTab === null) {
@@ -60,7 +61,7 @@ export const Main = () => {
                 break
             }
             case 'd': {
-                shift && switchTabTo({ type: TabType.Dashboard })
+                shift && !isKv && switchTabTo({ type: TabType.Dashboard })
                 break
             }
             case '[': {
@@ -86,9 +87,14 @@ export const Main = () => {
                 <IconButton title={quickSearchTitle} onClick={showCommandSearch}>
                     <IconSearch size={16} strokeWidth={1.5} />
                 </IconButton>
-                <IconButton title={dashboardTitle} onClick={() => switchTabTo({ type: TabType.Dashboard })}>
-                    <IconLayoutDashboard size={16} strokeWidth={1.5} />
-                </IconButton>
+                {!isKv && (
+                    <IconButton
+                        title={dashboardTitle}
+                        onClick={() => switchTabTo({ type: TabType.Dashboard })}
+                    >
+                        <IconLayoutDashboard size={16} strokeWidth={1.5} />
+                    </IconButton>
+                )}
                 <IconButton title={chatTitle} onClick={() => toggleChatPanel()}>
                     {chatPanelOpened ? (
                         <IconMessageFilled size={16} strokeWidth={1.5} />

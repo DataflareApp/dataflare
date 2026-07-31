@@ -14,6 +14,10 @@ export const KeyboardShortcutsSettings = () => {
                     keys: [KeyModifier.Meta, 'P']
                 },
                 {
+                    name: t('dashboard'),
+                    keys: [KeyModifier.Shift, KeyModifier.Meta, 'D']
+                },
+                {
                     name: t('manageConnection'),
                     keys: [KeyModifier.Meta, 'N']
                 },
