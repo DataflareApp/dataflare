@@ -14,7 +14,7 @@ codegen-units = 1
 strip = "symbols"
 
 [dependencies]
-chdb-rust = { git = "https://github.com/chdb-io/chdb-rust", rev = "48e004758d55bb9dc0763e85bdc8c62410e358bd", features = ["static"] }
+chdb-rust = { version = "1.4.0", default-features = false, features = ["static"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = { version = "1.0.150", features = ["float_roundtrip"] }
 thiserror = "2.0.18"
