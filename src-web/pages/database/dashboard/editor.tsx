@@ -15,6 +15,7 @@ import {
     MetricConfig,
     ComposedChartConfig,
     PieChartConfig,
+    ProgressConfig,
     WidgetConfig,
     WidgetType,
     Query,
@@ -110,6 +111,16 @@ export const WidgetEditor = ({ widgetConfig, onSave }: Props): ReactNode => {
                 return updateData('dataKey', dataKey ?? query!.columns[0].name)
             }
         }
+        if (config.options.type === WidgetType.Progress) {
+            const valueDataKey = query!.columns[0].name
+            const goalDataKey = query!.columns[1]?.name ?? valueDataKey
+            if (!keySet.has(config.options.config.valueDataKey)) {
+                return updateData('valueDataKey', valueDataKey)
+            }
+            if (!keySet.has(config.options.config.goalDataKey)) {
+                return updateData('goalDataKey', goalDataKey)
+            }
+        }
     }
 
     return (
@@ -201,10 +212,63 @@ export const WidgetEditor = ({ widgetConfig, onSave }: Props): ReactNode => {
                         {config.options.type === WidgetType.Metric && (
                             <MetricDataEditor data={config.options.config} onChange={updateData} />
                         )}
+                        {config.options.type === WidgetType.Progress && (
+                            <ProgressDataEditor
+                                keyOptions={keyOptions}
+                                data={config.options.config}
+                                onChange={updateData}
+                            />
+                        )}
                     </ScrollView>
                 )}
             </div>
         </SplitView>
+    )
+}
+
+const ProgressDataEditor = ({
+    keyOptions,
+    data,
+    onChange
+}: {
+    keyOptions: SelectProps['options']
+    data: ProgressConfig
+    onChange: <K extends keyof ProgressConfig>(key: K, value: ProgressConfig[K]) => void
+}) => {
+    return (
+        <>
+            <Box name={t('valueColumn')}>
+                <Select
+                    className='mt-2 w-full'
+                    options={keyOptions}
+                    value={data.valueDataKey}
+                    onChange={(val) => onChange('valueDataKey', val)}
+                />
+            </Box>
+            <Box name={t('goalColumn')}>
+                <Select
+                    className='mt-2 w-full'
+                    options={keyOptions}
+                    value={data.goalDataKey}
+                    onChange={(val) => onChange('goalDataKey', val)}
+                />
+            </Box>
+            <Box name={t('thickness')}>
+                <Slider
+                    className='mt-2'
+                    min={4}
+                    max={24}
+                    step={2}
+                    value={data.thickness}
+                    onChange={(val) => onChange('thickness', val)}
+                    onRenderValue={(val) => `${val}px`}
+                />
+            </Box>
+            <Box
+                name={t('color')}
+                titleChildren={<ColorSelect value={data.color} onChange={(val) => onChange('color', val)} />}
+            />
+        </>
     )
 }
 

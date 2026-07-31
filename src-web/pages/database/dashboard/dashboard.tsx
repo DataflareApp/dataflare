@@ -27,6 +27,7 @@ import {
     defaultComposedChartConfig,
     defaultMetricConfig,
     defaultPieChartConfig,
+    defaultProgressConfig,
     defaultTableConfig
 } from './config'
 import { WidgetEditor } from './editor'
@@ -206,8 +207,9 @@ const NewWidgetButton = ({ onSetData }: { onSetData: (data: EditorWidgetData) =>
         >
             {[
                 [t('composedChart'), defaultComposedChartConfig] as const,
-                [t('pieChart'), defaultPieChartConfig] as const,
                 [t('metric'), defaultMetricConfig] as const,
+                [t('pieChart'), defaultPieChartConfig] as const,
+                [t('progress'), defaultProgressConfig] as const,
                 [t('table'), defaultTableConfig] as const
             ].map(([name, fn], i) => {
                 return (

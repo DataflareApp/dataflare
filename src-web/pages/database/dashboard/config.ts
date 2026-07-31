@@ -1,8 +1,10 @@
 import {
     Layout,
+    ProgressShape,
     WidgetComposedChartConfig,
     WidgetMetricConfig,
     WidgetPieChartConfig,
+    WidgetProgressConfig,
     WidgetTableConfig,
     WidgetType
 } from '../../../tauri'
@@ -79,6 +81,24 @@ export const defaultMetricConfig = (): WidgetMetricConfig => {
                 suffix: '',
                 color: CHART_COLORS[randomPieColorIndex()],
                 fontSize: 24
+            }
+        }
+    }
+}
+
+export const defaultProgressConfig = (): WidgetProgressConfig => {
+    return {
+        name: 'New Progress',
+        source: '\n\n',
+        interval: DEFAULT_INTERVAL,
+        options: {
+            type: WidgetType.Progress,
+            config: {
+                shape: ProgressShape.Circular,
+                valueDataKey: '',
+                goalDataKey: '',
+                thickness: 10,
+                color: CHART_COLORS[randomPieColorIndex()]
             }
         }
     }

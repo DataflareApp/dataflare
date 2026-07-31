@@ -1981,6 +1981,41 @@ export const translationText = {
         [Language.zhCN]: `指标`,
         [Language.ja]: '指標'
     },
+    progress: {
+        [Language.en]: `Progress`,
+        [Language.de]: `Fortschritt`,
+        [Language.frFR]: `Progression`,
+        [Language.zhCN]: `进度`,
+        [Language.ja]: '進捗'
+    },
+    valueColumn: {
+        [Language.en]: `Value Column`,
+        [Language.de]: `Wertspalte`,
+        [Language.frFR]: `Colonne de valeur`,
+        [Language.zhCN]: `数值列`,
+        [Language.ja]: '値の列'
+    },
+    goalColumn: {
+        [Language.en]: `Goal Column`,
+        [Language.de]: `Zielspalte`,
+        [Language.frFR]: `Colonne d'objectif`,
+        [Language.zhCN]: `目标值列`,
+        [Language.ja]: '目標値の列'
+    },
+    thickness: {
+        [Language.en]: `Thickness`,
+        [Language.de]: `Stärke`,
+        [Language.frFR]: `Épaisseur`,
+        [Language.zhCN]: `厚度`,
+        [Language.ja]: '太さ'
+    },
+    goal: {
+        [Language.en]: `Goal`,
+        [Language.de]: `Ziel`,
+        [Language.frFR]: `Objectif`,
+        [Language.zhCN]: `目标值`,
+        [Language.ja]: '目標値'
+    },
     prefix: {
         [Language.en]: `Prefix`,
         [Language.de]: `Präfix`,

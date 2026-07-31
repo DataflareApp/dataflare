@@ -46,7 +46,8 @@ export const enum WidgetType {
     Table = 'table',
     ComposedChart = 'composed',
     PieChart = 'pie',
-    Metric = 'metric'
+    Metric = 'metric',
+    Progress = 'progress'
 }
 
 export type WidgetConfig =
@@ -54,6 +55,7 @@ export type WidgetConfig =
     | WidgetComposedChartConfig
     | WidgetPieChartConfig
     | WidgetMetricConfig
+    | WidgetProgressConfig
 
 export interface WidgetTableConfig extends WidgetBaseConfig {
     options: {
@@ -83,11 +85,30 @@ export interface WidgetMetricConfig extends WidgetBaseConfig {
     }
 }
 
+export interface WidgetProgressConfig extends WidgetBaseConfig {
+    options: {
+        type: WidgetType.Progress
+        config: ProgressConfig
+    }
+}
+
 export interface MetricConfig {
     prefix: string
     suffix: string
     color: string
     fontSize: number
+}
+
+export const enum ProgressShape {
+    Circular = 'circular'
+}
+
+export interface ProgressConfig {
+    shape: ProgressShape
+    valueDataKey: string
+    goalDataKey: string
+    thickness: number
+    color: string
 }
 
 export interface ComposedChartConfig {

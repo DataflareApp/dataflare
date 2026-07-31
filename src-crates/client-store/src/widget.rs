@@ -31,6 +31,8 @@ pub enum WidgetOptions {
     PieChart(PieChartConfig),
     #[serde(rename = "metric")]
     Metric(MetricConfig),
+    #[serde(rename = "progress")]
+    Progress(ProgressConfig),
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -62,6 +64,22 @@ pub struct MetricConfig {
     suffix: String,
     color: String,
     fontSize: u16,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ProgressConfig {
+    shape: ProgressShape,
+    valueDataKey: String,
+    goalDataKey: String,
+    thickness: u16,
+    color: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ProgressShape {
+    Circular,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
