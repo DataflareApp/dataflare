@@ -42,7 +42,7 @@ export const Main = () => {
         return `${getTabTitle(activeTab)} — ${connection.name}`
     }, [activeTab, connection])
 
-    useShortcutMeta('w,n,i,d,[,]', (key, shift) => {
+    useShortcutMeta('w,n,i,[,]', (key, shift) => {
         switch (key) {
             case 'w': {
                 if (activeTab === null) {
@@ -60,10 +60,6 @@ export const Main = () => {
                 shift && toggleChatPanel()
                 break
             }
-            case 'd': {
-                shift && !isKv && switchTabTo({ type: TabType.Dashboard })
-                break
-            }
             case '[': {
                 !shift && switchTabTo(TabNavigate.Prev)
                 break
@@ -74,6 +70,14 @@ export const Main = () => {
             }
         }
     })
+
+    useShortcutMeta(
+        'd',
+        (_, shift) => {
+            shift && switchTabTo({ type: TabType.Dashboard })
+        },
+        isKv
+    )
 
     useShortcutMetaNumber(switchTabTo)
 
