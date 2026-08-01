@@ -29,6 +29,11 @@ export const normalizeBaseURL = <T>(url: string, emptyFallback: T): string | T =
 }
 
 export const fetchModels = async (config: ProviderConfig): Promise<ProviderModelConfig[]> => {
+    const baseURL = normalizeBaseURL(config.baseURL, defaultBaseURL(config.type))
+    if (baseURL === '') {
+        throw 'Invalid Base URL'
+    }
+
     const apiKey = await ClientData.providerResolveSecret(config.apiKey)
     config = { ...config, apiKey }
 
@@ -46,7 +51,6 @@ export const fetchModels = async (config: ProviderConfig): Promise<ProviderModel
         return parsed.data
     }
 
-    let baseURL = normalizeBaseURL(config.baseURL, defaultBaseURL(config.type))
     switch (config.type) {
         case ProviderType.DeepSeek:
         case ProviderType.Groq:
