@@ -156,7 +156,7 @@ const ChartContent = ({ input, output }: { input: Input; output: Output }): JSX.
                     <RechartComposedChart
                         data={data}
                         layout='horizontal'
-                        margin={{ top: 12, right: 24, bottom: 6 }}
+                        margin={{ top: 12, right: 24, bottom: 6, left: 8 }}
                     >
                         <CartesianGrid
                             className='text-neutral-200 dark:text-neutral-800'
@@ -171,14 +171,16 @@ const ChartContent = ({ input, output }: { input: Input; output: Output }): JSX.
                             type={'category'}
                             axisLine={false}
                             tickLine={false}
+                            tick={{ className: 'text-xs text-tertiary', fill: 'currentColor' }}
                             className='text-xs text-tertiary'
                             stroke='currentColor'
                         />
                         <YAxis
-                            width={52}
+                            width='auto'
                             type={'number'}
                             axisLine={false}
                             tickLine={false}
+                            tick={{ className: 'text-xs text-tertiary', fill: 'currentColor' }}
                             className='text-xs text-tertiary'
                             stroke='currentColor'
                         />

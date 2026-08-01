@@ -9,14 +9,14 @@ import {
     YAxis,
     CartesianGrid,
     Tooltip,
-    TooltipProps,
+    TooltipContentProps,
+    TooltipValueType,
     Area,
     Legend,
-    LegendProps,
+    DefaultLegendContentProps,
     Pie,
     Cell
 } from 'recharts'
-import { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent'
 import { ComposedChartConfig, Layout, PieChartConfig, Query, QueryData, Value } from '../tauri'
 
 // TODO: Async import
@@ -75,7 +75,7 @@ export const ComposedChart = ({ config, query }: { config: ComposedChartConfig; 
                 margin={{
                     top: 16,
                     bottom: !showLegend && config.axis.x.hidden ? 16 : 4,
-                    left: config.axis.y.hidden ? 16 : undefined,
+                    left: config.axis.y.hidden ? 16 : 8,
                     right: config.axis.y.hidden ? 16 : 24
                 }}
             >
@@ -103,16 +103,18 @@ export const ComposedChart = ({ config, query }: { config: ComposedChartConfig; 
                     type={horizontalLayout ? 'category' : 'number'}
                     axisLine={false}
                     tickLine={false}
+                    tick={{ className: 'text-xs text-tertiary', fill: 'currentColor' }}
                     className='text-xs text-tertiary'
                     stroke='currentColor'
                 />
                 <YAxis
-                    width={52}
+                    width='auto'
                     hide={config.axis.y.hidden}
                     dataKey={horizontalLayout ? undefined : config.categoryDataKey}
                     type={horizontalLayout ? 'number' : 'category'}
                     axisLine={false}
                     tickLine={false}
+                    tick={{ className: 'text-xs text-tertiary', fill: 'currentColor' }}
                     className='text-xs text-tertiary'
                     stroke='currentColor'
                 />
@@ -196,10 +198,10 @@ export const PieChart = ({ config, query }: { config: PieChartConfig; query: Que
     )
 }
 
-export const legendContent = (props: LegendProps): ReactNode => {
+export const legendContent = (props: DefaultLegendContentProps): ReactNode => {
     return (
         <div className='flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 pb-2'>
-            {props.payload!.map((item, i) => {
+            {props.payload?.map((item, i) => {
                 return (
                     <div key={i} className='flex h-3 items-center gap-1 text-xs'>
                         <div className='h-full w-1 rounded-sm' style={{ backgroundColor: item.color }} />
@@ -211,7 +213,9 @@ export const legendContent = (props: LegendProps): ReactNode => {
     )
 }
 
-export const ComposedtooltipContent = (props: TooltipProps<ValueType, NameType>): ReactNode => {
+export const ComposedtooltipContent = (
+    props: TooltipContentProps<TooltipValueType, string | number>
+): ReactNode => {
     if (!props.active || props.label === undefined || !props.payload?.length) {
         return null
     }
@@ -231,7 +235,9 @@ export const ComposedtooltipContent = (props: TooltipProps<ValueType, NameType>)
     )
 }
 
-export const PieTooltipContent = (props: TooltipProps<ValueType, NameType>): ReactNode => {
+export const PieTooltipContent = (
+    props: TooltipContentProps<TooltipValueType, string | number>
+): ReactNode => {
     if (props.payload === undefined || props.payload.length === 0) {
         return null
     }
