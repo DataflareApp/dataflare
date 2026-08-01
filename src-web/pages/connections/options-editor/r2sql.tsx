@@ -32,5 +32,5 @@ export const R2SqlConnection = ({ data, onChange }: ConnectionEditorOptions<R2Sq
         </>
     )
 
-    return <ConnectionTab general={general} alert='dev' />
+    return <ConnectionTab general={general} alert='beta' />
 }

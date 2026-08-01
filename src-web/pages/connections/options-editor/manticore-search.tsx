@@ -73,6 +73,6 @@ export const ManticoreSearchConnection = ({
     )
 
     return (
-        <ConnectionTab general={general} security={security} proxy={proxy} initialSQL={initSQL} alert='dev' />
+        <ConnectionTab general={general} security={security} proxy={proxy} initialSQL={initSQL} alert='beta' />
     )
 }

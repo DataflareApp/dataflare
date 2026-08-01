@@ -127,5 +127,5 @@ export const PrestoConnection = ({ data, onChange }: ConnectionEditorOptions<Pre
 
     const proxy = <Proxy proxy={options.proxy} onChange={(proxy) => setOpt('proxy', proxy)} />
 
-    return <ConnectionTab general={general} security={security} proxy={proxy} alert='dev' />
+    return <ConnectionTab general={general} security={security} proxy={proxy} />
 }

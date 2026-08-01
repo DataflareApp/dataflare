@@ -22,12 +22,10 @@ export const TursoConnection = ({ data, onChange }: ConnectionEditorOptions<Turs
     const alert: AlertType | undefined = (() => {
         switch (database.type) {
             case TursoDatabaseType.LibSQL:
+            case TursoDatabaseType.Remote:
                 return undefined
             case TursoDatabaseType.Turso: {
                 return 'dev'
-            }
-            case TursoDatabaseType.Remote: {
-                return 'beta'
             }
         }
     })()

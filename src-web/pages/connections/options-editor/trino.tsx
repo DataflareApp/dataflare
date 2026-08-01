@@ -127,5 +127,5 @@ export const TrinoConnection = ({ data, onChange }: ConnectionEditorOptions<Trin
 
     const proxy = <Proxy proxy={options.proxy} onChange={(proxy) => setOpt('proxy', proxy)} />
 
-    return <ConnectionTab general={general} security={security} proxy={proxy} alert='beta' />
+    return <ConnectionTab general={general} security={security} proxy={proxy} />
 }
