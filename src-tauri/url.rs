@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use percent_encoding::percent_decode_str;
 use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
 use tauri::command;
@@ -28,10 +29,13 @@ pub fn decode_url(url: &str) -> Result<UrlOption, String> {
     let rst = UrlOption {
         scheme: url.scheme().to_string(),
         host: url.host().map(|v| v.to_string()),
-        username: url.username().to_string(),
-        password: url.password().map(|v| v.to_string()),
+        username: decode_component(url.username(), "username")?,
+        password: url
+            .password()
+            .map(|value| decode_component(value, "password"))
+            .transpose()?,
         port: url.port(),
-        path: url.path().to_string(),
+        path: decode_component(url.path(), "path")?,
         query,
     };
     Ok(rst)
@@ -63,6 +67,13 @@ pub fn encode_url(option: UrlOption) -> Result<String, String> {
         url.query_pairs_mut().append_pair(&k, &v);
     }
     Ok(url.to_string())
+}
+
+fn decode_component(value: &str, component: &str) -> Result<String, String> {
+    percent_decode_str(value)
+        .decode_utf8()
+        .map(|value| value.into_owned())
+        .map_err(|err| format!("Invalid UTF-8 in URL {component}: {err}"))
 }
 
 #[cfg(test)]
@@ -105,6 +116,71 @@ mod tests {
                 port: Some(5432),
                 path: "/database".into(),
                 query,
+            }
+        );
+    }
+
+    #[test]
+    fn decode_percent_encoded_pg_url_components() {
+        let url = decode_url(
+            "postgresql://user%40example.com:p%40ss%3Aword%2F100%25@localhost/db%20name?name=My+DB",
+        )
+        .unwrap();
+        let mut query = IndexMap::new();
+        query.insert("name".into(), "My DB".into());
+        assert_eq!(
+            url,
+            UrlOption {
+                scheme: "postgresql".into(),
+                host: Some("localhost".into()),
+                username: "user@example.com".into(),
+                password: Some("p@ss:word/100%".into()),
+                port: None,
+                path: "/db name".into(),
+                query,
+            }
+        );
+    }
+
+    #[test]
+    fn decode_1password_secret_reference_password() {
+        let url = decode_url(
+            "postgresql://owner:exec%3Aop%20read%20%22op%3A%2F%2FPersonal%2FMy%2Fdatabase%20password%22@example.com/mydb?name=My+PostgreSQL",
+        )
+        .unwrap();
+        assert_eq!(
+            url.password.as_deref(),
+            Some("exec:op read \"op://Personal/My/database password\"")
+        );
+        assert_eq!(
+            url.query.get("name").map(String::as_str),
+            Some("My PostgreSQL")
+        );
+    }
+
+    #[test]
+    fn percent_encoded_components_round_trip() {
+        let option = UrlOption {
+            scheme: "postgresql".into(),
+            host: Some("localhost".into()),
+            username: "user@example.com".into(),
+            password: Some("p@ss:word/100%".into()),
+            port: Some(5432),
+            path: "/db name".into(),
+            query: IndexMap::new(),
+        };
+        let encoded = encode_url(option).unwrap();
+
+        assert_eq!(
+            decode_url(&encoded).unwrap(),
+            UrlOption {
+                scheme: "postgresql".into(),
+                host: Some("localhost".into()),
+                username: "user@example.com".into(),
+                password: Some("p@ss:word/100%".into()),
+                port: Some(5432),
+                path: "/db name".into(),
+                query: IndexMap::new(),
             }
         );
     }
