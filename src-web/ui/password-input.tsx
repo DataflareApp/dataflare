@@ -76,6 +76,10 @@ const PasswordSecretResolve = () => {
     const { t } = useTranslation()
     const items = [
         {
+            label: 'From shell output:',
+            example: "exec: echo 'MY_PASSWORD'"
+        },
+        {
             label: 'From env:',
             example: 'env: MY_PASSWORD'
         },
@@ -86,10 +90,6 @@ const PasswordSecretResolve = () => {
         {
             label: 'From file content:',
             example: 'file: /path/file'
-        },
-        {
-            label: 'From shell output:',
-            example: "exec: echo 'MY_PASSWORD'"
         }
     ]
     return (
