@@ -143,6 +143,14 @@ FROM
     }
 
     #[test]
+    fn test_format_bracketed_identifiers() {
+        assert_eq!(
+            format("SELECT [Order Details].[Unit Price] FROM [Order Details];".into()),
+            "SELECT\n  [Order Details].[Unit Price]\nFROM\n  [Order Details];"
+        );
+    }
+
+    #[test]
     fn test_minify() {
         let dialect = GenericDialect {};
         assert_eq!(minify(&dialect, ""), Ok("".into()));

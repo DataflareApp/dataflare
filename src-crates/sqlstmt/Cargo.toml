@@ -4,5 +4,5 @@ edition.workspace = true
 
 [dependencies]
 serde = { workspace = true }
-sqlparser = "0.58.0"
-sqlformat = { git = "https://github.com/shssoichiro/sqlformat-rs", rev = "227688f2dd6885f3d8dbe05e5d3df3157dd3cb2e" }
+sqlparser = "0.62.0"
+sqlformat = { git = "https://github.com/shssoichiro/sqlformat-rs", rev = "cdc0732c4945765ed0b468f6c2813ae3657d334a" }

@@ -23,8 +23,11 @@ fn read_only(stmt: &Statement) -> bool {
         Statement::ShowDatabases { .. } => true,
         Statement::ShowSchemas { .. } => true,
         Statement::ShowTables { .. } => true,
+        Statement::ShowCatalogs { .. } => true,
         Statement::ShowColumns { .. } => true,
         Statement::ShowViews { .. } => true,
+        Statement::ShowProcessList { .. } => true,
+        Statement::ShowCharset(_) => true,
         Statement::ShowObjects(_) => true,
         Statement::ShowCollation { .. } => true,
         Statement::ShowCreate { .. } => true,
@@ -62,12 +65,24 @@ fn read_only(stmt: &Statement) -> bool {
         Statement::CreateVirtualTable { .. } => false,
         Statement::CreateServer(..) => false,
         Statement::CreateDomain(..) => false,
+        Statement::CreateCollation(_) => false,
+        Statement::CreateOperator(_) => false,
+        Statement::CreateOperatorFamily(_) => false,
+        Statement::CreateOperatorClass(_) => false,
+        Statement::CreateUser(_) => false,
 
         Statement::AlterTable { .. } => false,
         Statement::AlterView { .. } => false,
         Statement::AlterIndex { .. } => false,
+        Statement::AlterSchema(_) => false,
+        Statement::AlterFunction(_) => false,
         Statement::AlterType { .. } => false,
+        Statement::AlterCollation(_) => false,
+        Statement::AlterOperator(_) => false,
+        Statement::AlterOperatorFamily(_) => false,
+        Statement::AlterOperatorClass(_) => false,
         Statement::AlterRole { .. } => false,
+        Statement::AlterUser(_) => false,
         Statement::AlterSession { .. } => false,
         Statement::AlterPolicy { .. } => false,
         Statement::AlterConnector { .. } => false,
@@ -81,6 +96,9 @@ fn read_only(stmt: &Statement) -> bool {
         Statement::DropPolicy { .. } => false,
         Statement::DropConnector { .. } => false,
         Statement::DropDomain(..) => false,
+        Statement::DropOperator(_) => false,
+        Statement::DropOperatorFamily(_) => false,
+        Statement::DropOperatorClass(_) => false,
 
         Statement::StartTransaction { .. } => false,
         Statement::Commit { .. } => false,
@@ -111,6 +129,7 @@ fn read_only(stmt: &Statement) -> bool {
         Statement::UNCache { .. } => false,
         Statement::LockTables { .. } => false,
         Statement::UnlockTables => false,
+        Statement::Lock(_) => false,
         Statement::Pragma { .. } => false,
         Statement::Unload { .. } => false,
         Statement::OptimizeTable { .. } => false,
@@ -125,6 +144,8 @@ fn read_only(stmt: &Statement) -> bool {
         Statement::UNLISTEN { .. } => false,
         Statement::RenameTable { .. } => false,
         Statement::RaisError { .. } => false,
+        Statement::Throw(_) => false,
+        Statement::WaitFor(_) => false,
         Statement::Print { .. } => false,
         Statement::Return { .. } => false,
         Statement::List(_) => true,
@@ -134,6 +155,9 @@ fn read_only(stmt: &Statement) -> bool {
         Statement::If(_) => false,
         Statement::While(_) => false,
         Statement::Raise(_) => false,
+        Statement::ExportData(_) => false,
+        Statement::Vacuum(_) => false,
+        Statement::Reset(_) => false,
     }
 }
 
@@ -150,6 +174,7 @@ mod tests {
         assert!(statement_readonly(&dialect, "EXPLAIN SELECT * FROM users"));
         assert!(statement_readonly(&dialect, "SHOW TABLES"));
         assert!(statement_readonly(&dialect, "SHOW DATABASES"));
+        assert!(statement_readonly(&dialect, "SHOW CATALOGS"));
         assert!(statement_readonly(&dialect, "USE mydb"));
 
         assert!(!statement_readonly(
@@ -173,6 +198,8 @@ mod tests {
         assert!(!statement_readonly(&dialect, "TRUNCATE TABLE users"));
         assert!(!statement_readonly(&dialect, "COMMIT"));
         assert!(!statement_readonly(&dialect, "ROLLBACK"));
+        assert!(!statement_readonly(&dialect, "RESET ALL"));
+        assert!(!statement_readonly(&dialect, "VACUUM"));
 
         assert!(statement_readonly(&dialect, "SELECT 1; SHOW TABLES;"));
 
