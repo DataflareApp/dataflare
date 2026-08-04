@@ -36,6 +36,7 @@ presto = { path = "../presto" }
 databricks = { path = "../databricks" }
 batch-insert = { path = "../batch-insert" }
 bytes = "1.6"
+humansize = "2.1.3"
 kvdb = { path = "../kvdb" }
 connection-config = { path = "../connection-config" }
 

@@ -1,4 +1,4 @@
-use crate::utils::unordered_tasks;
+use crate::utils::{RowsExt, format_bytes, unordered_tasks};
 use crate::{ChunkInsert, ConnectionInfo, Database, LOCALHOST, Result, RqliteConfig, Value};
 use futures_util::FutureExt;
 use query::Query;
@@ -60,6 +60,12 @@ impl RqliteConnection {
             url.host_str().unwrap_or_default(),
             url.port_or_known_default().unwrap_or_default(),
         );
+        let database_size = self
+            .conn
+            .select("SELECT CAST(page_count * page_size AS TEXT) FROM pragma_page_count('main'), pragma_page_size('main');")
+            .await?
+            .first_cell_string()?;
+        info.push_text("Size", format_bytes(database_size)?);
         info.push_text("SQLite", status.sqlite_version());
         info.push_text("rqlite", status.rqlite_version());
         Ok(info)

@@ -1,6 +1,7 @@
 use crate::{Error, Result};
 use futures_util::future::BoxFuture;
 use futures_util::stream::{FuturesUnordered, StreamExt};
+use humansize::{DECIMAL, format_size};
 use query::Value;
 use std::io::Error as IoError;
 
@@ -89,6 +90,13 @@ pub(crate) fn empty_if<T: Into<String>>(val: String, fallback: T) -> String {
     if val.is_empty() { fallback.into() } else { val }
 }
 
+pub(crate) fn format_bytes(bytes: String) -> Result<String> {
+    let bytes = bytes
+        .parse::<u64>()
+        .map_err(|err| Error::Io(IoError::other(err)))?;
+    Ok(format_size(bytes, DECIMAL))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -107,5 +115,10 @@ mod tests {
     fn first_cell_string_optional_accepts_null() {
         let mut rows = vec![vec![Value::Null]];
         assert_eq!(rows.first_cell_string_optional().unwrap(), None);
+    }
+
+    #[test]
+    fn format_bytes_uses_decimal_units() {
+        assert_eq!(format_bytes("4000000".into()).unwrap(), "4 MB");
     }
 }

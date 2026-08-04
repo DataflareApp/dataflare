@@ -1,4 +1,4 @@
-use crate::utils::RowsExt;
+use crate::utils::{RowsExt, format_bytes};
 use crate::{ChunkInsert, ConnectionInfo, Database, Result, SqlCipherConfig};
 use query::{Query, Value};
 use sqlcipher::Connection;
@@ -45,11 +45,12 @@ impl SqlCipherConnection {
 
     pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
         let mut info = ConnectionInfo::new("SQLCipher");
-        let [path, sqlite_version] = self
+        let [path, sqlite_version, database_size] = self
             .conn
-            .select("SELECT file, sqlite_version() FROM pragma_database_list WHERE name = 'main';")?
-            .first_row_strings::<2>()?;
+            .select("SELECT file, sqlite_version(), CAST(page_count * page_size AS TEXT) FROM pragma_database_list, pragma_page_count('main'), pragma_page_size('main') WHERE name = 'main';")?
+            .first_row_strings::<3>()?;
         info.push_db_path(path);
+        info.push_text("Size", format_bytes(database_size)?);
         info.push_text("SQLite", sqlite_version);
         let sqlcipher_version = self
             .conn
