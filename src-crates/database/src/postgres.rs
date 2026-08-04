@@ -172,12 +172,7 @@ impl PostgresConnection {
                     .select("SELECT current_user(), build();".into())
                     .await?
                     .first_row_strings::<2>()?;
-                let timezone = self
-                    .select("SHOW TIME ZONE;".into())
-                    .await?
-                    .first_cell_string()?;
                 info.push_text("User", user);
-                info.push_text("Timezone", timezone);
                 info.push_text("Version", version);
             }
         }
