@@ -1,5 +1,5 @@
-use crate::utils::{FirstCell, empty_if, unordered_tasks};
-use crate::{ChunkInsert, Database, LOCALHOST, Result, Value};
+use crate::utils::{RowsExt, empty_if, unordered_tasks};
+use crate::{ChunkInsert, ConnectionInfo, Database, LOCALHOST, Result, Value};
 use connection_config::{ConnectProtocol, PrestoAuth, PrestoConfig};
 use futures_util::FutureExt;
 use presto::{AuthConfig, Config, Connection};
@@ -56,6 +56,33 @@ impl PrestoConnection {
         };
         let conn = Connection::open_with(config)?;
         Ok(conn)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut conn = self.conn.lock().await;
+        let [user, timezone, version, nodes] = conn
+            .query(
+                "SELECT
+                        current_user,
+                        current_timezone(),
+                        (SELECT node_version FROM system.runtime.nodes LIMIT 1),
+                        CAST((SELECT count(*) FROM system.runtime.nodes) AS VARCHAR)",
+            )
+            .await?
+            .rows
+            .first_row_strings::<4>()?;
+        let url = conn.url();
+        let mut info = ConnectionInfo::new("Presto");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
+        info.push_text("User", user);
+        info.push_text("Timezone", timezone);
+        info.push_text("Nodes", nodes);
+        info.push_text("Version", version);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

@@ -2427,6 +2427,7 @@ dependencies = [
  "trino",
  "turso-local",
  "turso-remote",
+ "url",
  "workers-analytics-engine",
 ]
 

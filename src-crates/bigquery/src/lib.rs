@@ -81,6 +81,23 @@ impl Connection {
         })
     }
 
+    pub fn project_id(&self) -> &str {
+        &self.project_id
+    }
+
+    pub fn default_dataset(&self) -> Option<&str> {
+        self.default_dataset
+            .as_ref()
+            .map(|dataset| dataset.as_str())
+    }
+
+    pub fn console_url(&self) -> String {
+        format!(
+            "https://console.cloud.google.com/bigquery?project={}",
+            self.project_id
+        )
+    }
+
     pub async fn query(&self, sql: String) -> Result<Query> {
         {
             // NOTE:

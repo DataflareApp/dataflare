@@ -1,10 +1,11 @@
-use crate::utils::FirstCell;
-use crate::{ChunkInsert, Database, DatabricksConfig, Result, Value};
+use crate::utils::RowsExt;
+use crate::{ChunkInsert, ConnectionInfo, Database, DatabricksConfig, Result, Value};
 use connection_config::{ConnectProtocol, DatabricksAuth};
 use databricks::{Connection, config::Config};
 use query::{Query, QueryColumn};
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use url::Url;
 
 #[derive(Debug, Clone)]
 pub struct DatabricksConnection {
@@ -12,6 +13,40 @@ pub struct DatabricksConnection {
 }
 
 impl DatabricksConnection {
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut conn = self.conn.lock().await;
+        let mut rows = conn
+            .query(
+                r#"SELECT current_user(), COALESCE(current_catalog(), ''), COALESCE(current_schema(), ''), current_timezone()"#,
+            )
+            .await?
+            .rows
+            .into_iter()
+            .map(|row| row.into_iter().map(map_value).collect())
+            .collect::<Vec<Vec<Value>>>();
+        let [user, catalog, schema, timezone] = rows.first_row_strings::<4>()?;
+        let mut info = ConnectionInfo::new("Databricks");
+        let mut endpoint = None;
+        if let Ok(mut url) = conn.transport_endpoint_url().parse::<Url>() {
+            info.push_server(
+                "thrift",
+                url.host_str().unwrap_or_default(),
+                url.port_or_known_default().unwrap_or_default(),
+            );
+            url.set_path(&format!("/explore/data/{catalog}/{schema}"));
+            endpoint = Some(url);
+        }
+        // TODO: warehouse_id
+        info.push_text("User", user);
+        info.push_text("Catalog", catalog);
+        info.push_text("Schema", schema);
+        info.push_text("Timezone", timezone);
+        if let Some(url) = endpoint {
+            info.push_url("Console", url.to_string());
+        }
+        Ok(info)
+    }
+
     pub(crate) async fn test(config: DatabricksConfig) -> Result<Option<String>> {
         let conn = Self::make_conn(config).await?;
         let sql = r#"

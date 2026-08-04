@@ -1,6 +1,7 @@
-use crate::utils::{FirstCell, empty_if, unordered_tasks};
+use crate::utils::{RowsExt, empty_if, unordered_tasks};
 use crate::{
-    ChunkInsert, ConnectProtocol, Database, DatabendConfig, Error, LOCALHOST, Result, Value,
+    ChunkInsert, ConnectProtocol, ConnectionInfo, Database, DatabendConfig, Error, LOCALHOST,
+    Result, Value,
 };
 use databend::{Config, Connection};
 use futures_util::FutureExt;
@@ -51,6 +52,39 @@ impl DatabendConnection {
             database,
             proxy: config.proxy,
         }
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut conn = self.conn.lock().await;
+        let [user, catalog, database, version, timezone] = conn
+            .query(
+                r#"SELECT
+                    current_user(),
+                    current_catalog(),
+                    database(),
+                    version(),
+                    timezone()
+                FROM system.databases
+                WHERE catalog = current_catalog()
+                  AND name = database()
+                LIMIT 1;"#,
+            )
+            .await?
+            .rows
+            .first_row_strings::<5>()?;
+        let url = conn.url();
+        let mut info = ConnectionInfo::new("Databend");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
+        info.push_text("User", user);
+        info.push_text("Catalog", catalog);
+        info.push_text("Database", database);
+        info.push_text("Timezone", timezone);
+        info.push_text("Version", version);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

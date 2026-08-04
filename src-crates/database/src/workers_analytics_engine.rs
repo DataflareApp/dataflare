@@ -1,4 +1,4 @@
-use crate::{ChunkInsert, Database, Result, Value, WorkersAnalyticsEngineConfig};
+use crate::{ChunkInsert, ConnectionInfo, Database, Result, Value, WorkersAnalyticsEngineConfig};
 use query::Query;
 use workers_analytics_engine::{Connection, Error};
 
@@ -8,6 +8,14 @@ pub struct WorkersAnalyticsEngineConnection {
 }
 
 impl WorkersAnalyticsEngineConnection {
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut info = ConnectionInfo::new("Workers Analytics Engine");
+        info.push_text("Account ID", self.conn.account_id());
+        info.push_text("API URL", self.conn.api_url());
+        info.push_url("Dashboard", self.conn.dashboard_url());
+        Ok(info)
+    }
+
     pub(crate) async fn test(config: WorkersAnalyticsEngineConfig) -> Result<Option<String>> {
         let conn = Connection::new(config.account_id, config.api_token)?;
         conn.query("SELECT now() as _;".into()).await?;

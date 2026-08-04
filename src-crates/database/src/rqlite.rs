@@ -1,5 +1,5 @@
 use crate::utils::unordered_tasks;
-use crate::{ChunkInsert, Database, LOCALHOST, Result, RqliteConfig, Value};
+use crate::{ChunkInsert, ConnectionInfo, Database, LOCALHOST, Result, RqliteConfig, Value};
 use futures_util::FutureExt;
 use query::Query;
 use rqlite::{Auth, Config, Connection, Protocol};
@@ -49,6 +49,20 @@ impl RqliteConnection {
             allow_invalid_certs: config.allow_invalid_certs,
             proxy: config.proxy,
         }
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let status = self.conn.status().await?;
+        let url = self.conn.status_url();
+        let mut info = ConnectionInfo::new("rqlite");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
+        info.push_text("SQLite", status.sqlite_version());
+        info.push_text("rqlite", status.rqlite_version());
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

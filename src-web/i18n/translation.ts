@@ -238,6 +238,13 @@ export const translationText = {
         [Language.zhCN]: `管理连接`,
         [Language.ja]: '接続の管理'
     },
+    connectionInfo: {
+        [Language.en]: `Connection Info`,
+        [Language.de]: 'Verbindungsinformationen',
+        [Language.frFR]: `Informations sur la connexion`,
+        [Language.zhCN]: `连接信息`,
+        [Language.ja]: '接続情報'
+    },
     dashboard: {
         [Language.en]: `Dashboard`,
         [Language.de]: 'Dashboard',

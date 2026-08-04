@@ -1,5 +1,5 @@
 use crate::utils::unordered_tasks;
-use crate::{ChunkInsert, CloudflareD1Config, Database, Result, Value};
+use crate::{ChunkInsert, CloudflareD1Config, ConnectionInfo, Database, Result, Value};
 use cloudflare_d1::Connection;
 use futures_util::FutureExt;
 use query::Query;
@@ -30,6 +30,20 @@ impl D1Connection {
             config.api_origin.as_deref(),
         )?;
         Ok(conn)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let url = self.conn.api_url();
+        let mut info = ConnectionInfo::new("Cloudflare D1");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
+        info.push_text("Account ID", self.conn.account_id());
+        info.push_text("Database ID", self.conn.database_id());
+        info.push_url("Dashboard", self.conn.dashboard_url());
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

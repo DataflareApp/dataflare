@@ -1,5 +1,5 @@
-use crate::utils::FirstCell;
-use crate::{ChunkInsert, Database, Result, SqlCipherConfig};
+use crate::utils::RowsExt;
+use crate::{ChunkInsert, ConnectionInfo, Database, Result, SqlCipherConfig};
 use query::{Query, Value};
 use sqlcipher::Connection;
 use std::sync::Arc;
@@ -41,6 +41,28 @@ impl SqlCipherConnection {
             conn.execute_batch(&sql)?;
         }
         Ok(conn)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut info = ConnectionInfo::new("SQLCipher");
+        let [path, sqlite_version] = self
+            .conn
+            .select("SELECT file, sqlite_version() FROM pragma_database_list WHERE name = 'main';")?
+            .first_row_strings::<2>()?;
+        info.push_db_path(path);
+        info.push_text("SQLite", sqlite_version);
+        let sqlcipher_version = self
+            .conn
+            .select("PRAGMA cipher_version;")?
+            .first_cell_string()?;
+        info.push_text("SQLCipher", sqlcipher_version);
+        let cipher = self
+            .conn
+            .select("PRAGMA cipher;")?
+            .first_cell_string_optional()?
+            .unwrap_or_else(|| "None".into());
+        info.push_text("Cipher", cipher);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

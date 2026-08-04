@@ -13,7 +13,7 @@ use std::time::Duration;
 #[derive(Debug, Clone)]
 pub struct Client {
     client: HttpClient,
-    url: Url,
+    pipeline_url: Url,
     token: String,
 }
 
@@ -31,15 +31,19 @@ impl Client {
             .build()?;
         Ok(Self {
             client,
-            url: pipeline_url,
+            pipeline_url,
             token: auth_token.into(),
         })
+    }
+
+    pub fn pipeline_url(&self) -> &Url {
+        &self.pipeline_url
     }
 
     async fn run_pipeline(&self, pipeline: PipelineRequest) -> Result<PipelineResponse> {
         let res = self
             .client
-            .post(self.url.clone())
+            .post(self.pipeline_url.clone())
             .bearer_auth(&self.token)
             .json(&pipeline)
             .send()

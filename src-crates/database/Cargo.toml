@@ -12,6 +12,7 @@ turso-local = { path = "../turso-local" }
 turso-remote = { path = "../turso-remote" }
 tokio-util = { version = "0.7", features = ["compat"] }
 futures-util = { workspace = true }
+url = { workspace = true }
 query = { path = "../query" }
 proxy = { path = "../proxy" }
 dylib = { path = "../dylib" }

@@ -1,5 +1,5 @@
-use crate::utils::FirstCell;
-use crate::{ChunkInsert, Database, Result, SqliteConfig};
+use crate::utils::RowsExt;
+use crate::{ChunkInsert, ConnectionInfo, Database, Result, SqliteConfig};
 use query::{Query, QueryColumn, Value};
 use rusqlite::{Connection, OpenFlags, types::ValueRef};
 use std::sync::Arc;
@@ -43,6 +43,20 @@ impl SqliteConnection {
         Ok(Self {
             conn: Arc::new(Mutex::new(conn)),
         })
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let [path, version] = self
+            .select(
+                "SELECT file, sqlite_version() FROM pragma_database_list WHERE name = 'main';"
+                    .into(),
+            )
+            .await?
+            .first_row_strings::<2>()?;
+        let mut info = ConnectionInfo::new("SQLite");
+        info.push_db_path(path);
+        info.push_text("Version", version);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

@@ -1,8 +1,12 @@
+mod connection_info;
+
 use pgsq::TlsMode;
 use proxy::ProxyConfig;
 use secret_resolve::ResolveSecrets;
 use serde::{Deserialize, Serialize};
 use strum::{EnumProperty, IntoStaticStr};
+
+pub use connection_info::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize, IntoStaticStr, EnumProperty, ResolveSecrets)]
 #[serde(tag = "type", content = "options")]

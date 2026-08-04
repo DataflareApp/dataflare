@@ -48,6 +48,10 @@ impl Connection {
         })
     }
 
+    pub fn transport_endpoint_url(&self) -> &str {
+        self.transport.endpoint_url()
+    }
+
     async fn open_session(
         transport: &ThriftHttpTransport,
         config: &Config,

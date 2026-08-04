@@ -80,6 +80,10 @@ impl Connection {
         }
     }
 
+    pub fn url(&self) -> &Url {
+        &self.url
+    }
+
     /// POST to `/v1/query` to start a new query.
     async fn send_query(&self, sql: &str) -> Result<QueryResponse> {
         let req = QueryRequest {

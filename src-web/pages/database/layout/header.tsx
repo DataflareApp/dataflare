@@ -1,9 +1,8 @@
-import { IconExclamationCircle, IconLoader2, IconPlugConnected } from '@tabler/icons-react'
+import { IconExclamationCircle, IconLoader2 } from '@tabler/icons-react'
 import { useTranslation } from '../../../i18n'
-import { showConnectionsWindow } from '../../../tauri'
 import { Button, IconButton, ConnectionIcon, Popover } from '../../../ui'
-import { keyboardTitleChars, KeyModifier } from '../../../utils/keyboard-char'
 import { useDbStore } from '../hooks/use-store'
+import { ConnectionInfo } from './connection-info'
 import { ManageDatabase } from './database'
 
 export const Header = () => {
@@ -52,12 +51,7 @@ export const Header = () => {
                 </h1>
 
                 <div className='flex'>
-                    <IconButton
-                        title={keyboardTitleChars(t('manageConnection'), [KeyModifier.Meta, 'N'])}
-                        onClick={showConnectionsWindow}
-                    >
-                        <IconPlugConnected size={16} strokeWidth={1.5} />
-                    </IconButton>
+                    <ConnectionInfo />
                     <ManageDatabase />
                 </div>
             </div>

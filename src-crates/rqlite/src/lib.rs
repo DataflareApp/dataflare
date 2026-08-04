@@ -2,6 +2,7 @@ use query::{Query, QueryColumn, QueryValueExt, Value};
 use reqwest::{Client, ClientBuilder, Proxy, Response};
 use serde::{Deserialize, de::DeserializeOwned};
 use std::sync::Arc;
+use url::Url;
 mod config;
 pub use config::{Auth, Config, Protocol};
 use serde_json::Value as JsonValue;
@@ -35,6 +36,10 @@ impl Connection {
         }
         let client = builder.build()?;
         Ok(Self { url, client })
+    }
+
+    pub fn status_url(&self) -> &Url {
+        &self.url.status
     }
 
     async fn de<T: DeserializeOwned>(res: Response) -> Result<T> {

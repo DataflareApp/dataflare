@@ -21,7 +21,9 @@ pub enum Error {
 #[derive(Debug, Clone)]
 pub struct Connection {
     client: Client,
-    url: Url,
+    api_url: Url,
+    account_id: String,
+    bucket_name: String,
     api_token: String,
 }
 
@@ -33,9 +35,30 @@ impl Connection {
         let url = url.parse::<Url>().map_err(|err| Error::Url(err, url))?;
         Ok(Self {
             client: Client::new(),
-            url,
+            api_url: url,
+            account_id,
+            bucket_name,
             api_token,
         })
+    }
+
+    pub fn api_url(&self) -> &Url {
+        &self.api_url
+    }
+
+    pub fn account_id(&self) -> &str {
+        &self.account_id
+    }
+
+    pub fn bucket_name(&self) -> &str {
+        &self.bucket_name
+    }
+
+    pub fn dashboard_url(&self) -> String {
+        format!(
+            "https://dash.cloudflare.com/{}/data-catalog/{}",
+            self.account_id, self.bucket_name
+        )
     }
 
     pub async fn query(&self, sql: String) -> Result<Query> {
@@ -43,7 +66,7 @@ impl Connection {
 
         let res = self
             .client
-            .post(self.url.clone())
+            .post(self.api_url.clone())
             .bearer_auth(&self.api_token)
             .json(&RequestBody { query: &sql })
             .send()

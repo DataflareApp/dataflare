@@ -105,6 +105,10 @@ impl Connection {
         }
     }
 
+    pub fn url(&self) -> &Url {
+        &self.url
+    }
+
     pub async fn query(&mut self, sql: String) -> Result<Query> {
         let url = build_request_url(&self.url, &self.session);
         let res = self.client.post(url).body(Body::from(sql)).send().await?;

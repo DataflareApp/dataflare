@@ -3,7 +3,7 @@ use crate::{
     CloudflareData, CloudflareKvMetadata, Cursor, GenericValue, Key, Keys, KvDatabase,
     KvDatabaseError, KvInput, KvOutput, NameSpace, Result, async_trait,
 };
-use connection_config::CloudflareKvConfig;
+use connection_config::{CloudflareKvConfig, ConnectionInfo};
 use reqwest::{Client, Response};
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::collections::HashMap;
@@ -26,6 +26,11 @@ impl CloudflareKv {
     #[rustfmt::skip]
     fn prefix(&self) -> String {
         format!("https://api.cloudflare.com/client/v4/accounts/{}", self.config.account_id)
+    }
+
+    #[rustfmt::skip]
+    fn dashboard_url(&self) -> String {
+        format!("https://dash.cloudflare.com/{}/workers/kv/namespaces", self.config.account_id)
     }
 
     const PAGE_SIZE: usize = 100;
@@ -88,6 +93,14 @@ impl CloudflareKv {
 
 #[async_trait]
 impl KvDatabase for CloudflareKv {
+    async fn info(&self) -> Result<ConnectionInfo> {
+        let mut info = ConnectionInfo::new("Cloudflare Workers KV");
+        info.push_server("https", "api.cloudflare.com", 443);
+        info.push_text("Account ID", &self.config.account_id);
+        info.push_url("Dashboard", self.dashboard_url());
+        Ok(info)
+    }
+
     async fn namespaces(&self) -> Result<Vec<NameSpace>> {
         let mut page = 1;
         let mut namespaces = Vec::new();

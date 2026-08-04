@@ -132,6 +132,7 @@ fn main() {
         database::test,
         database::connect,
         database::close,
+        database::info,
         database::sql_select,
         database::sql_query,
         database::sql_execute,

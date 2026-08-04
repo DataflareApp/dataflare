@@ -1,5 +1,7 @@
-use crate::utils::FirstCell;
-use crate::{ChunkInsert, Database, LOCALHOST, MsSqlAuthConfig, MsSqlConfig, Result, Value};
+use crate::utils::RowsExt;
+use crate::{
+    ChunkInsert, ConnectionInfo, Database, LOCALHOST, MsSqlAuthConfig, MsSqlConfig, Result, Value,
+};
 use query::{Query, QueryColumn};
 use std::sync::Arc;
 use std::time::Instant;
@@ -14,6 +16,9 @@ use tokio_util::compat::{Compat, TokioAsyncWriteCompatExt};
 #[derive(Debug, Clone)]
 pub struct MsSqlConnection {
     conn: Arc<Mutex<Connection>>,
+    // For connection info
+    host: String,
+    port: u16,
 }
 
 // TODO:
@@ -33,9 +38,15 @@ impl MsSqlConnection {
     }
 
     pub(crate) async fn connect(config: MsSqlConfig) -> Result<Database> {
+        let host = config.host.clone().unwrap_or_else(|| LOCALHOST.into());
+        let port = config.port.unwrap_or(1433);
+
         let conn = Connection::connect(Self::make_config(config)).await?;
+
         Ok(Database::MsSql(Self {
             conn: Arc::new(Mutex::new(conn)),
+            host,
+            port,
         }))
     }
 
@@ -56,6 +67,34 @@ impl MsSqlConnection {
         options.encryption(EncryptionLevel::On);
         options.trust_cert();
         (options, config.initial)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut conn = self.conn.lock().await;
+        let [user, database, version, edition, product_level, collation] = conn
+            .query(
+                r#"
+                    SELECT
+                        COALESCE(CONVERT(nvarchar(128), SUSER_SNAME()), ''),
+                        COALESCE(CONVERT(nvarchar(128), DB_NAME()), ''),
+                        COALESCE(CONVERT(nvarchar(128), SERVERPROPERTY('ProductVersion')), ''),
+                        COALESCE(CONVERT(nvarchar(128), SERVERPROPERTY('Edition')), ''),
+                        COALESCE(CONVERT(nvarchar(128), SERVERPROPERTY('ProductLevel')), ''),
+                        COALESCE(CONVERT(nvarchar(128), DATABASEPROPERTYEX(DB_NAME(), 'Collation')), '')
+                "#,
+            )
+            .await?
+            .rows
+            .first_row_strings::<6>()?;
+        let mut info = ConnectionInfo::new("Microsoft SQL Server");
+        info.push_server("tcp", &self.host, self.port);
+        info.push_text("User", user);
+        info.push_text("Database", database);
+        info.push_text("Edition", edition);
+        info.push_text("Product Level", product_level);
+        info.push_text("Collation", collation);
+        info.push_text("SQL Server", version);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

@@ -3,7 +3,7 @@ use crate::{
     Cursor, GenericValue, Key, Keys, KvDatabase, KvDatabaseError, KvInput, KvOutput, NameSpace,
     RedisData, Result, async_trait,
 };
-use connection_config::RedisConfig;
+use connection_config::{ConnectionInfo, RedisConfig};
 use proxy::{Proxy, ProxyConfig, ProxyHandler};
 use redis_rs::aio::ConnectionManagerConfig;
 use redis_rs::io::tcp::TcpSettings;
@@ -21,6 +21,10 @@ use std::time::Duration;
 pub struct Redis {
     conn: ConnectionManager,
     _proxy_handler: Option<Arc<ProxyHandler>>,
+
+    // for connection info
+    host: String,
+    port: u16,
 }
 
 impl Debug for Redis {
@@ -33,6 +37,9 @@ impl Debug for Redis {
 
 impl Redis {
     pub async fn new(config: RedisConfig) -> Result<Self> {
+        let target_host = config.host.clone().unwrap_or_else(|| "localhost".into());
+        let target_port = config.port.unwrap_or(6379);
+
         let (host, port, proxy_handler) = Self::make_proxy(
             (config.host, "localhost"),
             (config.port, 6379),
@@ -109,6 +116,9 @@ impl Redis {
         Ok(Self {
             conn,
             _proxy_handler: proxy_handler.map(Arc::new),
+
+            host: target_host,
+            port: target_port,
         })
     }
 
@@ -143,6 +153,36 @@ impl Redis {
 
 #[async_trait]
 impl KvDatabase for Redis {
+    async fn info(&self) -> Result<ConnectionInfo> {
+        let mut info = ConnectionInfo::new("Redis");
+        info.push_server("RESP3", &self.host, self.port);
+
+        let mut conn = self.conn.clone();
+        let username = cmd("ACL")
+            .arg("WHOAMI")
+            .query_async::<String>(&mut conn)
+            .await
+            .unwrap_or_else(|_| "Unknown".into());
+        info.push_text("User", username);
+
+        let value = cmd("INFO").query_async::<String>(&mut conn).await?;
+        let values = value
+            .lines()
+            .filter_map(|line| line.split_once(':'))
+            .collect::<std::collections::HashMap<_, _>>();
+        for (name, key) in [
+            ("Mode", "redis_mode"),
+            ("Role", "role"),
+            ("Memory Usage", "used_memory_human"),
+            ("Version", "redis_version"),
+        ] {
+            if let Some(value) = values.get(key) {
+                info.push_text(name, value);
+            }
+        }
+        Ok(info)
+    }
+
     async fn namespaces(&self) -> Result<Vec<NameSpace>> {
         let mut conn = self.conn.clone();
         let items = cmd("CONFIG")

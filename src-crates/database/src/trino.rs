@@ -1,5 +1,5 @@
-use crate::utils::{FirstCell, empty_if, unordered_tasks};
-use crate::{ChunkInsert, Database, LOCALHOST, Result, TrinoConfig, Value};
+use crate::utils::{RowsExt, empty_if, unordered_tasks};
+use crate::{ChunkInsert, ConnectionInfo, Database, LOCALHOST, Result, TrinoConfig, Value};
 use connection_config::{ConnectProtocol, TrinoAuth};
 use futures_util::FutureExt;
 use query::Query;
@@ -13,6 +13,45 @@ pub struct TrinoConnection {
 }
 
 impl TrinoConnection {
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut conn = self.conn.lock().await;
+        let [user, catalog, schema, timezone, connector, version, nodes] = conn
+            .query(
+                r#"
+                    SELECT
+                        current_user,
+                        COALESCE(current_catalog, ''),
+                        COALESCE(current_schema, ''),
+                        current_timezone(),
+                        COALESCE((
+                            SELECT connector_name
+                            FROM system.metadata.catalogs
+                            WHERE catalog_name = current_catalog
+                        ), ''),
+                        version(),
+                        CAST((SELECT count(*) FROM system.runtime.nodes) AS VARCHAR)
+                "#,
+            )
+            .await?
+            .rows
+            .first_row_strings::<7>()?;
+        let url = conn.url();
+        let mut info = ConnectionInfo::new("Trino");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
+        info.push_text("User", user);
+        info.push_text("Catalog", catalog);
+        info.push_text("Schema", schema);
+        info.push_text("Connector", connector);
+        info.push_text("Timezone", timezone);
+        info.push_text("Nodes", nodes);
+        info.push_text("Version", version);
+        Ok(info)
+    }
+
     pub(crate) async fn test(config: TrinoConfig) -> Result<Option<String>> {
         let mut conn = Self::make_conn(config).await?;
         conn.query("SELECT concat('Trino version: ', version())")

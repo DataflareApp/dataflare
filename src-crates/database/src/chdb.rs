@@ -1,5 +1,5 @@
-use crate::utils::FirstCell;
-use crate::{ChDbConfig, ChunkInsert, Database, Result, Value};
+use crate::utils::RowsExt;
+use crate::{ChDbConfig, ChunkInsert, ConnectionInfo, Database, Result, Value};
 use chdb::Connection;
 use query::Query;
 use std::sync::Arc;
@@ -25,6 +25,20 @@ impl ChDbConnection {
             .rows
             .first_cell_string()
             .map(Some)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let [database, version] = self
+            .conn
+            .query("SELECT currentDatabase(), version();")?
+            .rows
+            .first_row_strings::<2>()?;
+        let mut info = ConnectionInfo::new("chDB");
+        let path = self.conn.path();
+        info.push_db_path(path);
+        info.push_text("Version", version);
+        info.push_text("Database", database);
+        Ok(info)
     }
 
     pub(crate) async fn connect(config: ChDbConfig) -> Result<Database> {

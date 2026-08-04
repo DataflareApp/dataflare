@@ -1,5 +1,5 @@
-use crate::utils::unordered_tasks;
-use crate::{BigQueryConfig, ChunkInsert, Database, Result, Value};
+use crate::utils::{RowsExt, unordered_tasks};
+use crate::{BigQueryConfig, ChunkInsert, ConnectionInfo, Database, Result, Value};
 use bigquery::Connection;
 use connection_config::BigQueryAuth;
 use futures_util::FutureExt;
@@ -28,6 +28,19 @@ impl BigQueryConnection {
         };
         let conn = Connection::new(key, config.project_id, config.dataset).await?;
         Ok(conn)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let session_user = self
+            .select("SELECT SESSION_USER();".into())
+            .await?
+            .first_cell_string()?;
+        let mut info = ConnectionInfo::new("BigQuery");
+        info.push_text("Project ID", self.conn.project_id());
+        info.push_text("Dataset", self.conn.default_dataset().unwrap_or_default());
+        info.push_text("User", session_user);
+        info.push_url("Console", self.conn.console_url());
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

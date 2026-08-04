@@ -12,7 +12,7 @@ use aws_sdk_s3::{
     primitives::ByteStream,
 };
 use aws_types::SdkConfig;
-use connection_config::S3Config;
+use connection_config::{ConnectionInfo, S3Config};
 use std::collections::{BTreeMap, HashMap};
 use tokio::fs::File;
 use tokio::io::{BufReader, BufWriter};
@@ -111,6 +111,12 @@ impl S3 {
 
 #[async_trait]
 impl KvDatabase for S3 {
+    async fn info(&self) -> Result<ConnectionInfo> {
+        let mut info = ConnectionInfo::new("S3");
+        info.push_text("Default Bucket", &self.default_bucket);
+        Ok(info)
+    }
+
     async fn namespaces(&self) -> Result<Vec<NameSpace>> {
         if self.list_all_buckets {
             let mut namespaces = self.list_buckets().await?;

@@ -1,12 +1,14 @@
 import { invoke } from '@tauri-apps/api/core'
 import { DatabaseConfig } from './config'
 import { decodeTask } from './fbon'
+import { ConnectionInfo } from './info'
 import { Keys, NameSpace, KvInput, KvOutput, Cursor, Key, GenericValue, CommandOutput } from './kv'
 import { Query, Rows, Value, BatchInsertOptions } from './sql'
 
 export * from './config'
 export * from './kv'
 export * from './sql'
+export * from './info'
 
 export const Database = {
     test(config: DatabaseConfig): Promise<string | null> {
@@ -21,6 +23,9 @@ export const Database = {
     },
     close(): Promise<void> {
         return invoke('close', {})
+    },
+    info(): Promise<ConnectionInfo> {
+        return invoke('info', {})
     },
     sql: {
         select<R = Value[]>(sql: string): Promise<Rows<R>> {

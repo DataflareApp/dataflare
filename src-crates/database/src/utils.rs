@@ -4,13 +4,15 @@ use futures_util::stream::{FuturesUnordered, StreamExt};
 use query::Value;
 use std::io::Error as IoError;
 
-pub(crate) trait FirstCell {
+pub(crate) trait RowsExt {
     // Get the value of the first cell from the query result
     // Used to get the database version when testing a database connection
     fn first_cell_string(&mut self) -> Result<String>;
+    fn first_cell_string_optional(&mut self) -> Result<Option<String>>;
+    fn first_row_strings<const N: usize>(&mut self) -> Result<[String; N]>;
 }
 
-impl FirstCell for Vec<Vec<Value>> {
+impl RowsExt for Vec<Vec<Value>> {
     fn first_cell_string(&mut self) -> Result<String> {
         if !self.is_empty() && !self[0].is_empty() {
             if let Value::String(s) = self.remove(0).remove(0) {
@@ -20,6 +22,36 @@ impl FirstCell for Vec<Vec<Value>> {
         Err(Error::Io(IoError::other(
             "Received no result of type 'String'",
         )))
+    }
+
+    fn first_cell_string_optional(&mut self) -> Result<Option<String>> {
+        if self.is_empty() || self[0].is_empty() {
+            return Ok(None);
+        }
+        match self.remove(0).remove(0) {
+            Value::String(value) => Ok(Some(value)),
+            Value::Null => Ok(None),
+            _ => Err(Error::Io(IoError::other("Received a non-string value"))),
+        }
+    }
+
+    fn first_row_strings<const N: usize>(&mut self) -> Result<[String; N]> {
+        if !self.is_empty() {
+            let values = self
+                .remove(0)
+                .into_iter()
+                .map(|value| match value {
+                    Value::String(value) => Ok(value),
+                    _ => Err(Error::Io(IoError::other("Received a non-string value"))),
+                })
+                .collect::<Result<Vec<_>>>()?;
+            if let Ok(values) = values.try_into() {
+                return Ok(values);
+            }
+        }
+        Err(Error::Io(IoError::other(format!(
+            "Received no row with {N} string values"
+        ))))
     }
 }
 
@@ -69,5 +101,11 @@ mod tests {
         })
         .await;
         assert_eq!(rst, Err(1));
+    }
+
+    #[test]
+    fn first_cell_string_optional_accepts_null() {
+        let mut rows = vec![vec![Value::Null]];
+        assert_eq!(rows.first_cell_string_optional().unwrap(), None);
     }
 }
