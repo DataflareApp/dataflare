@@ -35,6 +35,7 @@ export const Main = () => {
     const connection = useConnection()
     const closeTab = useTabsStore((state) => state.closeTab)
     const switchTabTo = useTabsStore((state) => state.switchTabTo)
+    const toggleTab = useTabsStore((state) => state.toggleTab)
     const activeTab = useTabsStore((state) => state.activeTab)
     const resetTabs = useTabsStore((state) => state.resetTabs)
     const { chatPanelOpened, toggleChatPanel } = useChatPanel()
@@ -99,10 +100,7 @@ export const Main = () => {
                     <IconSearch size={16} strokeWidth={1.5} />
                 </IconButton>
                 {!isKv && (
-                    <IconButton
-                        title={dashboardTitle}
-                        onClick={() => switchTabTo({ type: TabType.Dashboard })}
-                    >
+                    <IconButton title={dashboardTitle} onClick={() => toggleTab({ type: TabType.Dashboard })}>
                         <IconLayoutDashboard size={16} strokeWidth={1.5} />
                     </IconButton>
                 )}

@@ -191,6 +191,7 @@ export const useTabsStore = create<{
     resetTabs: () => void
     tabExist: (tab: TabData) => boolean
     switchTabTo: (tab: TabData | TabNavigate | number) => void
+    toggleTab: (tab: TabData) => void
     replaceTab: (tab: Replace | Replace[]) => void
     closeTab: (tab: TabData | TabData[]) => void
     closeOtherTabs: (tab: TabData) => void
@@ -259,6 +260,14 @@ export const useTabsStore = create<{
             }
             // Already exists, switch to it directly
             store.setActiveTab(tab)
+        },
+        toggleTab: (tab) => {
+            const store = get()
+            if (tabEqual(tab, store.activeTab)) {
+                store.closeTab(tab)
+                return
+            }
+            store.switchTabTo(tab)
         },
         replaceTab: (tab) => {
             const store = get()
