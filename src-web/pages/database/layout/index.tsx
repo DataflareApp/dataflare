@@ -1,4 +1,10 @@
-import { IconLayoutDashboard, IconMessage, IconMessageFilled, IconSearch } from '@tabler/icons-react'
+import {
+    IconLayoutDashboard,
+    IconMessage,
+    IconMessageFilled,
+    IconPlugConnected,
+    IconSearch
+} from '@tabler/icons-react'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { memo, useMemo } from 'react'
 import { useShortcutMeta, useShortcutMetaNumber } from '../../../hooks/use-shortcut'
@@ -82,6 +88,7 @@ export const Main = () => {
     useShortcutMetaNumber(switchTabTo)
 
     const quickSearchTitle = keyboardTitleChars(t('quickSearch'), [KeyModifier.Meta, 'P'])
+    const manageConnectionTitle = keyboardTitleChars(t('manageConnection'), [KeyModifier.Meta, 'N'])
     const chatTitle = keyboardTitleChars(t('aiAssistant'), [KeyModifier.Shift, KeyModifier.Meta, 'I'])
     const dashboardTitle = keyboardTitleChars(t('dashboard'), [KeyModifier.Shift, KeyModifier.Meta, 'D'])
 
@@ -99,6 +106,9 @@ export const Main = () => {
                         <IconLayoutDashboard size={16} strokeWidth={1.5} />
                     </IconButton>
                 )}
+                <IconButton title={manageConnectionTitle} onClick={showConnectionsWindow}>
+                    <IconPlugConnected size={16} strokeWidth={1.5} />
+                </IconButton>
                 <IconButton title={chatTitle} onClick={() => toggleChatPanel()}>
                     {chatPanelOpened ? (
                         <IconMessageFilled size={16} strokeWidth={1.5} />

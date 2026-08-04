@@ -111,6 +111,10 @@ impl Connection {
         }
     }
 
+    pub fn url(&self) -> &Url {
+        &self.query_url
+    }
+
     fn insert_header(headers: &mut HeaderMap, key: &'static str, value: String) -> Result<()> {
         let v = HeaderValue::from_str(&value).map_err(|_| Error::InvalidHeaderValue(value))?;
         headers.insert(key, v);

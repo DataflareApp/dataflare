@@ -1,5 +1,5 @@
-use crate::utils::FirstCell;
-use crate::{ChunkInsert, Database, PGliteConfig, Result, Value};
+use crate::utils::RowsExt;
+use crate::{ChunkInsert, ConnectionInfo, Database, PGliteConfig, Result, Value};
 use pglite::Connection;
 use query::Query;
 use std::sync::Arc;
@@ -31,6 +31,19 @@ impl PGliteConnection {
         Ok(Database::PGlite(Self {
             conn: Arc::new(Self::conn(config).await?),
         }))
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let version = self
+            .conn
+            .query("SELECT version();")?
+            .rows
+            .first_cell_string()?;
+        let mut info = ConnectionInfo::new("PGlite");
+        info.push_db_path(self.conn.path());
+        info.push_text("Runtime", "WASI");
+        info.push_text("Version", version);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

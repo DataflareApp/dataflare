@@ -1,5 +1,7 @@
 use crate::ipc::to_response;
-use database::{BatchInsertOptions, ChunkInsert, ConnectionConfig, Database, SingleInsert};
+use database::{
+    BatchInsertOptions, ChunkInsert, ConnectionConfig, ConnectionInfo, Database, SingleInsert,
+};
 use kvdb::{CommandOutput, Cursor, GenericValue, Key, Keys, KvInput, KvOutput, NameSpace};
 use secret_resolve::ResolveSecrets;
 use serde::{Serialize, Serializer};
@@ -60,6 +62,12 @@ pub async fn connect(
 pub async fn close(store: State<'_, ConnectionStore>, window: Window) -> Result<()> {
     store.close(window.label()).await;
     Ok(())
+}
+
+#[command]
+pub async fn info(store: State<'_, ConnectionStore>, window: Window) -> Result<ConnectionInfo> {
+    let database = store.db(window.label()).await?;
+    Ok(database.info().await?)
 }
 
 #[command]

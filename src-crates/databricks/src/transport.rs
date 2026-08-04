@@ -37,6 +37,10 @@ impl ThriftHttpTransport {
         })
     }
 
+    pub(crate) fn endpoint_url(&self) -> &str {
+        &self.endpoint_url
+    }
+
     /// Send a Thrift RPC call over HTTP.
     ///
     /// Frames the request as:

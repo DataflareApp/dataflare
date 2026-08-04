@@ -7,7 +7,7 @@ pub use crate::command::CommandOutput;
 pub(crate) use async_trait::async_trait;
 use aws_sdk_s3::primitives::ByteStream;
 pub use cloudflare_kv::*;
-use connection_config::{CloudflareKvConfig, RedisConfig, S3Config};
+use connection_config::{CloudflareKvConfig, ConnectionInfo, RedisConfig, S3Config};
 pub use redis::*;
 pub use s3::*;
 use serde::{Deserialize, Serialize};
@@ -55,6 +55,8 @@ pub enum KvDatabaseError {
 
 #[async_trait]
 pub trait KvDatabase: Sync + Send + Debug {
+    async fn info(&self) -> Result<ConnectionInfo>;
+
     async fn namespaces(&self) -> Result<Vec<NameSpace>> {
         Ok(vec![NameSpace {
             id: "Keys".to_string(),

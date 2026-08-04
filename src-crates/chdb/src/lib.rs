@@ -30,6 +30,7 @@ const CHDB_SHA256: &str = ""; // Unsupported platform
 pub struct Connection {
     conn: Mutex<*mut c_void>,
     dylib: Dylib,
+    path: String,
 }
 
 unsafe impl Send for Connection {}
@@ -69,6 +70,7 @@ impl Connection {
         let conn = Self {
             conn: Mutex::new(conn),
             dylib,
+            path: path.to_string(),
         };
         {
             // TODO: Migrate the database field to the dynamic library in the future.
@@ -79,6 +81,10 @@ impl Connection {
             }
         }
         Ok(conn)
+    }
+
+    pub fn path(&self) -> &str {
+        &self.path
     }
 
     fn close(&self) -> Result<(), Error> {

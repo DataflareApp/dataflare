@@ -1,5 +1,8 @@
-use crate::utils::{FirstCell, empty_if, unordered_tasks};
-use crate::{ChunkInsert, ClickHouseConfig, ConnectProtocol, Database, LOCALHOST, Result, Value};
+use crate::utils::{RowsExt, empty_if, unordered_tasks};
+use crate::{
+    ChunkInsert, ClickHouseConfig, ConnectProtocol, ConnectionInfo, Database, LOCALHOST, Result,
+    Value,
+};
 use clickhouse::{Config, Connection};
 use futures_util::FutureExt;
 use query::Query;
@@ -52,6 +55,32 @@ impl ClickHouseConnection {
             database,
             proxy: config.proxy,
         }
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut conn = self.conn.lock().await;
+        let [database, engine, version, timezone, uptime, user] = conn
+            .query(
+                "SELECT currentDatabase(), (SELECT engine FROM system.databases WHERE name = currentDatabase()), version(), timezone(), formatReadableTimeDelta(uptime()), currentUser();"
+                    .into(),
+            )
+            .await?
+            .rows
+            .first_row_strings::<6>()?;
+        let url = conn.url();
+        let mut info = ConnectionInfo::new("ClickHouse");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
+        info.push_text("User", user);
+        info.push_text("Database", database);
+        info.push_text("Engine", engine);
+        info.push_text("Timezone", timezone);
+        info.push_text("Uptime", uptime);
+        info.push_text("Version", version);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

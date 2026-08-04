@@ -1,5 +1,5 @@
-use crate::utils::FirstCell;
-use crate::{ChunkInsert, Database, EchoLiteConfig, LOCALHOST, Result};
+use crate::utils::RowsExt;
+use crate::{ChunkInsert, ConnectionInfo, Database, EchoLiteConfig, LOCALHOST, Result};
 use echolite::{
     Connection, Error as EchoError, Flags, ProtocolError, SQLITE_OPEN_CREATE, SQLITE_OPEN_READONLY,
     SQLITE_OPEN_READWRITE, Value as EchoValue,
@@ -77,6 +77,27 @@ impl EchoLiteConnection {
             conn.execute(sql).await?;
         }
         Ok(conn)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let [path, version] = self
+            .select(
+                "SELECT file, sqlite_version() FROM pragma_database_list WHERE name = 'main';"
+                    .into(),
+            )
+            .await?
+            .first_row_strings::<2>()?;
+        let mut info = ConnectionInfo::new("EchoLite");
+        info.push_server(
+            "tcp",
+            self.config.host.as_deref().unwrap_or(LOCALHOST),
+            self.config.port.unwrap_or(4567),
+        );
+        info.push_db_path(path);
+        // todo: Add EchoLite version
+        // info.push_text("EchoLite", "");
+        info.push_text("SQLite", version);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

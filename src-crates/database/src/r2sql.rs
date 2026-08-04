@@ -1,4 +1,4 @@
-use crate::{ChunkInsert, Database, R2SqlConfig, Result, Value};
+use crate::{ChunkInsert, ConnectionInfo, Database, R2SqlConfig, Result, Value};
 use query::Query;
 use r2sql::{Connection, Error};
 
@@ -17,6 +17,20 @@ impl R2SqlConnection {
     pub(crate) async fn connect(config: R2SqlConfig) -> Result<Database> {
         let conn = Connection::new(config.account_id, config.bucket_name, config.api_token)?;
         Ok(Database::R2Sql(Self { conn }))
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let url = self.conn.api_url();
+        let mut info = ConnectionInfo::new("R2 SQL");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
+        info.push_text("Account ID", self.conn.account_id());
+        info.push_text("Bucket", self.conn.bucket_name());
+        info.push_url("Dashboard", self.conn.dashboard_url());
+        Ok(info)
     }
 
     pub(crate) async fn query(&self, sql: String) -> Result<Query> {

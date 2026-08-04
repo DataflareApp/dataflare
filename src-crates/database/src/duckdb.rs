@@ -1,5 +1,5 @@
-use crate::utils::FirstCell;
-use crate::{ChunkInsert, Database, DuckDbConfig, Error, Result, Value};
+use crate::utils::RowsExt;
+use crate::{ChunkInsert, ConnectionInfo, Database, DuckDbConfig, Error, Result, Value};
 use duckdb::Connection;
 use dylib::driver::Error as DuckDbError;
 use query::Query;
@@ -32,6 +32,25 @@ impl DuckDbConnection {
         Ok(Database::DuckDb(Self {
             conn: Arc::new(Self::conn(config).await?),
         }))
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let [path, database, schema, version, database_size, memory_usage, memory_limit] = self
+            .conn
+            .query(
+                "SELECT coalesce(databases.path, ''), current_database(), current_schema(), version(), sizes.database_size, sizes.memory_usage, sizes.memory_limit FROM duckdb_databases() AS databases JOIN pragma_database_size() AS sizes USING (database_name) WHERE database_name = current_database();",
+            )?
+            .rows
+            .first_row_strings::<7>()?;
+        let mut info = ConnectionInfo::new("DuckDB");
+        info.push_db_path(path);
+        info.push_text("Version", version);
+        info.push_text("Database", database);
+        info.push_text("Schema", schema);
+        info.push_text("Database Size", database_size);
+        info.push_text("Memory Usage", memory_usage);
+        info.push_text("Memory Limit", memory_limit);
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

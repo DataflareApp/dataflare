@@ -36,14 +36,13 @@ use kvdb::{
 use mssql::MsSqlConnection;
 use mysql::MySqlConnection;
 use pglite::PGliteConnection;
-use postgres::{COCKROACH_DEFAULT_PORT, POSTGRES_DEFAULT_PORT, PostgresConnection};
+use postgres::PostgresConnection;
 use presto::PrestoConnection;
 use query::{Query, Value};
 use r2sql::R2SqlConnection;
 use rqlite::RqliteConnection;
 use sqlcipher::SqlCipherConnection;
 use sqlite::SqliteConnection;
-use std::fmt::Debug;
 use std::sync::Arc;
 use trino::TrinoConnection;
 use turso::TursoConnection;
@@ -87,12 +86,12 @@ impl Database {
         match config {
             ConnectionConfig::SQLite(config) => SqliteConnection::test(config).await,
             ConnectionConfig::SQLCipher(config) => SqlCipherConnection::test(config).await,
-            ConnectionConfig::PostgreSQL(config) => PostgresConnection::test_postgres(config, POSTGRES_DEFAULT_PORT).await,
+            ConnectionConfig::PostgreSQL(config) => PostgresConnection::test_postgres(config).await,
             ConnectionConfig::PGlite(config) => PGliteConnection::test(config).await,
-            ConnectionConfig::CockroachDB(config) => PostgresConnection::test_postgres(config, COCKROACH_DEFAULT_PORT).await,
+            ConnectionConfig::CockroachDB(config) => PostgresConnection::test_cockroachdb(config).await,
             ConnectionConfig::QuestDB(config) => PostgresConnection::test_questdb(config).await,
             ConnectionConfig::MySQL(config) => MySqlConnection::test(config).await,
-            ConnectionConfig::MariaDB(config) => MySqlConnection::test(config).await,
+            ConnectionConfig::MariaDB(config) => MySqlConnection::test_mariadb(config).await,
             ConnectionConfig::ManticoreSearch(config) => {
                 MySqlConnection::test_manticore_search(config).await
             }
@@ -131,12 +130,12 @@ impl Database {
         match config {
             ConnectionConfig::SQLite(config) => SqliteConnection::connect(config).await,
             ConnectionConfig::SQLCipher(config) => SqlCipherConnection::connect(config).await,
-            ConnectionConfig::PostgreSQL(config) => PostgresConnection::connect_postgres(config, POSTGRES_DEFAULT_PORT).await,
+            ConnectionConfig::PostgreSQL(config) => PostgresConnection::connect_postgres(config).await,
             ConnectionConfig::PGlite(config) => PGliteConnection::connect(config).await,
-            ConnectionConfig::CockroachDB(config) => PostgresConnection::connect_postgres(config, COCKROACH_DEFAULT_PORT).await,
+            ConnectionConfig::CockroachDB(config) => PostgresConnection::connect_cockroachdb(config).await,
             ConnectionConfig::QuestDB(config) => PostgresConnection::connect_questdb(config).await,
             ConnectionConfig::MySQL(config) => MySqlConnection::connect(config).await,
-            ConnectionConfig::MariaDB(config) => MySqlConnection::connect(config).await,
+            ConnectionConfig::MariaDB(config) => MySqlConnection::connect_mariadb(config).await,
             ConnectionConfig::ManticoreSearch(config) => {
                 MySqlConnection::connect_manticore_search(config).await
             }
@@ -167,6 +166,32 @@ impl Database {
                 let db = KvDatabaseConfig::S3(config).connect().await?;
                 Ok(Self::Kv(Arc::new(db)))
             }
+        }
+    }
+
+    pub async fn info(&self) -> Result<ConnectionInfo> {
+        match &self {
+            Self::Sqlite(db) => db.info().await,
+            Self::SqlCipher(db) => db.info().await,
+            Self::Postgres(db) => db.info().await,
+            Self::PGlite(db) => db.info().await,
+            Self::MySql(db) => db.info().await,
+            Self::MsSql(db) => db.info().await,
+            Self::ClickHouse(db) => db.info().await,
+            Self::ChDb(db) => db.info().await,
+            Self::Databend(db) => db.info().await,
+            Self::BigQuery(db) => db.info().await,
+            Self::Trino(db) => db.info().await,
+            Self::Presto(db) => db.info().await,
+            Self::Databricks(db) => db.info().await,
+            Self::Turso(db) => db.info().await,
+            Self::Rqlite(db) => db.info().await,
+            Self::EchoLite(db) => db.info().await,
+            Self::D1(db) => db.info().await,
+            Self::WorkersAnalyticsEngine(db) => db.info().await,
+            Self::R2Sql(db) => db.info().await,
+            Self::DuckDb(db) => db.info().await,
+            Self::Kv(db) => db.info().await.map_err(Into::into),
         }
     }
 

@@ -29,6 +29,7 @@ const PGLITE_SHA256: &str = "0a6494abce03ee5fd0dc9c1c1a43be82cff72339c148eccb0d7
 pub struct Connection {
     conn: Mutex<*mut c_void>,
     dylib: Dylib,
+    path: String,
 }
 
 unsafe impl Send for Connection {}
@@ -65,7 +66,12 @@ impl Connection {
         Ok(Self {
             conn: Mutex::new(conn),
             dylib,
+            path: path.to_string(),
         })
+    }
+
+    pub fn path(&self) -> &str {
+        &self.path
     }
 
     fn check_path(path: &str) -> Result<()> {

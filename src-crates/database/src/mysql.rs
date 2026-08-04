@@ -1,7 +1,7 @@
-use crate::utils::FirstCell;
+use crate::utils::RowsExt;
 use crate::{
-    ChunkInsert, Database, Error, LOCALHOST, ManticoreSearchConfig, MySqlConfig, MySqlTlsMode,
-    Result,
+    ChunkInsert, ConnectionInfo, Database, Error, LOCALHOST, ManticoreSearchConfig, MySqlConfig,
+    MySqlTlsMode, Result,
 };
 use mysql::{ClientIdentity, Compression, Connection, Flavor, OptsBuilder, PathOrBuf, SslOpts};
 use proxy::{Proxy, ProxyConfig, ProxyHandler};
@@ -14,11 +14,23 @@ use tokio::sync::Mutex;
 pub struct MySqlConnection {
     conn: Arc<Mutex<Connection>>,
     _proxy_handler: Option<Arc<ProxyHandler>>,
+
+    // For connection info
+    host: String,
+    port: u16,
 }
 
 impl MySqlConnection {
     pub(crate) async fn test(config: MySqlConfig) -> Result<Option<String>> {
-        let conn = Self::make_conn(config, Flavor::MySql).await?;
+        Self::test_with_flavor(config, Flavor::MySql).await
+    }
+
+    pub(crate) async fn test_mariadb(config: MySqlConfig) -> Result<Option<String>> {
+        Self::test_with_flavor(config, Flavor::MariaDb).await
+    }
+
+    async fn test_with_flavor(config: MySqlConfig, flavor: Flavor) -> Result<Option<String>> {
+        let conn = Self::make_conn(config, flavor).await?;
         let version = conn
             .select("SELECT CONCAT('v', VERSION(), ' ', @@version_comment);".into())
             .await?
@@ -41,18 +53,29 @@ impl MySqlConnection {
     }
 
     async fn make_conn(config: MySqlConfig, flavor: Flavor) -> Result<Self> {
+        let host = config.host.clone().unwrap_or_else(|| LOCALHOST.into());
+        let port = config.port.unwrap_or(3306);
+
         let (options, proxy_handler) = Self::make_options(config).await?;
         let conn = Self {
             conn: Arc::new(Mutex::new(
                 Connection::connect(options.into(), flavor).await?,
             )),
             _proxy_handler: proxy_handler.map(Arc::new),
+
+            host,
+            port,
         };
         Ok(conn)
     }
 
     pub(crate) async fn connect(config: MySqlConfig) -> Result<Database> {
         let conn = Self::make_conn(config, Flavor::MySql).await?;
+        Ok(Database::MySql(conn))
+    }
+
+    pub(crate) async fn connect_mariadb(config: MySqlConfig) -> Result<Database> {
+        let conn = Self::make_conn(config, Flavor::MariaDb).await?;
         Ok(Database::MySql(conn))
     }
 
@@ -153,6 +176,41 @@ impl MySqlConnection {
             .compression(Compression::fast());
 
         Ok((opts, proxy_handler))
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let mut conn = self.conn.lock().await;
+        let name = match conn.flavor {
+            Flavor::MySql => "MySQL",
+            Flavor::MariaDb => "MariaDB",
+            Flavor::ManticoreSearch => "Manticore Search",
+        };
+        let mut info = ConnectionInfo::new(name);
+        info.push_server("tcp", &self.host, self.port);
+        match conn.flavor {
+            Flavor::MySql | Flavor::MariaDb => {
+                let [user, database, timezone, version] = conn
+                    .query(r#"SELECT CURRENT_USER(), COALESCE(DATABASE(), ''), @@session.time_zone, VERSION()"#)
+                    .await?
+                    .rows
+                    .first_row_strings::<4>()?;
+                info.push_text("User", user);
+                if !database.is_empty() {
+                    info.push_text("Database", database);
+                }
+                info.push_text("Timezone", timezone);
+                info.push_text("Version", version);
+            }
+            Flavor::ManticoreSearch => {
+                let version = conn
+                    .query("SELECT VERSION()")
+                    .await?
+                    .rows
+                    .first_cell_string()?;
+                info.push_text("Version", version);
+            }
+        }
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

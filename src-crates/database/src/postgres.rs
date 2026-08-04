@@ -1,6 +1,7 @@
-use crate::utils::FirstCell;
+use crate::utils::RowsExt;
 use crate::{
-    ChunkInsert, Database, Error, LOCALHOST, PostgresConfig, QuestDbConfig, Result, Value,
+    ChunkInsert, ConnectionInfo, Database, Error, LOCALHOST, PostgresConfig, QuestDbConfig, Result,
+    Value,
 };
 use bytes::Bytes;
 use pgsq::{
@@ -12,54 +13,75 @@ use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::Mutex;
 
-pub(crate) const POSTGRES_DEFAULT_PORT: u16 = 5432;
-pub(crate) const COCKROACH_DEFAULT_PORT: u16 = 26257;
+const POSTGRES_DEFAULT_PORT: u16 = 5432;
+const COCKROACH_DEFAULT_PORT: u16 = 26257;
+const QUESTDB_DEFAULT_PORT: u16 = 8812;
+
+#[derive(Debug, Clone, Copy)]
+pub enum Flavor {
+    PostgreSql,
+    CockroachDb,
+    QuestDb,
+}
 
 #[derive(Debug, Clone)]
 pub struct PostgresConnection {
     conn: Arc<Mutex<Connection>>,
+    flavor: Flavor,
 }
 
 impl PostgresConnection {
-    pub(crate) async fn test_postgres(
-        config: PostgresConfig,
-        default_port: u16,
-    ) -> Result<Option<String>> {
-        let config = Self::make_postgres_config(config, default_port)?;
-        Self::test(config).await
+    pub(crate) async fn test_postgres(config: PostgresConfig) -> Result<Option<String>> {
+        let config = Self::make_postgres_config(config, POSTGRES_DEFAULT_PORT)?;
+        Self::test(config, Flavor::PostgreSql).await
+    }
+
+    pub(crate) async fn test_cockroachdb(config: PostgresConfig) -> Result<Option<String>> {
+        let config = Self::make_postgres_config(config, COCKROACH_DEFAULT_PORT)?;
+        Self::test(config, Flavor::CockroachDb).await
     }
 
     pub(crate) async fn test_questdb(config: QuestDbConfig) -> Result<Option<String>> {
         let config = Self::make_questdb_config(config)?;
-        Self::test(config).await
+        Self::test(config, Flavor::QuestDb).await
     }
 
-    async fn test(config: Config) -> Result<Option<String>> {
+    async fn test(config: Config, flavor: Flavor) -> Result<Option<String>> {
         let conn = Self {
             conn: Arc::new(Mutex::new(Connection::connect(config).await?)),
+            flavor,
+        };
+        let sql = match flavor {
+            Flavor::QuestDb => "SELECT build();",
+            Flavor::PostgreSql | Flavor::CockroachDb => "SELECT version();",
         };
         let version = conn
-            .select("SELECT version();".into())
+            .select(sql.into())
             .await?
             .first_cell_string()
             .map(Some)?;
         Ok(version)
     }
 
-    pub(crate) async fn connect_postgres(
-        config: PostgresConfig,
-        default_port: u16,
-    ) -> Result<Database> {
-        let config = Self::make_postgres_config(config, default_port)?;
-        Ok(Database::Postgres(Self {
-            conn: Arc::new(Mutex::new(Connection::connect(config).await?)),
-        }))
+    pub(crate) async fn connect_postgres(config: PostgresConfig) -> Result<Database> {
+        let config = Self::make_postgres_config(config, POSTGRES_DEFAULT_PORT)?;
+        Self::connect(config, Flavor::PostgreSql).await
+    }
+
+    pub(crate) async fn connect_cockroachdb(config: PostgresConfig) -> Result<Database> {
+        let config = Self::make_postgres_config(config, COCKROACH_DEFAULT_PORT)?;
+        Self::connect(config, Flavor::CockroachDb).await
     }
 
     pub(crate) async fn connect_questdb(config: QuestDbConfig) -> Result<Database> {
         let config = Self::make_questdb_config(config)?;
+        Self::connect(config, Flavor::QuestDb).await
+    }
+
+    async fn connect(config: Config, flavor: Flavor) -> Result<Database> {
         Ok(Database::Postgres(Self {
             conn: Arc::new(Mutex::new(Connection::connect(config).await?)),
+            flavor,
         }))
     }
 
@@ -90,7 +112,7 @@ impl PostgresConnection {
             username: config.user,
             password: Some(config.password),
             host: config.host.unwrap_or(LOCALHOST.into()),
-            port: config.port.unwrap_or(8812),
+            port: config.port.unwrap_or(QUESTDB_DEFAULT_PORT),
             database: "".into(),
             application_name: Some("Dataflare".into()),
             tls_mode: config.tls.mode.into(),
@@ -104,6 +126,62 @@ impl PostgresConnection {
             pc.tls_root_cert = Some(load_root_cert(&ca)?);
         }
         Ok(pc)
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let name = match self.flavor {
+            Flavor::PostgreSql => "PostgreSQL",
+            Flavor::CockroachDb => "CockroachDB",
+            Flavor::QuestDb => "QuestDB",
+        };
+        let mut info = ConnectionInfo::new(name);
+        {
+            let conn = self.conn.lock().await;
+            info.push_server("wire", &conn.config.host, conn.config.port);
+        }
+        match self.flavor {
+            Flavor::PostgreSql => {
+                let [user, database, schema, timezone, version, tls] = self
+                    .select(
+                        r#"SELECT current_user, current_database(), COALESCE(current_schema(), ''), current_setting('TimeZone'), version(), COALESCE((SELECT version || ', ' || cipher || ' (' || bits::text || ' bits)' FROM pg_stat_ssl WHERE pid = pg_backend_pid()), 'None')"#.into(),
+                    )
+                    .await?
+                    .first_row_strings::<6>()?;
+                info.push_text("User", user);
+                info.push_text("Database", database);
+                info.push_text("Schema", schema);
+                info.push_text("Timezone", timezone);
+                info.push_text("TLS", tls);
+                info.push_text("Version", version);
+            }
+            Flavor::CockroachDb => {
+                let [user, database, schema, timezone, version] = self
+                    .select(
+                        r#"SELECT current_user, current_database(), COALESCE(current_schema(), ''), current_setting('TimeZone'), version()"#.into(),
+                    )
+                    .await?
+                    .first_row_strings::<5>()?;
+                info.push_text("User", user);
+                info.push_text("Database", database);
+                info.push_text("Schema", schema);
+                info.push_text("Timezone", timezone);
+                info.push_text("Version", version);
+            }
+            Flavor::QuestDb => {
+                let [user, version] = self
+                    .select("SELECT current_user(), build();".into())
+                    .await?
+                    .first_row_strings::<2>()?;
+                let timezone = self
+                    .select("SHOW TIME ZONE;".into())
+                    .await?
+                    .first_cell_string()?;
+                info.push_text("User", user);
+                info.push_text("Timezone", timezone);
+                info.push_text("Version", version);
+            }
+        }
+        Ok(info)
     }
 
     pub(crate) async fn select(&self, sql: String) -> Result<Vec<Vec<Value>>> {

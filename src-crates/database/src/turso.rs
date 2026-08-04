@@ -1,5 +1,7 @@
-use crate::utils::{FirstCell, unordered_tasks};
-use crate::{ChunkInsert, Database, Result, TursoConfig, TursoDatabaseConfig, Value};
+use crate::utils::{RowsExt, unordered_tasks};
+use crate::{
+    ChunkInsert, ConnectionInfo, Database, Result, TursoConfig, TursoDatabaseConfig, Value,
+};
 use connection_config::TursoEncryptionConfig;
 use futures_util::FutureExt;
 use libsql_local::Connection as LibSql;
@@ -74,6 +76,52 @@ impl TursoConnection {
             TursoDatabaseConfig::Remote { url, token } => {
                 let client = Remote::new(url, token)?;
                 Ok(Self::Remote(client))
+            }
+        }
+    }
+
+    pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        match self {
+            Self::LibSql(conn) => {
+                let [path, sqlite_version] = conn
+                    .query(
+                        "SELECT file, sqlite_version() FROM pragma_database_list WHERE name = 'main';",
+                    )?
+                    .rows
+                    .first_row_strings::<2>()?;
+                let mut info = ConnectionInfo::new("libSQL");
+                info.push_db_path(path);
+                info.push_text("SQLite", sqlite_version);
+                Ok(info)
+            }
+            Self::Turso(conn) => {
+                let [path, turso_version] = conn
+                    .query(
+                        "SELECT file, turso_version() FROM pragma_database_list WHERE name = 'main';",
+                    )?
+                    .rows
+                    .first_row_strings::<2>()?;
+                let mut info = ConnectionInfo::new("Turso");
+                info.push_db_path(path);
+                info.push_text("Turso", turso_version);
+                let cipher = conn
+                    .query("PRAGMA cipher;")?
+                    .rows
+                    .first_cell_string_optional()?
+                    .unwrap_or_else(|| "None".into());
+                info.push_text("Cipher", cipher);
+                Ok(info)
+            }
+            Self::Remote(client) => {
+                let mut info = ConnectionInfo::new("Turso Remote");
+                let url = client.pipeline_url();
+                info.push_server(
+                    url.scheme(),
+                    url.host_str().unwrap_or_default(),
+                    url.port_or_known_default().unwrap_or_default(),
+                );
+                // TODO: version, cipher and more
+                Ok(info)
             }
         }
     }

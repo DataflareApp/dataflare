@@ -27,6 +27,7 @@ pub struct Connection {
 #[derive(Debug, Clone, Copy)]
 pub enum Flavor {
     MySql,
+    MariaDb,
     ManticoreSearch,
 }
 
@@ -41,7 +42,7 @@ impl Connection {
 
     fn trim_sql<'a>(&self, sql: &'a str) -> &'a str {
         match self.flavor {
-            Flavor::MySql => sql,
+            Flavor::MySql | Flavor::MariaDb => sql,
             // Trim trailing semicolons
             // ManticoreSearch does not allow semicolons (;) at the end of certain syntaxes.
             // eg:
