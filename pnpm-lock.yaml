@@ -84,8 +84,8 @@ importers:
         specifier: ^2.10.1
         version: 2.10.1
       '@wyhaya/fuzzy-search':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.2.0
+        version: 0.2.0
       '@xyflow/react':
         specifier: 12.6.0
         version: 12.6.0(@types/react@18.3.20)(immer@11.1.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1155,8 +1155,8 @@ packages:
       babel-plugin-react-compiler:
         optional: true
 
-  '@wyhaya/fuzzy-search@0.1.0':
-    resolution: {integrity: sha512-RkRZn5xhSHo9Wt3uu2qNp/saKhEbgzbtjjdB+iVwvf150pgZRUQz3Z8kVnJ7HW0a8DsNbFtZZE8XqyzK48dn6g==}
+  '@wyhaya/fuzzy-search@0.2.0':
+    resolution: {integrity: sha512-Gw1rHjKtXEYiGxcyz+89A8478u+iV7QONXgr0HeKY4E+hu7CXDQXjrfO/0sV4oyyyvm8PP+Mxqk+63Uh6LPTyw==}
 
   '@xyflow/react@12.6.0':
     resolution: {integrity: sha512-YzsSK4SlpC6e9Ki1g6O9B1UH7xvz/bzWF+tJ+vWDD8Am5xJmFn0jYnCEuqvzvH8dRKb1NFBmyuqEGqWN39xXsA==}
@@ -3225,7 +3225,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.0-rc.7
       vite: 8.0.9(@types/node@24.5.2)(jiti@1.21.7)(yaml@2.7.1)
 
-  '@wyhaya/fuzzy-search@0.1.0': {}
+  '@wyhaya/fuzzy-search@0.2.0': {}
 
   '@xyflow/react@12.6.0(@types/react@18.3.20)(immer@11.1.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:

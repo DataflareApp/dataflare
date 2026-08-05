@@ -33,7 +33,7 @@
         "@tauri-apps/plugin-opener": "^2.5.4",
         "@tauri-apps/plugin-process": "^2.3.1",
         "@tauri-apps/plugin-updater": "^2.10.1",
-        "@wyhaya/fuzzy-search": "^0.1.0",
+        "@wyhaya/fuzzy-search": "^0.2.0",
         "@xyflow/react": "12.6.0",
         "ai": "^6.0.168",
         "clsx": "^2.1.1",
