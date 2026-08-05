@@ -1,3 +1,19 @@
+## v3.1.8
+
+**Published:** `2026-08-05T00:00:00Z`
+
+**Changes**
+
+- Add a connection information panel for supported databases
+- Display database size in SQLite connection information
+- Support toggling the dashboard from the title bar
+- Move the manage connection button to the TitleBar
+- Fix percent decoding for connection URL usernames, passwords, and paths
+- Fix empty AI provider base URL validation
+- Upgrade `recharts` to v3.10.1
+- Upgrade `russh` to v0.62.5
+- Upgrade SQL parser and formatter dependencies
+
 ## v3.1.7
 
 **Published:** `2026-07-31T09:00:00Z`
