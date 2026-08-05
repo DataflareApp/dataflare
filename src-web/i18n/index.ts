@@ -23,6 +23,10 @@ export const LANGUAGE_OPTIONS = [
     {
         name: '日本語',
         value: Language.ja
+    },
+    {
+        name: 'ไทย',
+        value: Language.th
     }
 ]
 
@@ -58,6 +62,10 @@ const Storage = {
                 case 'ja':
                 case 'ja-jp': {
                     return Language.ja
+                }
+                case 'th':
+                case 'th-th': {
+                    return Language.th
                 }
             }
         }
