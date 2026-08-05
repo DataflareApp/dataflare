@@ -9,9 +9,14 @@ pub struct WorkersAnalyticsEngineConnection {
 
 impl WorkersAnalyticsEngineConnection {
     pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
+        let url = self.conn.api_url();
         let mut info = ConnectionInfo::new("Workers Analytics Engine");
+        info.push_server(
+            url.scheme(),
+            url.host_str().unwrap_or_default(),
+            url.port_or_known_default().unwrap_or_default(),
+        );
         info.push_text("Account ID", self.conn.account_id());
-        info.push_text("API URL", self.conn.api_url());
         info.push_url("Dashboard", self.conn.dashboard_url());
         Ok(info)
     }
