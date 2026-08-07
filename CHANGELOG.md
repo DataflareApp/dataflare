@@ -1,3 +1,13 @@
+## v3.1.9
+
+**Published:** `2026-08-07T12:00:00Z`
+
+**Changes**
+
+- Add `Thai` language support
+- Fix leading spaces in fuzzy search
+- Upgrade `Turso` to v0.8.0-pre.3
+
 ## v3.1.8
 
 **Published:** `2026-08-05T00:00:00Z`
