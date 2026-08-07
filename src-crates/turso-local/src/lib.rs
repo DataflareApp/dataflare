@@ -11,19 +11,19 @@ use std::{ffi::c_void, sync::Mutex, time::Instant};
 // Do not update manually
 // Use `node ./src-dylib/driver-update.mjs` update the sha256 values.
 
-const TURSO_DRIVER_VERSION: &str = "20260731";
+const TURSO_DRIVER_VERSION: &str = "20260807";
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-const TURSO_SHA256: &str = "854c7b40c3cb0940ab7e5a1b0cbe0846775e6adca9a90e1fb76870831a653670";
+const TURSO_SHA256: &str = "6d5a0f0bb69c197194cbd6424e35adeddab38aa740a7c6e5330536b8ea3976fb";
 #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
-const TURSO_SHA256: &str = "142dbc4664dcd7c5e8fd66821702880a5d98f431de1a3f0a3841c0c7dbe639ba";
+const TURSO_SHA256: &str = "c9b93bb317754f0d069abb565519a428f2d185eff9f2bbbb29d26b077a1c7594";
 #[cfg(all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"))]
-const TURSO_SHA256: &str = "85c87d27717241cf24ff0bfbcd351d24012d2e9f2286430749658f34966904ad";
+const TURSO_SHA256: &str = "c677312e3d2e29f86b48245a0fbc3cb5badde16b64c262b44a2105577b12a91b";
 #[cfg(all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"))]
-const TURSO_SHA256: &str = "a90e08a2038def59838ec3101cea7b25a6448fcc70cbf92c7d7ca6aaa637f3ef";
+const TURSO_SHA256: &str = "8ce57c698a0221e9e8a42e6d53ad355c998be21b7a3e37d77cec726ccadbd3c7";
 #[cfg(all(target_os = "windows", target_arch = "aarch64", target_env = "msvc"))]
-const TURSO_SHA256: &str = "ac1f8f1b84fe7aabe7c6f1bdb46ba144e92b91486e85a44e59d6a2e8ad31a56d";
+const TURSO_SHA256: &str = "0c77d867559012b2e61f2bcca863285dd2b41048bc22f81cf7391fcf8383ac1e";
 #[cfg(all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"))]
-const TURSO_SHA256: &str = "9d2b35d23b1ba739d9cfbb850cf60e17c8aff3a900ab399defe50b2550e31de2";
+const TURSO_SHA256: &str = "aa126e6fe0a33f4837c28753020c006271ef017a5c419e43b246c0603ef8ca9e";
 
 #[derive(Debug)]
 pub struct Connection {
