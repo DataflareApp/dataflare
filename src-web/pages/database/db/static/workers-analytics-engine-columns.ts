@@ -1,6 +1,6 @@
 // Workers Analytics Engine columns are fixed
 // From: https://developers.cloudflare.com/analytics/analytics-engine/sql-api/#table-structure
-// Date: 2026-01-10
+// Date: 2026-08-08
 export default [
     { name: 'dataset', type: 'string' },
     { name: 'timestamp', type: 'DateTime' },

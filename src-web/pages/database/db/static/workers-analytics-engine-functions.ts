@@ -1,5 +1,5 @@
 // From: https://developers.cloudflare.com/analytics/analytics-engine/sql-reference/
-// Date: 2026-01-10
+// Date: 2026-08-08
 export default [
     // Aggregate functions
     'count',
@@ -35,6 +35,7 @@ export default [
     // Date and Time functions
     'formatDateTime',
     'now',
+    'today',
     'toDateTime',
     'toYear',
     'toMonth',
@@ -71,8 +72,10 @@ export default [
     'empty',
     'lower',
     'lowerUTF8',
+    'toLower',
     'upper',
     'upperUTF8',
+    'toUpper',
     'startsWith',
     'endsWith',
     'position',

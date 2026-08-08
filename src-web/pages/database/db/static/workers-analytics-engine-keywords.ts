@@ -2,7 +2,7 @@
 // These are compiled by AI from the official Statements and Operators documentation pages
 // https://developers.cloudflare.com/analytics/analytics-engine/sql-reference/statements/
 // https://developers.cloudflare.com/analytics/analytics-engine/sql-reference/operators/
-// Date: 2026-01-10
+// Date: 2026-08-08
 export default [
     'SHOW',
     'TABLES',
@@ -23,12 +23,26 @@ export default [
     'AS',
     'ASC',
     'DESC',
+    'DISTINCT',
     'OR',
     'IN',
     'AND',
     'NOT',
     'NOT IN',
     'HAVING',
+    'BETWEEN',
+    'NOT BETWEEN',
     'LIKE',
-    'NOT LIKE'
+    'NOT LIKE',
+    'ILIKE',
+    'NOT ILIKE',
+    'TRUE',
+    'FALSE',
+    'INTERVAL',
+    'YEAR',
+    'MONTH',
+    'DAY',
+    'HOUR',
+    'MINUTE',
+    'SECOND'
 ]
