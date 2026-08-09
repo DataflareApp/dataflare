@@ -1,8 +1,9 @@
+
 # Dataflare
 
 Dataflare is a simple, easy-to-use database manager. It is easy to connect to your databases, manage Table, view Data, write SQL and run Query.
 
-![Dataflare](https://github.com/user-attachments/assets/78385d49-d686-4e21-87a2-2998c9f58cea)
+![Dataflare](https://github.com/user-attachments/assets/0212fd7a-ed4d-4d3d-b4be-311cb18f1ae0)
 
 ## Features
 
