@@ -37,7 +37,7 @@ export const ConnectionInfo = () => {
 const ConnectionInfoContent = () => {
     const { t } = useTranslation()
     const connectID = useConnectID()
-    const key = [connectID, 'connection-info'] as const
+    const key = connectID === null ? null : ([connectID, 'connection-info'] as const)
     const { data, error, isLoading, isValidating, mutate } = useSWR(key, Database.info)
 
     return (
