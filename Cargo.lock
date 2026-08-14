@@ -245,7 +245,7 @@ dependencies = [
  "objc2-foundation 0.3.1",
  "parking_lot 0.12.3",
  "percent-encoding",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
  "wl-clipboard-rs",
  "x11rb",
 ]
@@ -1736,7 +1736,7 @@ dependencies = [
 [[package]]
 name = "client"
 version = "0.0.0"
-source = "git+https://github.com/DataflareApp/echolite.git?tag=v0.2.4#79774078560dc65fc1a33ce906282920c7ccce50"
+source = "git+https://github.com/DataflareApp/echolite.git?tag=v0.2.5#d61c293dcee621f318862cf68f789b46fdf30bfc"
 dependencies = [
  "protocol",
  "thiserror 2.0.18",
@@ -3073,7 +3073,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "976dd42dc7e85965fe702eb8164f21f450704bdde31faefd6471dba214cb594e"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6843,7 +6843,7 @@ dependencies = [
 [[package]]
 name = "protocol"
 version = "0.0.0"
-source = "git+https://github.com/DataflareApp/echolite.git?tag=v0.2.4#79774078560dc65fc1a33ce906282920c7ccce50"
+source = "git+https://github.com/DataflareApp/echolite.git?tag=v0.2.5#d61c293dcee621f318862cf68f789b46fdf30bfc"
 dependencies = [
  "argon2 0.5.3",
  "rand 0.10.1",
@@ -7755,7 +7755,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -8757,7 +8757,7 @@ dependencies = [
  "cfg-if",
  "libc",
  "psm",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -9421,7 +9421,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.2",
+ "getrandom 0.3.2",
  "once_cell",
  "rustix 1.1.4",
  "windows-sys 0.61.2",

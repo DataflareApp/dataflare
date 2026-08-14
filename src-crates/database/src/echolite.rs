@@ -1,8 +1,8 @@
 use crate::utils::{RowsExt, format_bytes};
 use crate::{ChunkInsert, ConnectionInfo, Database, EchoLiteConfig, LOCALHOST, Result};
 use echolite::{
-    Connection, Error as EchoError, Flags, ProtocolError, SQLITE_OPEN_CREATE, SQLITE_OPEN_READONLY,
-    SQLITE_OPEN_READWRITE, Value as EchoValue,
+    Connection, DEFAULT_SERVER_PORT, Error as EchoError, Flags, ProtocolError, SQLITE_OPEN_CREATE,
+    SQLITE_OPEN_READONLY, SQLITE_OPEN_READWRITE, Value as EchoValue,
 };
 use proxy::{ProxyConfig, SshStream};
 use query::{Query, QueryColumn, Value};
@@ -40,13 +40,18 @@ impl EchoLiteConnection {
     pub(crate) async fn test(config: EchoLiteConfig) -> Result<Option<String>> {
         let mut conn = Self::make_connection(&config).await?;
         conn.query("SELECT * FROM sqlite_master LIMIT 0;").await?;
-        let query = conn
-            .query("SELECT concat('SQLite version: ', sqlite_version());")
-            .await?;
+
+        let echolite_version = conn.version();
+        let query = conn.query("SELECT sqlite_version();").await?;
+
         conn.disconnect().await?;
-        convert_to_rows(query.values, query.columns.len())?
-            .first_cell_string()
-            .map(Some)
+
+        let sqlite_version =
+            convert_to_rows(query.values, query.columns.len())?.first_cell_string()?;
+
+        Ok(Some(format!(
+            "EchoLite version: {echolite_version}\nSQLite version: {sqlite_version}"
+        )))
     }
 
     pub(crate) async fn connect(config: EchoLiteConfig) -> Result<Database> {
@@ -64,7 +69,7 @@ impl EchoLiteConnection {
             .as_ref()
             .cloned()
             .unwrap_or_else(|| LOCALHOST.into());
-        let port = config.port.unwrap_or(4567);
+        let port = config.port.unwrap_or(DEFAULT_SERVER_PORT);
         let mut flags = Flags::default();
         if config.readonly {
             flags.set(SQLITE_OPEN_READWRITE, false);
@@ -90,12 +95,11 @@ impl EchoLiteConnection {
         info.push_server(
             "tcp",
             self.config.host.as_deref().unwrap_or(LOCALHOST),
-            self.config.port.unwrap_or(4567),
+            self.config.port.unwrap_or(DEFAULT_SERVER_PORT),
         );
         info.push_db_path(path);
         info.push_text("Size", format_bytes(database_size)?);
-        // todo: Add EchoLite version
-        // info.push_text("EchoLite", "");
+        info.push_text("EchoLite", self.conn.lock().await.version());
         info.push_text("SQLite", version);
         Ok(info)
     }
