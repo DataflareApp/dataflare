@@ -233,22 +233,9 @@ impl Stream {
             let stream = proxy.connect_stream(host, port).await?;
             return Ok(Stream::Ssh(stream));
         }
-        let stream = TcpStream::connect(Self::addr(host, port)).await?;
+        let stream = TcpStream::connect(endpoint::join(host, port)).await?;
         stream.set_nodelay(true)?;
         Ok(Stream::Tcp(stream))
-    }
-
-    fn addr(host: &str, port: u16) -> String {
-        // IPv6
-        if host.contains(':') {
-            if host.starts_with('[') {
-                return format!("{}:{}", host, port);
-            } else {
-                return format!("[{}]:{}", host, port);
-            }
-        }
-        // IPv4 or Domain
-        format!("{}:{}", host, port)
     }
 }
 

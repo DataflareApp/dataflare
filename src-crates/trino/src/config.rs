@@ -28,18 +28,8 @@ impl Config {
     }
 
     pub(crate) fn query_url(&self) -> Result<Url> {
-        let host = convert_host(&self.host);
-        let url = format!("{}://{}:{}/v1/statement", self.protocol(), host, self.port).parse()?;
+        let endpoint = endpoint::join_with_scheme(self.protocol(), &self.host, self.port);
+        let url = format!("{endpoint}/v1/statement").parse()?;
         Ok(url)
     }
-}
-
-fn convert_host(host: &str) -> String {
-    if host.starts_with('[') {
-        return host.into();
-    }
-    if host.contains(':') {
-        return format!("[{}]", host);
-    }
-    host.into()
 }

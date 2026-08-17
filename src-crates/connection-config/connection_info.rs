@@ -66,7 +66,7 @@ impl ConnectionInfo {
     }
 
     pub fn push_server(&mut self, protocol: impl ToString, server: impl ToString, port: u16) {
-        let server = encode_server(&server.to_string(), port);
+        let server = endpoint::join(server.to_string(), port);
         self.items.push(ConnectionInfoItem {
             name: "Server".into(),
             value: ConnectionInfoValue::Server {
@@ -75,15 +75,4 @@ impl ConnectionInfo {
             },
         });
     }
-}
-
-fn encode_server(host: &str, port: u16) -> String {
-    if host.contains(':') {
-        if host.starts_with('[') {
-            return format!("{host}:{port}");
-        } else {
-            return format!("[{host}]:{port}");
-        }
-    }
-    format!("{host}:{port}")
 }

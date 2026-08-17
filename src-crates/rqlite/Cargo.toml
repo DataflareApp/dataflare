@@ -14,3 +14,4 @@ url = { workspace = true }
 reqwest = { path = "../reqwest" }
 query = { path = "../query" }
 proxy = { path = "../proxy" }
+endpoint = { path = "../endpoint" }

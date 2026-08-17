@@ -1,0 +1,6 @@
+[package]
+name = "endpoint"
+edition.workspace = true
+
+[lib]
+path = "endpoint.rs"

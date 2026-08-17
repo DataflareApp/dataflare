@@ -39,6 +39,7 @@ bytes = "1.6"
 humansize = "2.1.3"
 kvdb = { path = "../kvdb" }
 connection-config = { path = "../connection-config" }
+endpoint = { path = "../endpoint" }
 
 # MSSQL
 # Compared to the original repository, the changes: https://github.com/DataflareApp/tiberius/commit/9cfc142f1c501c08d59e6c0b0ad62a2712cfc173

@@ -19,24 +19,13 @@ impl Config {
     }
 
     pub(crate) fn url(&self) -> Result<Url> {
-        let host = convert_host(&self.host);
-        let url = format!("{}://{}:{}", self.protocol(), host, self.port).parse()?;
+        let url = endpoint::join_with_scheme(self.protocol(), &self.host, self.port).parse()?;
         Ok(url)
     }
 
     pub(crate) fn query_url(&self) -> Result<Url> {
-        let host = convert_host(&self.host);
-        let url = format!("{}://{}:{}/v1/query", self.protocol(), host, self.port).parse()?;
+        let endpoint = endpoint::join_with_scheme(self.protocol(), &self.host, self.port);
+        let url = format!("{endpoint}/v1/query").parse()?;
         Ok(url)
     }
-}
-
-fn convert_host(host: &str) -> String {
-    if host.starts_with('[') {
-        return host.into();
-    }
-    if host.contains(':') {
-        return format!("[{}]", host);
-    }
-    host.into()
 }

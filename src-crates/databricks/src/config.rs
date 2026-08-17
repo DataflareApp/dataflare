@@ -33,17 +33,7 @@ impl Config {
     /// Build the full HTTPS/HTTP URL for the Thrift endpoint.
     pub fn endpoint_url(&self) -> String {
         let scheme = if self.https { "https" } else { "http" };
-        let host = convert_host(&self.host);
-        format!("{}://{}:{}{}", scheme, host, self.port, self.http_path)
+        let endpoint = endpoint::join_with_scheme(scheme, &self.host, self.port);
+        format!("{endpoint}{}", self.http_path)
     }
-}
-
-fn convert_host(host: &str) -> String {
-    if host.starts_with('[') {
-        return host.into();
-    }
-    if host.contains(':') {
-        return format!("[{}]", host);
-    }
-    host.into()
 }

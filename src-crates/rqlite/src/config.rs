@@ -38,7 +38,7 @@ impl Config {
             Protocol::Https => "https",
             Protocol::Http => "http",
         };
-        let basic = format!("{}://{}:{}", protocol, convert_host(&self.host), self.port);
+        let basic = endpoint::join_with_scheme(protocol, &self.host, self.port);
         let mut select = Url::parse(&format!("{basic}/db/query?blob_array"))?;
         let mut execute = Url::parse(&format!("{basic}/db/execute"))?;
         let mut transaction = Url::parse(&format!("{basic}/db/execute?transaction"))?;
@@ -64,14 +64,4 @@ impl Config {
             status,
         })
     }
-}
-
-fn convert_host(host: &str) -> String {
-    if host.starts_with('[') {
-        return host.into();
-    }
-    if host.contains(':') {
-        return format!("[{}]", host);
-    }
-    host.into()
 }

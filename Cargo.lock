@@ -1722,6 +1722,7 @@ dependencies = [
 name = "clickhouse"
 version = "0.0.0"
 dependencies = [
+ "endpoint",
  "proxy",
  "query",
  "reqwest 0.0.0",
@@ -1841,6 +1842,7 @@ dependencies = [
 name = "connection-config"
 version = "0.0.0"
 dependencies = [
+ "endpoint",
  "pgsq",
  "proxy",
  "secret-resolve",
@@ -2405,6 +2407,7 @@ dependencies = [
  "databricks",
  "duckdb",
  "dylib",
+ "endpoint",
  "futures-util",
  "humansize",
  "kvdb",
@@ -2436,6 +2439,7 @@ dependencies = [
 name = "databend"
 version = "0.0.0"
 dependencies = [
+ "endpoint",
  "hex",
  "proxy",
  "query",
@@ -2451,6 +2455,7 @@ dependencies = [
 name = "databricks"
 version = "0.0.0"
 dependencies = [
+ "endpoint",
  "proxy",
  "reqwest 0.0.0",
  "thiserror 2.0.18",
@@ -3003,6 +3008,10 @@ name = "endi"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a3d8a32ae18130a3c84dd492d4215c3d913c3b07c6b63c2eb3eb7ff1101ab7bf"
+
+[[package]]
+name = "endpoint"
+version = "0.0.0"
 
 [[package]]
 name = "enum_dispatch"
@@ -6280,6 +6289,7 @@ version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
  "bytes",
+ "endpoint",
  "hex",
  "hmac 0.12.1",
  "md-5",
@@ -6688,6 +6698,7 @@ name = "presto"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "endpoint",
  "proxy",
  "query",
  "reqwest 0.0.0",
@@ -7552,6 +7563,7 @@ dependencies = [
 name = "rqlite"
 version = "0.0.0"
 dependencies = [
+ "endpoint",
  "proxy",
  "query",
  "reqwest 0.0.0",
@@ -10021,6 +10033,7 @@ name = "trino"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "endpoint",
  "proxy",
  "query",
  "reqwest 0.0.0",

@@ -68,9 +68,8 @@ impl Connection {
             proxy,
         }: Config,
     ) -> Result<Self> {
-        let schema = if https { "https" } else { "http" };
-        let host = convert_host(&host);
-        let url = format!("{schema}://{host}:{port}").parse::<Url>()?;
+        let scheme = if https { "https" } else { "http" };
+        let url = endpoint::join_with_scheme(scheme, &host, port).parse::<Url>()?;
         let mut headers = HeaderMap::new();
         headers.insert("X-ClickHouse-User", HeaderValue::from_str(&user)?);
         headers.insert("X-ClickHouse-Key", HeaderValue::from_str(&password)?);
@@ -170,16 +169,6 @@ impl Connection {
         let t = val.to_str().unwrap_or_default().to_string();
         Err(Error::InvalidContentType(t))
     }
-}
-
-fn convert_host(host: &str) -> String {
-    if host.starts_with('[') {
-        return host.into();
-    }
-    if host.contains(':') {
-        return format!("[{}]", host);
-    }
-    host.into()
 }
 
 fn normalize_database(database: String) -> Option<String> {

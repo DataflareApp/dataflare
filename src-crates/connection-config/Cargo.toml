@@ -11,3 +11,4 @@ strum = { workspace = true }
 pgsq = { path = "../pgsq" }
 proxy = { path = "../proxy" }
 secret-resolve = { path = "../secret-resolve" }
+endpoint = { path = "../endpoint" }

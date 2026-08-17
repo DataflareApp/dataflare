@@ -11,3 +11,4 @@ tokio = { workspace = true }
 thiserror = { workspace = true }
 reqwest = { path = "../reqwest" }
 proxy = { path = "../proxy" }
+endpoint = { path = "../endpoint" }
