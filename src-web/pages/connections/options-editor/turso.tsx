@@ -76,7 +76,7 @@ export const TursoConnection = ({ data, onChange }: ConnectionEditorOptions<Turs
 
     const security = (
         <Readonly
-            secure={database.type === TursoDatabaseType.LibSQL}
+            secure={database.type !== TursoDatabaseType.Remote}
             readonly={readonly}
             onChange={(val) => setOpt('readonly', val)}
         />
