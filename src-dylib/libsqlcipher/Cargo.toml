@@ -14,4 +14,4 @@ codegen-units = 1
 strip = "symbols"
 
 [dependencies]
-rusqlite = { version = "0.40.0", features = ["column_decltype", "bundled-sqlcipher-vendored-openssl"] }
+rusqlite = { version = "0.40.2", features = ["column_decltype", "bundled-sqlcipher-vendored-openssl"] }
