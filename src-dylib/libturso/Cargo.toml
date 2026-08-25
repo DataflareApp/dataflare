@@ -14,4 +14,5 @@ codegen-units = 1
 strip = "symbols"
 
 [dependencies]
-turso_sdk_kit = { version = "0.8.0-pre.3", features = ["fts"] }
+turso_core = { version = "0.8.0-pre.7", default-features = false }
+turso_sdk_kit = { version = "0.8.0-pre.7", features = ["fts"] }

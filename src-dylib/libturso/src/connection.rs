@@ -1,5 +1,6 @@
 use crate::{Query, QueryColumn, QueryValue};
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
+use turso_core::OpenFlags;
 use turso_sdk_kit::IoBackend;
 use turso_sdk_kit::rsapi::{
     EncryptionOpts, Numeric, TursoConnection, TursoDatabase, TursoDatabaseConfig, TursoError,
@@ -8,16 +9,20 @@ use turso_sdk_kit::rsapi::{
 
 #[derive(Clone)]
 pub struct Connection {
-    inner: Arc<TursoConnection>,
+    inner: TursoConnection,
 }
 
 impl Connection {
-    // TODO: Support readonly: bool
     pub fn connect(
         path: impl AsRef<str>,
+        readonly: bool,
         encryption: Option<EncryptionOpts>,
     ) -> Result<Self, TursoError> {
         let features = "encryption,attach,custom_types,autovacuum,index_method,views,generated_columns,vacuum,without_rowid,mvcc_passive_checkpoint";
+        let mut open_flags = OpenFlags::default();
+        if readonly {
+            open_flags |= OpenFlags::ReadOnly;
+        }
         let config = TursoDatabaseConfig {
             path: path.as_ref().into(),
             experimental_features: Some(features.into()),
@@ -26,13 +31,15 @@ impl Connection {
             vfs: IoBackend::Default,
             io: None,
             db_file: None,
+            page_codec: None,
+            open_flags,
         };
         let db = TursoDatabase::new(config);
         let _ = db.open()?;
-        let conn = db.connect()?;
-        conn.set_load_extension_enabled(true);
-        conn.set_busy_timeout(Duration::from_secs(10));
-        Ok(Self { inner: conn })
+        let inner = db.connect()?.as_ref().clone();
+        inner.set_load_extension_enabled(true);
+        inner.set_busy_timeout(Duration::from_secs(20));
+        Ok(Self { inner })
     }
 
     pub fn close(&self) -> Result<(), TursoError> {
@@ -176,7 +183,7 @@ mod tests {
             .join(format!("test_close_{}.db", std::process::id()))
             .display()
             .to_string();
-        let conn = Connection::connect(&path, None).unwrap();
+        let conn = Connection::connect(&path, false, None).unwrap();
 
         conn.query(r#"CREATE TABLE "test" ("id" uuid NOT NULL, PRIMARY KEY ("id"))"#)
             .unwrap();
@@ -192,7 +199,7 @@ mod tests {
         };
         assert!(wal_empty);
 
-        let conn = Connection::connect(&path, None).unwrap();
+        let conn = Connection::connect(&path, false, None).unwrap();
         let query = conn.query("SELECT count(*) FROM test").unwrap();
         match &query.rows[0][0] {
             QueryValue::I64(value) => assert_eq!(*value, 1),
@@ -207,7 +214,7 @@ mod tests {
 
     #[test]
     fn test_fts() {
-        let conn = Connection::connect(":memory:", None).unwrap();
+        let conn = Connection::connect(":memory:", false, None).unwrap();
         conn.execute_batch(
             "create table docs (id integer primary key, title text, body text);\
              create index docs_fts on docs using fts (title, body);\

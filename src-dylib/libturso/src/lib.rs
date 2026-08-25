@@ -80,6 +80,7 @@ pub union Data {
 #[repr(C)]
 struct ConnectOptions {
     pub path: StringRef,
+    pub readonly: bool,
     pub encryption: *const EncryptionOptions,
 }
 
@@ -116,7 +117,8 @@ extern "C" fn df_connect(options: ConnectOptions, error: *mut ErrorMessage) -> *
                 hexkey: hexkey.to_string(),
             });
         }
-        let conn = Connection::connect(options.path(), encryption).string_err()?;
+        let conn =
+            Connection::connect(options.path(), options.readonly, encryption).string_err()?;
         Ok(Box::into_raw(Box::new(conn)))
     };
     call()
@@ -266,6 +268,7 @@ mod tests {
     fn options(path: &str) -> ConnectOptions {
         ConnectOptions {
             path: StringRef::new(path),
+            readonly: false,
             encryption: null_mut(),
         }
     }
@@ -273,7 +276,16 @@ mod tests {
     fn options_encrypted<'a>(path: &str, encryption: &'a EncryptionOptions) -> ConnectOptions {
         ConnectOptions {
             path: StringRef::new(path),
+            readonly: false,
             encryption: encryption as *const EncryptionOptions,
+        }
+    }
+
+    fn options_readonly(path: &str) -> ConnectOptions {
+        ConnectOptions {
+            path: StringRef::new(path),
+            readonly: true,
+            encryption: null_mut(),
         }
     }
 
@@ -311,6 +323,53 @@ mod tests {
     fn test_close() {
         let conn = conn();
         df_close(conn);
+    }
+
+    #[test]
+    fn test_readonly() {
+        let path = std::env::temp_dir()
+            .join(format!("test_readonly_{}.db", std::process::id()))
+            .display()
+            .to_string();
+        let mut error = ErrorMessage::null();
+        let conn = df_connect(options(&path), &mut error);
+        assert!(!conn.is_null());
+        assert!(error.is_null());
+        df_execute(
+            conn,
+            StringRef::new("CREATE TABLE test (value TEXT)"),
+            &mut error,
+        );
+        assert!(error.is_null());
+        df_execute(
+            conn,
+            StringRef::new("INSERT INTO test VALUES ('stored')"),
+            &mut error,
+        );
+        assert!(error.is_null());
+        df_close(conn);
+
+        let conn = df_connect(options_readonly(&path), &mut error);
+        assert!(!conn.is_null());
+        assert!(error.is_null());
+        let query = df_query(conn, StringRef::new("SELECT value FROM test"), &mut error);
+        assert!(error.is_null());
+        let value = df_query_value(query, 0, 0);
+        assert_eq!(unsafe { value.value.string.as_str() }, "stored");
+        df_free_query(query);
+
+        df_execute(
+            conn,
+            StringRef::new("INSERT INTO test VALUES ('rejected')"),
+            &mut error,
+        );
+        assert!(!error.is_null());
+        df_free_error(error);
+        df_close(conn);
+
+        let _ = std::fs::remove_file(&path);
+        let _ = std::fs::remove_file(format!("{path}-wal"));
+        let _ = std::fs::remove_file(format!("{path}-shm"));
     }
 
     #[test]
@@ -484,10 +543,7 @@ mod tests {
         let mut error = ErrorMessage::null();
         let conn = df_connect(options_encrypted(":memory:", &encryption), &mut error);
         assert!(conn.is_null());
-        assert_eq!(
-            error.as_str(),
-            "Invalid argument supplied: Unknown cipher name: error-cipher"
-        );
+        assert_eq!(error.as_str(), "Unknown cipher name: error-cipher");
     }
 
     #[test]
