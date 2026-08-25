@@ -152,7 +152,7 @@ fn terminal_string(val: Value) -> String {
         Value::U64(v) => v.to_string(),
         Value::F64(v) => v.to_string(),
         Value::String(v) => v,
-        Value::Bytes(v) => hex::encode(v),
+        Value::Bytes(v) => const_hex::encode(v),
         // NOTE: Array and Map are objects used only for serialization and transmission in conjunction with Query; they do not exist when used as database values.
         Value::Array(_) => "".to_string(),
         Value::Map(_) => "".to_string(),

@@ -11,7 +11,7 @@ thiserror = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 url = { workspace = true }
-hex = { workspace = true }
+const-hex = { workspace = true }
 reqwest = { path = "../reqwest" }
 base64 = { workspace = true }
 shell = { path = "../shell" }

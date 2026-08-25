@@ -46,7 +46,7 @@ fn decode_value(col: Option<&QueryColumn>, v: Option<String>) -> Result<Value> {
         "float32" | "nullable(float32)" => v.parse().map(Value::F32)?,
         "float64" | "nullable(float64)" => v.parse().map(Value::F64)?,
         "boolean" | "nullable(boolean)" => Value::Bool(v == "1" || v.eq_ignore_ascii_case("true")),
-        "binary" | "nullable(binary)" => hex::decode(v).map(Value::from_bytes)?,
+        "binary" | "nullable(binary)" => const_hex::decode(v).map(Value::from_bytes)?,
         _ => Value::String(v),
     };
     Ok(value)

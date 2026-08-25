@@ -160,7 +160,7 @@ impl Key {
     pub fn try_string(bytes: Vec<u8>) -> Self {
         match String::from_utf8(bytes) {
             Ok(s) => Self::String(s),
-            Err(err) => Self::Bytes(format!("0x{}", hex::encode(err.into_bytes()))),
+            Err(err) => Self::Bytes(format!("0x{}", const_hex::encode(err.into_bytes()))),
         }
     }
 
@@ -168,7 +168,7 @@ impl Key {
         match self {
             Self::String(v) => Ok(v.into_bytes()),
             Self::Bytes(v) => {
-                let bytes = hex::decode(&v.as_bytes()[2..])
+                let bytes = const_hex::decode(&v.as_bytes()[2..])
                     .map_err(|_| KvDatabaseError::DataType("Hex Bytes", "Invalid Hex String"))?;
                 Ok(bytes)
             }

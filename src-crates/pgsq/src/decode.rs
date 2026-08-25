@@ -1,5 +1,5 @@
 use bytes::Bytes;
-use hex::FromHexError;
+use const_hex::FromHexError;
 use std::{
     num::{ParseFloatError, ParseIntError},
     str::{Utf8Error, from_utf8},
@@ -51,7 +51,7 @@ decoder_int!(f64);
 impl Decoder<Vec<u8>> for Bytes {
     fn decode(&self) -> Result<Vec<u8>> {
         if let Some(v) = from_utf8(self)?.strip_prefix("\\x") {
-            return Ok(hex::decode(v)?);
+            return Ok(const_hex::decode(v)?);
         }
         Err(DecodeError::InvalidBytes)
     }

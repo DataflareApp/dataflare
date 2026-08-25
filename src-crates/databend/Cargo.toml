@@ -11,7 +11,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true }
 url = { workspace = true }
-hex = { workspace = true }
+const-hex = { workspace = true }
 reqwest = { path = "../reqwest" }
 query = { path = "../query" }
 proxy = { path = "../proxy" }

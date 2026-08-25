@@ -19,7 +19,7 @@ pub enum Error {
     #[error("Parse float: {0}")]
     ParseFloat(#[from] std::num::ParseFloatError),
     #[error("Parse bytes: {0}")]
-    ParseBytes(#[from] hex::FromHexError),
+    ParseBytes(#[from] const_hex::FromHexError),
 }
 
 #[derive(Debug)]
