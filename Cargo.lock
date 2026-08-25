@@ -1709,9 +1709,9 @@ dependencies = [
  "clap 4.6.1",
  "client-store",
  "comfy-table",
+ "const-hex",
  "database",
  "dir",
- "const-hex",
  "query",
  "secret-resolve",
  "thiserror 2.0.18",
@@ -2451,8 +2451,8 @@ dependencies = [
 name = "databend"
 version = "0.0.0"
 dependencies = [
- "endpoint",
  "const-hex",
+ "endpoint",
  "proxy",
  "query",
  "reqwest 0.0.0",
@@ -6301,8 +6301,8 @@ version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
  "bytes",
- "endpoint",
  "const-hex",
+ "endpoint",
  "hmac 0.12.1",
  "md-5",
  "pgwire",
@@ -6832,6 +6832,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "proptest"
+version = "1.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4b45fcc2344c680f5025fe57779faef368840d0bd1f42f216291f0dc4ace4744"
+dependencies = [
+ "bitflags 2.11.1",
+ "num-traits",
+ "rand 0.9.2",
+ "rand_chacha 0.9.0",
+ "rand_xorshift",
+ "regex-syntax",
+ "unarray",
+]
+
+[[package]]
 name = "prost"
 version = "0.13.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6861,21 +6876,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "52c2c1bf36ddb1a1c396b3601a3cec27c2462e45f07c386894ec3ccf5332bd16"
 dependencies = [
  "prost",
-]
-
-[[package]]
-name = "proptest"
-version = "1.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4b45fcc2344c680f5025fe57779faef368840d0bd1f42f216291f0dc4ace4744"
-dependencies = [
- "bitflags 2.11.1",
- "num-traits",
- "rand 0.9.2",
- "rand_chacha 0.9.0",
- "rand_xorshift",
- "regex-syntax",
- "unarray",
 ]
 
 [[package]]
