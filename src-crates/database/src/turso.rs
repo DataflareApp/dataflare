@@ -66,7 +66,7 @@ impl TursoConnection {
                         Some(EncryptionConfig { cipher, key })
                     }
                 };
-                let conn = Turso::connect(&path, enc).await?;
+                let conn = Turso::connect(&path, config.readonly, enc).await?;
                 if let Some(sql) = config.initial {
                     conn.execute_batch(&sql)?;
                 }

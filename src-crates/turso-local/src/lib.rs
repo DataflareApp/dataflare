@@ -11,19 +11,19 @@ use std::{ffi::c_void, sync::Mutex, time::Instant};
 // Do not update manually
 // Use `node ./src-dylib/driver-update.mjs` update the sha256 values.
 
-const TURSO_DRIVER_VERSION: &str = "20260807";
+const TURSO_DRIVER_VERSION: &str = "20260825";
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-const TURSO_SHA256: &str = "6d5a0f0bb69c197194cbd6424e35adeddab38aa740a7c6e5330536b8ea3976fb";
+const TURSO_SHA256: &str = "08618dd98b2825573750498f0c50af9e0dff9a84d207e0814a5df8d529682fd4";
 #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
-const TURSO_SHA256: &str = "c9b93bb317754f0d069abb565519a428f2d185eff9f2bbbb29d26b077a1c7594";
+const TURSO_SHA256: &str = "8c9a6a924c008ec1c10415caad070dc1c66d784344cc8dd0b17e18c788054372";
 #[cfg(all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"))]
-const TURSO_SHA256: &str = "c677312e3d2e29f86b48245a0fbc3cb5badde16b64c262b44a2105577b12a91b";
+const TURSO_SHA256: &str = "175ad14c997f1dd1588edc57e74bcca824b5b191839a543cd99e0afc8b346c80";
 #[cfg(all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"))]
-const TURSO_SHA256: &str = "8ce57c698a0221e9e8a42e6d53ad355c998be21b7a3e37d77cec726ccadbd3c7";
+const TURSO_SHA256: &str = "8ec84ffc65349ccf939f00ff0841dbfd2f8b6439e9119f857831e83fc4b2b273";
 #[cfg(all(target_os = "windows", target_arch = "aarch64", target_env = "msvc"))]
-const TURSO_SHA256: &str = "0c77d867559012b2e61f2bcca863285dd2b41048bc22f81cf7391fcf8383ac1e";
+const TURSO_SHA256: &str = "f588899c7e329656ac44c03c01e376b08682f80f6c2984c676f772b762a34c32";
 #[cfg(all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"))]
-const TURSO_SHA256: &str = "aa126e6fe0a33f4837c28753020c006271ef017a5c419e43b246c0603ef8ca9e";
+const TURSO_SHA256: &str = "1defafb3286ef7722c807e277d89241784a5e1b675a2451a0cc5a2cb8c947dac";
 
 #[derive(Debug)]
 pub struct Connection {
@@ -56,7 +56,11 @@ pub struct EncryptionConfig {
 }
 
 impl Connection {
-    pub async fn connect(path: &str, encryption: Option<EncryptionConfig>) -> Result<Self> {
+    pub async fn connect(
+        path: &str,
+        readonly: bool,
+        encryption: Option<EncryptionConfig>,
+    ) -> Result<Self> {
         let mut error = ErrorMessage::null();
         let dylib = Dylib::try_load("turso", TURSO_DRIVER_VERSION, TURSO_SHA256).await?;
         let enc_opts = encryption.as_ref().map(|e| EncryptionOptions {
@@ -65,6 +69,7 @@ impl Connection {
         });
         let options = ConnectOptions {
             path: StringRef::new(path),
+            readonly,
             encryption: enc_opts
                 .as_ref()
                 .map(|e| e as *const EncryptionOptions)
@@ -182,7 +187,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_query() {
-        let conn = Connection::connect(":memory:", None).await.unwrap();
+        let conn = Connection::connect(":memory:", false, None).await.unwrap();
         let mut query = conn
             .query(
                 "SELECT 1 as int, 3.14 as float, 'hello' as text, x'FF00FF' as blob, NULL as empty, TRUE, FALSE",

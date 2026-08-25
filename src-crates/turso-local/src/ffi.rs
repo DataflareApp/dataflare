@@ -36,6 +36,7 @@ pub union Data {
 #[repr(C)]
 pub struct ConnectOptions {
     pub path: StringRef,
+    pub readonly: bool,
     pub encryption: *const EncryptionOptions,
 }
 
