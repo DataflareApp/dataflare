@@ -11,19 +11,19 @@ use std::{ffi::c_void, sync::Mutex, time::Instant};
 // Do not update manually
 // Use `node ./src-dylib/driver-update.mjs` update the sha256 values.
 
-const PGLITE_DRIVER_VERSION: &str = "20260701";
+const PGLITE_DRIVER_VERSION: &str = "20260825";
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-const PGLITE_SHA256: &str = "f5506509db8ff9b2e9bdfd047a254d8ecd5f07f88c1df2dd0eda0ff28bd19665";
+const PGLITE_SHA256: &str = "17e62671100bc92898c3775cc9991bd1346c77a838aa0588007467e950736c97";
 #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
-const PGLITE_SHA256: &str = "afce88b7be96632a4e76e48eef5d485a0d9ffceb83573f5dfef6a7dd7d808f8e";
+const PGLITE_SHA256: &str = "1acfe2a7702eb27144a7609f6f04584cc3607ff03f214809253ae4169c5d2924";
 #[cfg(all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"))]
-const PGLITE_SHA256: &str = "96f1edd85e239a40f71cf5a774c960a657f52842c5e80daac2d7eed3ba392192";
+const PGLITE_SHA256: &str = "d81df6e47f434f3849b517f2b5367cea93b6d18593588062d39d9cbbbb6901dd";
 #[cfg(all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"))]
-const PGLITE_SHA256: &str = "f577e617c8044b1cfb4e7423228a4883d77331cbaecfaa0b206167046e3fae77";
+const PGLITE_SHA256: &str = "38a2769d31fe09e2c6c1faada51f9fb03951f431df6208314f094d2cfe32a141";
 #[cfg(all(target_os = "windows", target_arch = "aarch64", target_env = "msvc"))]
-const PGLITE_SHA256: &str = "bd7898e9598d762ce622699b624b00661b7805a1410a26340d32be2b0bcccb47";
+const PGLITE_SHA256: &str = "5425fb18497c0c3b258ec56bcbfe3533ae268bcaa0b1dcfb625cb81d134b471a";
 #[cfg(all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"))]
-const PGLITE_SHA256: &str = "0a6494abce03ee5fd0dc9c1c1a43be82cff72339c148eccb0d74c72ff0893e89";
+const PGLITE_SHA256: &str = "af2290312e4ced4f5d1a0fe852cc340293a5cc4144cd85fb116cc1b06f238303";
 
 #[derive(Debug)]
 pub struct Connection {
