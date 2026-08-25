@@ -1,3 +1,18 @@
+## v3.2.0
+
+**Published:** `2026-08-025T12:00:00Z`
+
+**Changes**
+
+- Upgrade SQLite to latest version
+- Upgrade SQLcipher to latest version
+- Upgrade EchoLite to v0.2.5
+- Upgrade chDB to v26.7.2.1
+- Upgrade Turso to v0.8.0-pre.7
+- Supports Turso readonly database
+- Update workers analytics engine functions and keywords
+- Fix connection info panel loading state
+
 ## v3.1.9
 
 **Published:** `2026-08-07T12:00:00Z`
