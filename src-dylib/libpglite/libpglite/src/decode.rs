@@ -75,7 +75,7 @@ fn decode_bytea(value: &str) -> Result<Vec<u8>> {
     let value = value
         .strip_prefix("\\x")
         .ok_or_else(|| "bytea value must start with '\\x'".to_string())?;
-    hex::decode(value).map_err(|err| err.to_string())
+    const_hex::decode(value).map_err(|err| err.to_string())
 }
 
 fn rows_affected_from_tag(tag: &str) -> Option<u64> {

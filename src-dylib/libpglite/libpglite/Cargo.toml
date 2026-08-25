@@ -7,6 +7,6 @@ name = "pglite"
 crate-type = ["cdylib"]
 
 [dependencies]
-hex = "0.4.3"
+const-hex = "1.19.1"
 pglite = { path = "../pglite" }
 postgres-types = { workspace = true }
