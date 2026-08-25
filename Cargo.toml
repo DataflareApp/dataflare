@@ -78,5 +78,5 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = { version = "1.0.140", features = ["float_roundtrip"] }
 strum = { version = "0.26.2", features = ["derive"] }
 futures-util = "0.3.31"
-rusqlite = { version = "0.40.1", features = ["bundled", "column_decltype"] }
+rusqlite = { version = "0.40.2", features = ["bundled", "column_decltype"] }
 serde_rusqlite = "0.43.0"
