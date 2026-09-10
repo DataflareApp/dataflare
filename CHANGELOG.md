@@ -1,3 +1,11 @@
+## v3.2.1
+
+**Published:** `2026-09-10T18:18:53Z`
+
+**Changes**
+
+- Allow invalid TLS certificates for remote libSQL/Turso connections
+
 ## v3.2.0
 
 **Published:** `2026-08-025T12:00:00Z`
