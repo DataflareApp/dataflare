@@ -18,7 +18,7 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn new<U, A>(url: U, auth_token: A) -> Result<Self>
+    pub fn new<U, A>(url: U, auth_token: A, allow_invalid_certs: bool) -> Result<Self>
     where
         U: AsRef<str>,
         A: Into<String>,
@@ -26,6 +26,7 @@ impl Client {
         let original_url = url.as_ref().to_owned();
         let pipeline_url = normalize_pipeline_url(&original_url)?;
         let client = ClientBuilder::new()
+            .danger_accept_invalid_certs(allow_invalid_certs)
             .timeout(Duration::from_secs(60))
             .user_agent("Dataflare")
             .build()?;
@@ -178,7 +179,7 @@ mod tests {
     fn conn() -> Client {
         let url = "";
         let token = "";
-        let client = Client::new(url, token).unwrap();
+        let client = Client::new(url, token, false).unwrap();
         client
     }
 

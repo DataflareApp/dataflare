@@ -73,8 +73,12 @@ impl TursoConnection {
                 Ok(Self::Turso(Arc::new(conn)))
             }
             // TODO: Since a new connection is created each time, initial sql is meaningless; resolve this later if possible
-            TursoDatabaseConfig::Remote { url, token } => {
-                let client = Remote::new(url, token)?;
+            TursoDatabaseConfig::Remote {
+                url,
+                token,
+                allow_invalid_certs,
+            } => {
+                let client = Remote::new(url, token, allow_invalid_certs)?;
                 Ok(Self::Remote(client))
             }
         }

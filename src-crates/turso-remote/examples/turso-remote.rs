@@ -5,7 +5,7 @@ async fn main() {
     let url = "";
     let auth_token = "";
 
-    let client = Client::new(url, auth_token).unwrap();
+    let client = Client::new(url, auth_token, false).unwrap();
 
     let query = client
         .query(

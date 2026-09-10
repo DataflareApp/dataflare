@@ -11,7 +11,7 @@ import {
 } from '../../../tauri'
 import { Select } from '../../../ui'
 import { ConnectionEditorOptions } from '../connections'
-import { DatabasePathSelect, InitialSQL, Item, Readonly, Row } from '../from'
+import { BooleanSelect, DatabasePathSelect, InitialSQL, Item, Readonly, Row } from '../from'
 import { useOptions } from '../hooks'
 import { AlertType, ConnectionTab } from '../tabs'
 
@@ -46,7 +46,10 @@ export const TursoConnection = ({ data, onChange }: ConnectionEditorOptions<Turs
                 return setOpt('database', { type, options: { path: '', encryption: null } })
             }
             case TursoDatabaseType.Remote: {
-                return setOpt('database', { type, options: { url: '', token: '' } })
+                return setOpt('database', {
+                    type,
+                    options: { url: '', token: '', allow_invalid_certs: false }
+                })
             }
         }
     }
@@ -75,11 +78,33 @@ export const TursoConnection = ({ data, onChange }: ConnectionEditorOptions<Turs
     )
 
     const security = (
-        <Readonly
-            secure={database.type !== TursoDatabaseType.Remote}
-            readonly={readonly}
-            onChange={(val) => setOpt('readonly', val)}
-        />
+        <>
+            <Readonly
+                secure={database.type !== TursoDatabaseType.Remote}
+                readonly={readonly}
+                onChange={(val) => setOpt('readonly', val)}
+            />
+            {database.type === TursoDatabaseType.Remote && (
+                <Row label={t('cert')}>
+                    <div className='flex-1'>
+                        <BooleanSelect
+                            value={database.options.allow_invalid_certs}
+                            trueText={t('allowInvalidCerts')}
+                            falseText={t('system')}
+                            onChange={(val) =>
+                                setOpt('database', {
+                                    ...database,
+                                    options: { ...database.options, allow_invalid_certs: val }
+                                })
+                            }
+                        />
+                        {database.options.allow_invalid_certs && (
+                            <p className='mt-2 text-xs text-tertiary'>{t('certWarning')}</p>
+                        )}
+                    </div>
+                </Row>
+            )}
+        </>
     )
 
     const initSQL = (

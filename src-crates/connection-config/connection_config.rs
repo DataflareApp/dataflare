@@ -507,6 +507,8 @@ pub enum TursoDatabaseConfig {
         url: String,
         #[secret]
         token: String,
+        #[serde(default)]
+        allow_invalid_certs: bool,
     },
 }
 

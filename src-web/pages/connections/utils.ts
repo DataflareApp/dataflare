@@ -316,7 +316,8 @@ function defaultConfig(type: DatabaseType): DatabaseConfig {
                         type: TursoDatabaseType.Remote,
                         options: {
                             url: '',
-                            token: ''
+                            token: '',
+                            allow_invalid_certs: false
                         }
                     },
                     readonly: false,
@@ -868,7 +869,8 @@ export const parseConnectionURL = async (url: string) => {
                         type: TursoDatabaseType.Remote,
                         options: {
                             url: opt.query['url'] ?? '',
-                            token: opt.query['token'] ?? ''
+                            token: opt.query['token'] ?? '',
+                            allow_invalid_certs: false
                         }
                     }
                     break

@@ -547,6 +547,7 @@ export interface TursoRemoteDatabase {
     options: {
         url: string
         token: string
+        allow_invalid_certs: boolean
     }
 }
 
