@@ -1,3 +1,12 @@
+## v3.2.2
+
+**Published:** `2026-09-21T12:00:00Z`
+
+**Changes**
+
+- Upgrade turso driver to `v0.8.0-pre.11`
+- Update chdb driver to `v2.0.0`
+
 ## v3.2.1
 
 **Published:** `2026-09-10T18:18:53Z`
