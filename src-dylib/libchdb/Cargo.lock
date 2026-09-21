@@ -100,8 +100,9 @@ checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 
 [[package]]
 name = "chdb-rust"
-version = "1.4.0"
-source = "git+https://github.com/chdb-io/chdb-rust?rev=729c4a0a7cc63a5b22e8a67c48e2a5612f0a75f2#729c4a0a7cc63a5b22e8a67c48e2a5612f0a75f2"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b1b39d67e59faa2130cfbc2d62c8c2e1bb121e352c93a66207056ea2169b7c0"
 dependencies = [
  "bindgen",
  "flate2",
