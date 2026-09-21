@@ -9,8 +9,8 @@ import crypto from 'crypto'
 // src-crates/chdb/src/lib.rs
 // src-crates/pglite/src/lib.rs
 
-const name = 'turso'
-const version = '20260825'
+const name = 'chdb'
+const version = '20260921'
 
 const base = 'https://assets.dataflare.app/drivers/'
 const items = [

@@ -12,15 +12,15 @@ use std::sync::Mutex;
 // Do not update manually
 // Use `node ./src-dylib/driver-update.mjs` update the sha256 values.
 
-const CHDB_DRIVER_VERSION: &str = "20260825";
+const CHDB_DRIVER_VERSION: &str = "20260921";
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-const CHDB_SHA256: &str = "830cc396ca54b61c8e8aea4b5a3f72b18b16a7e5437534edb70064dfd7a23476";
+const CHDB_SHA256: &str = "0c3a53148cd6390b371d09ff0ba89c5114f311a0eff68ab3f55ae213daa9dad4";
 #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
-const CHDB_SHA256: &str = "a65c639717fee36505a0b50afa7fadde64561b1721baca04dd17cd7002886be4";
+const CHDB_SHA256: &str = "6ff000234281fc36adc0735580d2b730905ac2c679469059e6b3cc4fedcfb0ba";
 #[cfg(all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"))]
-const CHDB_SHA256: &str = "07322d38805f9167edadc5351075bcab82ff7b20e0f251f34354b2a6f0aa3aa2";
+const CHDB_SHA256: &str = "b19c39ff59c3523dde40a75b3b7ec4db112084e3cf70cae0aafc20630c378576";
 #[cfg(all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"))]
-const CHDB_SHA256: &str = "8843ce6a0ae3d2c0ee5cec0c4be9a9e824a12217070dc8941423159afd2b217e";
+const CHDB_SHA256: &str = "94e5d3102f14777906c33dab3934c3e154ef76805d43bccedb594f6ef176fbe4";
 #[cfg(all(target_os = "windows", target_arch = "aarch64", target_env = "msvc"))]
 const CHDB_SHA256: &str = ""; // Unsupported platform
 #[cfg(all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"))]
