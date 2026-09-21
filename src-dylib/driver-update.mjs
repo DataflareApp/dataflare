@@ -9,7 +9,7 @@ import crypto from 'crypto'
 // src-crates/chdb/src/lib.rs
 // src-crates/pglite/src/lib.rs
 
-const name = 'chdb'
+const name = 'turso'
 const version = '20260921'
 
 const base = 'https://assets.dataflare.app/drivers/'
