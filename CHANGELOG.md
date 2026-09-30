@@ -1,3 +1,13 @@
+## v3.2.3
+
+**Published:** `2026-10-01`
+
+**Changes**
+
+- Upgrade `DuckDB` to v1.5.6
+- Upgrade `Turso` to v0.8.1
+- Fix event listener backlog
+
 ## v3.2.2
 
 **Published:** `2026-09-21T12:00:00Z`
