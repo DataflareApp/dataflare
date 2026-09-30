@@ -148,7 +148,10 @@ impl Connection {
                 return Err(err);
             }
         }
-        self.execute("COMMIT")?;
+        if let Err(err) = self.execute("COMMIT") {
+            let _ = self.execute("ROLLBACK");
+            return Err(err);
+        }
         Ok(())
     }
 }
@@ -176,6 +179,36 @@ impl Statement {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_transaction_commit_failure_rolls_back() {
+        let conn = Connection::connect(":memory:", false, None).unwrap();
+        conn.execute_batch(
+            "PRAGMA foreign_keys = ON;
+             CREATE TABLE parent (id INTEGER PRIMARY KEY);
+             CREATE TABLE child (
+                 parent_id INTEGER REFERENCES parent(id) DEFERRABLE INITIALLY DEFERRED
+             );",
+        )
+        .unwrap();
+
+        let error = conn
+            .transaction(&["INSERT INTO child VALUES (1)"])
+            .unwrap_err();
+        assert!(matches!(error, TursoError::Constraint(_)));
+
+        let query = conn.query("SELECT count(*) FROM child").unwrap();
+        assert!(matches!(query.rows[0][0], QueryValue::I64(0)));
+
+        conn.transaction(&[
+            "INSERT INTO child VALUES (1)",
+            "INSERT INTO parent VALUES (1)",
+        ])
+        .unwrap();
+        let query = conn.query("SELECT count(*) FROM child").unwrap();
+        assert!(matches!(query.rows[0][0], QueryValue::I64(1)));
+        conn.close().unwrap();
+    }
 
     #[test]
     fn test_close_checkpoints_and_preserves_data() {
@@ -232,6 +265,31 @@ mod tests {
             (QueryValue::I64(1), QueryValue::I64(2)) => {}
             values => panic!("unexpected values: {values:?}"),
         }
+
+        conn.transaction(&[
+            "UPDATE docs SET body = 'storage engine' WHERE id = 1",
+            "DELETE FROM docs WHERE id = 2",
+            "INSERT INTO docs VALUES (4, 'New', 'database engine')",
+        ])
+        .unwrap();
+        let query = conn
+            .query("select id from docs where (title, body) match 'database' order by id")
+            .unwrap();
+        assert_eq!(query.rows.len(), 1);
+        assert!(matches!(query.rows[0][0], QueryValue::I64(4)));
+
+        let error = conn
+            .transaction(&[
+                "DELETE FROM docs WHERE id = 4",
+                "INSERT INTO missing_table VALUES (1)",
+            ])
+            .unwrap_err();
+        assert!(error.to_string().contains("missing_table"));
+        let query = conn
+            .query("select id from docs where (title, body) match 'database'")
+            .unwrap();
+        assert_eq!(query.rows.len(), 1);
+        assert!(matches!(query.rows[0][0], QueryValue::I64(4)));
         conn.close().unwrap();
     }
 }
