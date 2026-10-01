@@ -1108,6 +1108,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2af50177e190e07a26ab74f8b1efbfe2ef87da2116221318cb1c2e82baf7de06"
 
 [[package]]
+name = "basin-sql"
+version = "0.0.0"
+dependencies = [
+ "base64 0.22.1",
+ "query",
+ "reqwest 0.0.0",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.18",
+ "tokio",
+ "url",
+]
+
+[[package]]
 name = "batch-insert"
 version = "0.0.0"
 dependencies = [
@@ -2419,6 +2433,7 @@ checksum = "be1e0bca6c3637f992fc1cc7cbc52a78c1ef6db076dbf1059c4323d6a2048376"
 name = "database"
 version = "0.0.0"
 dependencies = [
+ "basin-sql",
  "batch-insert",
  "bigquery",
  "bytes",
@@ -2442,7 +2457,6 @@ dependencies = [
  "presto",
  "proxy",
  "query",
- "r2sql",
  "rqlite",
  "rusqlite",
  "serde",
@@ -7176,20 +7190,6 @@ name = "r-efi"
 version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
-
-[[package]]
-name = "r2sql"
-version = "0.0.0"
-dependencies = [
- "base64 0.22.1",
- "query",
- "reqwest 0.0.0",
- "serde",
- "serde_json",
- "thiserror 2.0.18",
- "tokio",
- "url",
-]
 
 [[package]]
 name = "radium"

@@ -33,7 +33,7 @@ pub enum Error {
     #[error(transparent)]
     WorkersAnalyticsEngine(#[from] workers_analytics_engine::Error),
     #[error(transparent)]
-    BasinSql(#[from] r2sql::Error),
+    BasinSql(#[from] basin_sql::Error),
     #[error(transparent)]
     ClickHouse(#[from] clickhouse::Error),
     #[error(transparent)]

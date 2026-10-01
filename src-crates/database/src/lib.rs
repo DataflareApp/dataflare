@@ -1,3 +1,4 @@
+mod basin_sql;
 mod bigquery;
 mod chdb;
 mod clickhouse;
@@ -12,7 +13,6 @@ mod mysql;
 mod pglite;
 mod postgres;
 mod presto;
-mod r2sql;
 mod rqlite;
 mod sqlcipher;
 mod sqlite;
@@ -21,6 +21,7 @@ mod turso;
 mod utils;
 mod workers_analytics_engine;
 
+use basin_sql::BasinSqlConnection;
 use bigquery::BigQueryConnection;
 use chdb::ChDbConnection;
 use clickhouse::ClickHouseConnection;
@@ -39,7 +40,6 @@ use pglite::PGliteConnection;
 use postgres::PostgresConnection;
 use presto::PrestoConnection;
 use query::{Query, Value};
-use r2sql::BasinSqlConnection;
 use rqlite::RqliteConnection;
 use sqlcipher::SqlCipherConnection;
 use sqlite::SqliteConnection;

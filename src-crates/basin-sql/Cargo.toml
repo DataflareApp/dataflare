@@ -1,5 +1,5 @@
 [package]
-name = "r2sql"
+name = "basin-sql"
 edition.workspace = true
 
 [dev-dependencies]

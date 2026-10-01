@@ -1,4 +1,4 @@
-use r2sql::Connection;
+use basin_sql::Connection;
 
 #[tokio::main]
 async fn main() {

@@ -1438,7 +1438,7 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
                 return import('./static/workers-analytics-engine-keywords').then((mod) => mod.default)
             }
             case SqlDatabaseType.BasinSql: {
-                return import('./static/r2sql-keywords').then((mod) => mod.default)
+                return import('./static/basin-sql-keywords').then((mod) => mod.default)
             }
         }
     }
@@ -1460,7 +1460,7 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
                 return (await import('./static/workers-analytics-engine-functions')).default
             }
             case SqlDatabaseType.BasinSql: {
-                return (await import('./static/r2sql-functions')).default
+                return (await import('./static/basin-sql-functions')).default
             }
             case SqlDatabaseType.DuckDB: {
                 const rows = await this.select<[string]>(
@@ -1601,7 +1601,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
                 return []
             }
             case SqlDatabaseType.BasinSql: {
-                return (await import('./static/r2sql-datatypes')).default
+                return (await import('./static/basin-sql-datatypes')).default
             }
         }
     }

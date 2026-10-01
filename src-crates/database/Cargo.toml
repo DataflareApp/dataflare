@@ -22,7 +22,7 @@ echolite = { package = "client", git = "https://github.com/DataflareApp/echolite
 rqlite = { path = "../rqlite" }
 cloudflare-d1 = { path = "../cloudflare-d1" }
 workers-analytics-engine = { path = "../workers-analytics-engine" }
-r2sql = { path = "../r2sql" }
+basin-sql = { path = "../basin-sql" }
 mysql = { path = "../mysql" }
 pgsq = { path = "../pgsq" }
 pglite = { path = "../pglite" }

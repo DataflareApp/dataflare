@@ -1,6 +1,6 @@
+use basin_sql::{Connection, Error};
 use crate::{BasinSqlConfig, ChunkInsert, ConnectionInfo, Database, Result, Value};
 use query::Query;
-use r2sql::{Connection, Error};
 
 #[derive(Debug, Clone)]
 pub struct BasinSqlConnection {
