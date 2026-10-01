@@ -1,11 +1,11 @@
 import { t } from '../../../i18n'
-import { R2SqlConfig } from '../../../tauri'
+import { BasinSqlConfig } from '../../../tauri'
 import { ConnectionEditorOptions } from '../connections'
 import { Item } from '../from'
 import { useOptions } from '../hooks'
 import { ConnectionTab } from '../tabs'
 
-export const R2SqlConnection = ({ data, onChange }: ConnectionEditorOptions<R2SqlConfig>) => {
+export const BasinSqlConnection = ({ data, onChange }: ConnectionEditorOptions<BasinSqlConfig>) => {
     const { name, options, setName, setOpt } = useOptions(data, onChange)
 
     const general = (

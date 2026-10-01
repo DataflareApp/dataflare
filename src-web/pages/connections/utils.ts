@@ -43,7 +43,7 @@ import {
     DatabricksAuthType,
     PrestoAuthType,
     WorkersAnalyticsEngineConfig,
-    R2SqlConfig,
+    BasinSqlConfig,
     TursoEncryptionCipher,
     TursoEncryptionConfig
 } from '../../tauri'
@@ -376,7 +376,7 @@ function defaultConfig(type: DatabaseType): DatabaseConfig {
                 }
             }
         }
-        case SqlDatabaseType.R2Sql: {
+        case SqlDatabaseType.BasinSql: {
             return {
                 type,
                 options: {
@@ -711,8 +711,8 @@ export const toConnectionURL = async (conn: Connection) => {
             opt.query['token'] = config.options.api_token
             break
         }
-        case SqlDatabaseType.R2Sql: {
-            opt.scheme = 'r2sql'
+        case SqlDatabaseType.BasinSql: {
+            opt.scheme = 'basin-sql'
             opt.path = config.options.bucket_name
             opt.query['account'] = config.options.account_id
             opt.query['token'] = config.options.api_token
@@ -829,8 +829,9 @@ export const parseConnectionURL = async (url: string) => {
             conn.config.options.api_token = opt.query['token'] ?? ''
             return conn
         }
-        case 'r2sql': {
-            let conn = createConnectionConfig(SqlDatabaseType.R2Sql) as Connection<R2SqlConfig>
+        case 'r2sql':
+        case 'basin-sql': {
+            let conn = createConnectionConfig(SqlDatabaseType.BasinSql) as Connection<BasinSqlConfig>
             applyQuery(conn)
             conn.config.options.account_id = opt.query['account'] ?? ''
             conn.config.options.bucket_name = opt.path.slice(1)

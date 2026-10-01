@@ -31,8 +31,8 @@ fn to_dialect(db: SqlDatabaseType) -> Box<dyn Dialect> {
         SqlDatabaseType::Databricks => Box::new(DatabricksDialect {}),
         // Not sure which SQL dialect Workers Analytics Engine uses, using ClickHouse dialect for now
         SqlDatabaseType::WorkersAnalyticsEngine => Box::new(ClickHouseDialect {}),
-        // R2 SQL uses ANSI-like syntax
-        SqlDatabaseType::R2Sql => Box::new(AnsiDialect {}),
+        // Basin SQL uses ANSI-like syntax
+        SqlDatabaseType::BasinSql => Box::new(AnsiDialect {}),
     }
 }
 

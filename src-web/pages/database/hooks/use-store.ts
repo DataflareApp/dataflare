@@ -94,7 +94,7 @@ const isKv = (type: DatabaseType): boolean => {
         case SqlDatabaseType.EchoLite:
         case SqlDatabaseType.CloudflareD1:
         case SqlDatabaseType.WorkersAnalyticsEngine:
-        case SqlDatabaseType.R2Sql: {
+        case SqlDatabaseType.BasinSql: {
             return false
         }
         case KvDatabaseType.CloudflareWorkersKv:

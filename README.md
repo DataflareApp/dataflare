@@ -39,6 +39,7 @@ Please visit Dataflare website to download: https://dataflare.app/download
 ## Supported Databases
 
 - [Amazon S3](https://aws.amazon.com/s3/)
+- [Basin SQL](https://developers.cloudflare.com/basin-sql/)
 - [BigQuery](https://cloud.google.com/bigquery)
 - [chDB](https://github.com/chdb-io)
 - [ClickHouse](https://github.com/ClickHouse/ClickHouse)
@@ -57,7 +58,6 @@ Please visit Dataflare website to download: https://dataflare.app/download
 - [PGlite](https://github.com/electric-sql/pglite)
 - [Presto](https://github.com/prestodb/presto)
 - [QuestDB](https://github.com/questdb/questdb)
-- [R2 SQL](https://developers.cloudflare.com/r2-sql/)
 - [Redis](https://github.com/redis/redis)
 - [Rqlite](https://github.com/rqlite/rqlite)
 - [SQLCipher](https://github.com/sqlcipher/sqlcipher)

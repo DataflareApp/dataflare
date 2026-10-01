@@ -1,5 +1,5 @@
 // From:
-// https://developers.cloudflare.com/r2-sql/sql-reference/
+// https://developers.cloudflare.com/basin-sql/sql-reference/
 // Date: 2026-06-08
 export default [
     'BOOLEAN',

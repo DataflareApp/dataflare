@@ -46,9 +46,9 @@ pub enum ConnectionConfig {
     #[serde(rename = "Workers Analytics Engine")]
     #[strum(serialize = "Workers Analytics Engine")]
     WorkersAnalyticsEngine(WorkersAnalyticsEngineConfig),
-    #[serde(rename = "R2 SQL")]
-    #[strum(serialize = "R2 SQL")]
-    R2Sql(R2SqlConfig),
+    #[serde(rename = "Basin SQL", alias = "R2 SQL")]
+    #[strum(serialize = "Basin SQL")]
+    BasinSql(BasinSqlConfig),
 
     #[serde(rename = "Cloudflare Workers KV")]
     #[strum(serialize = "Cloudflare Workers KV", props(kv = "true"))]
@@ -99,8 +99,8 @@ pub enum SqlDatabaseType {
     CloudflareD1,
     #[serde(rename = "Workers Analytics Engine")]
     WorkersAnalyticsEngine,
-    #[serde(rename = "R2 SQL")]
-    R2Sql,
+    #[serde(rename = "Basin SQL", alias = "R2 SQL")]
+    BasinSql,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, ResolveSecrets)]
@@ -299,7 +299,7 @@ pub struct WorkersAnalyticsEngineConfig {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, ResolveSecrets)]
-pub struct R2SqlConfig {
+pub struct BasinSqlConfig {
     pub account_id: String,
     pub bucket_name: String,
     #[secret]

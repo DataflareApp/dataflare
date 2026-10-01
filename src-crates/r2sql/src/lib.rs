@@ -30,7 +30,7 @@ pub struct Connection {
 impl Connection {
     pub fn new(account_id: String, bucket_name: String, api_token: String) -> Result<Self> {
         let url = format!(
-            "https://api.sql.cloudflarestorage.com/api/v1/accounts/{account_id}/r2-sql/query/{bucket_name}"
+            "https://api.sql.cloudflarestorage.com/api/v1/accounts/{account_id}/basin-sql/query/{bucket_name}"
         );
         let url = url.parse::<Url>().map_err(|err| Error::Url(err, url))?;
         Ok(Self {

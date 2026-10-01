@@ -360,8 +360,8 @@ export interface WorkersAnalyticsEngineConfig {
     }
 }
 
-export interface R2SqlConfig {
-    type: SqlDatabaseType.R2Sql
+export interface BasinSqlConfig {
+    type: SqlDatabaseType.BasinSql
     options: {
         account_id: string
         bucket_name: string
@@ -396,7 +396,7 @@ export type SqlDatabaseConfig =
     | EchoLiteConfig
     | CloudflareD1Config
     | WorkersAnalyticsEngineConfig
-    | R2SqlConfig
+    | BasinSqlConfig
 
 export type KvDatabaseConfig = CloudflareKvConfig | RedisConfig | S3Config
 
@@ -426,7 +426,7 @@ export const enum SqlDatabaseType {
     EchoLite = 'EchoLite',
     CloudflareD1 = 'Cloudflare D1',
     WorkersAnalyticsEngine = 'Workers Analytics Engine',
-    R2Sql = 'R2 SQL'
+    BasinSql = 'Basin SQL'
 }
 
 export const enum KvDatabaseType {
@@ -436,6 +436,7 @@ export const enum KvDatabaseType {
 }
 
 export const ALL_DATABASE_TYPE: DatabaseType[] = [
+    SqlDatabaseType.BasinSql,
     SqlDatabaseType.BigQuery,
     SqlDatabaseType.ChDb,
     SqlDatabaseType.ClickHouse,
@@ -454,7 +455,6 @@ export const ALL_DATABASE_TYPE: DatabaseType[] = [
     SqlDatabaseType.PGlite,
     SqlDatabaseType.Presto,
     SqlDatabaseType.QuestDB,
-    SqlDatabaseType.R2Sql,
     KvDatabaseType.Redis,
     SqlDatabaseType.Rqlite,
     KvDatabaseType.S3,

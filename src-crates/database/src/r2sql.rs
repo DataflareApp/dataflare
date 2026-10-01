@@ -1,27 +1,27 @@
-use crate::{ChunkInsert, ConnectionInfo, Database, R2SqlConfig, Result, Value};
+use crate::{BasinSqlConfig, ChunkInsert, ConnectionInfo, Database, Result, Value};
 use query::Query;
 use r2sql::{Connection, Error};
 
 #[derive(Debug, Clone)]
-pub struct R2SqlConnection {
+pub struct BasinSqlConnection {
     conn: Connection,
 }
 
-impl R2SqlConnection {
-    pub(crate) async fn test(config: R2SqlConfig) -> Result<Option<String>> {
+impl BasinSqlConnection {
+    pub(crate) async fn test(config: BasinSqlConfig) -> Result<Option<String>> {
         let conn = Connection::new(config.account_id, config.bucket_name, config.api_token)?;
         conn.query("SHOW NAMESPACES;".into()).await?;
         Ok(None)
     }
 
-    pub(crate) async fn connect(config: R2SqlConfig) -> Result<Database> {
+    pub(crate) async fn connect(config: BasinSqlConfig) -> Result<Database> {
         let conn = Connection::new(config.account_id, config.bucket_name, config.api_token)?;
-        Ok(Database::R2Sql(Self { conn }))
+        Ok(Database::BasinSql(Self { conn }))
     }
 
     pub(crate) async fn info(&self) -> Result<ConnectionInfo> {
         let url = self.conn.api_url();
-        let mut info = ConnectionInfo::new("R2 SQL");
+        let mut info = ConnectionInfo::new("Basin SQL");
         info.push_server(
             url.scheme(),
             url.host_str().unwrap_or_default(),
@@ -44,7 +44,7 @@ impl R2SqlConnection {
     }
 
     fn readonly_error() -> Result<()> {
-        Err(Error::Message("R2 SQL is read-only.".into()).into())
+        Err(Error::Message("Basin SQL is read-only.".into()).into())
     }
 
     pub(crate) async fn execute(&self, _: String) -> Result<()> {

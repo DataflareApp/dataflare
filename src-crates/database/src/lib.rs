@@ -39,7 +39,7 @@ use pglite::PGliteConnection;
 use postgres::PostgresConnection;
 use presto::PrestoConnection;
 use query::{Query, Value};
-use r2sql::R2SqlConnection;
+use r2sql::BasinSqlConnection;
 use rqlite::RqliteConnection;
 use sqlcipher::SqlCipherConnection;
 use sqlite::SqliteConnection;
@@ -75,7 +75,7 @@ pub enum Database {
     EchoLite(EchoLiteConnection),
     D1(D1Connection),
     WorkersAnalyticsEngine(WorkersAnalyticsEngineConnection),
-    R2Sql(R2SqlConnection),
+    BasinSql(BasinSqlConnection),
     DuckDb(DuckDbConnection),
     Kv(Arc<Box<dyn KvDatabase>>),
 }
@@ -108,7 +108,7 @@ impl Database {
             ConnectionConfig::EchoLite(config) => EchoLiteConnection::test(config).await,
             ConnectionConfig::CloudflareD1(config) => D1Connection::test(config).await,
             ConnectionConfig::WorkersAnalyticsEngine(config) => WorkersAnalyticsEngineConnection::test(config).await,
-            ConnectionConfig::R2Sql(config) => R2SqlConnection::test(config).await,
+            ConnectionConfig::BasinSql(config) => BasinSqlConnection::test(config).await,
             ConnectionConfig::DuckDB(config) => DuckDbConnection::test(config).await,
             ConnectionConfig::CloudflareKv(config) => {
                 KvDatabaseConfig::CloudflareKv(config).test().await?;
@@ -152,7 +152,7 @@ impl Database {
             ConnectionConfig::EchoLite(config) => EchoLiteConnection::connect(config).await,
             ConnectionConfig::CloudflareD1(config) => D1Connection::connect(config).await,
             ConnectionConfig::WorkersAnalyticsEngine(config) => WorkersAnalyticsEngineConnection::connect(config).await,
-            ConnectionConfig::R2Sql(config) => R2SqlConnection::connect(config).await,
+            ConnectionConfig::BasinSql(config) => BasinSqlConnection::connect(config).await,
             ConnectionConfig::DuckDB(config) => DuckDbConnection::connect(config).await,
             ConnectionConfig::CloudflareKv(config) => {
                 let db = KvDatabaseConfig::CloudflareKv(config).connect().await?;
@@ -189,7 +189,7 @@ impl Database {
             Self::EchoLite(db) => db.info().await,
             Self::D1(db) => db.info().await,
             Self::WorkersAnalyticsEngine(db) => db.info().await,
-            Self::R2Sql(db) => db.info().await,
+            Self::BasinSql(db) => db.info().await,
             Self::DuckDb(db) => db.info().await,
             Self::Kv(db) => db.info().await.map_err(Into::into),
         }
@@ -215,7 +215,7 @@ impl Database {
             Self::EchoLite(db) => db.select(sql).await,
             Self::D1(db) => db.select(sql).await,
             Self::WorkersAnalyticsEngine(db) => db.select(sql).await,
-            Self::R2Sql(db) => db.select(sql).await,
+            Self::BasinSql(db) => db.select(sql).await,
             Self::DuckDb(db) => db.select(sql).await,
             Self::Kv(_) => Err(Error::InvalidDatabaseType),
         }
@@ -241,7 +241,7 @@ impl Database {
             Self::EchoLite(db) => db.execute(sql).await,
             Self::D1(db) => db.execute(sql).await,
             Self::WorkersAnalyticsEngine(db) => db.execute(sql).await,
-            Self::R2Sql(db) => db.execute(sql).await,
+            Self::BasinSql(db) => db.execute(sql).await,
             Self::DuckDb(db) => db.execute(sql).await,
             Self::Kv(_) => Err(Error::InvalidDatabaseType),
         }
@@ -267,7 +267,7 @@ impl Database {
             Self::EchoLite(db) => db.transaction(sqls).await,
             Self::D1(db) => db.transaction(sqls).await,
             Self::WorkersAnalyticsEngine(db) => db.transaction(sqls).await,
-            Self::R2Sql(db) => db.transaction(sqls).await,
+            Self::BasinSql(db) => db.transaction(sqls).await,
             Self::DuckDb(db) => db.transaction(sqls).await,
             Self::Kv(_) => Err(Error::InvalidDatabaseType),
         }
@@ -293,7 +293,7 @@ impl Database {
             Self::EchoLite(db) => db.query(sql).await,
             Self::D1(db) => db.query(sql).await,
             Self::WorkersAnalyticsEngine(db) => db.query(sql).await,
-            Self::R2Sql(db) => db.query(sql).await,
+            Self::BasinSql(db) => db.query(sql).await,
             Self::DuckDb(db) => db.query(sql).await,
             Self::Kv(_) => Err(Error::InvalidDatabaseType),
         }
@@ -319,7 +319,7 @@ impl Database {
             Self::EchoLite(db) => db.batch_insert(insert).await,
             Self::D1(db) => db.batch_insert(insert).await,
             Self::WorkersAnalyticsEngine(db) => db.batch_insert(insert).await,
-            Self::R2Sql(db) => db.batch_insert(insert).await,
+            Self::BasinSql(db) => db.batch_insert(insert).await,
             Self::DuckDb(db) => db.batch_insert(insert).await,
             Self::Kv(_) => Err(Error::InvalidDatabaseType),
         }

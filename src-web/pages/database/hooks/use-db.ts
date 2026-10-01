@@ -49,7 +49,7 @@ const defaultSchema = (config: SqlDatabaseConfig): string => {
         case SqlDatabaseType.Databricks: {
             return config.options.schema ?? 'default'
         }
-        case SqlDatabaseType.R2Sql: {
+        case SqlDatabaseType.BasinSql: {
             return 'default'
         }
     }

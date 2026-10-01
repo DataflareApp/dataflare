@@ -1,7 +1,7 @@
 // From:
-// https://developers.cloudflare.com/r2-sql/sql-reference/
-// https://developers.cloudflare.com/r2-sql/sql-reference/scalar-functions/
-// https://developers.cloudflare.com/r2-sql/sql-reference/complex-types/
+// https://developers.cloudflare.com/basin-sql/sql-reference/
+// https://developers.cloudflare.com/basin-sql/sql-reference/scalar-functions/
+// https://developers.cloudflare.com/basin-sql/sql-reference/complex-types/
 // Date: 2026-06-08
 export default [
     // Statement and schema keywords

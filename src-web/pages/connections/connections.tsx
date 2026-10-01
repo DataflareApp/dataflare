@@ -33,7 +33,7 @@ import { PGliteConnection } from './options-editor/pglite'
 import { PostgresConnection } from './options-editor/postgres'
 import { PrestoConnection } from './options-editor/presto'
 import { QuestDbConnection } from './options-editor/questdb'
-import { R2SqlConnection } from './options-editor/r2sql'
+import { BasinSqlConnection } from './options-editor/r2sql'
 import { RedisConnection } from './options-editor/redis'
 import { RqliteConnection } from './options-editor/rqlite'
 import { S3Connection } from './options-editor/s3'
@@ -141,7 +141,7 @@ const CurrentConnection = (props: ConnectionEditorOptions<any>): JSX.Element => 
         [SqlDatabaseType.EchoLite]: <EchoLiteConnection {...props} />,
         [SqlDatabaseType.CloudflareD1]: <CloudflareD1Connection {...props} />,
         [SqlDatabaseType.WorkersAnalyticsEngine]: <WorkersAnalyticsEngineConnection {...props} />,
-        [SqlDatabaseType.R2Sql]: <R2SqlConnection {...props} />,
+        [SqlDatabaseType.BasinSql]: <BasinSqlConnection {...props} />,
         [KvDatabaseType.CloudflareWorkersKv]: <CloudflareKvConnection {...props} />,
         [KvDatabaseType.Redis]: <RedisConnection {...props} />,
         [KvDatabaseType.S3]: <S3Connection {...props} />

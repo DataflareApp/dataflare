@@ -65,7 +65,7 @@ export const setMonarchTokensProvider = async (language: LanguageHighLight) => {
         case SqlDatabaseType.SqlCipher:
         case SqlDatabaseType.CloudflareD1:
         case SqlDatabaseType.WorkersAnalyticsEngine:
-        case SqlDatabaseType.R2Sql:
+        case SqlDatabaseType.BasinSql:
         case SqlDatabaseType.BigQuery:
         case SqlDatabaseType.Trino:
         case SqlDatabaseType.Presto: {

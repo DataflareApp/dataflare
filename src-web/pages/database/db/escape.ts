@@ -45,8 +45,8 @@ export class Escape {
             case SqlDatabaseType.MsSql: {
                 return '[' + val + ']'
             }
-            // TODO: R2 SQL does not currently support escaping.
-            case SqlDatabaseType.R2Sql: {
+            // TODO: Basin SQL does not currently support escaping.
+            case SqlDatabaseType.BasinSql: {
                 return val
             }
         }
@@ -83,7 +83,7 @@ export class Escape {
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.ClickHouse:
@@ -141,7 +141,7 @@ export class Escape {
             case SqlDatabaseType.BigQuery:
             case SqlDatabaseType.Presto:
             case SqlDatabaseType.Trino:
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 return `${this.id(entry.schema)}.${this.id(entry.table)}`
             }
         }

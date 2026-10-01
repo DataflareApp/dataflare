@@ -175,7 +175,7 @@ const databaseName = (type: SqlDatabaseType): string => {
         case SqlDatabaseType.BigQuery:
         case SqlDatabaseType.Trino:
         case SqlDatabaseType.DuckDB:
-        case SqlDatabaseType.R2Sql: {
+        case SqlDatabaseType.BasinSql: {
             return type
         }
     }

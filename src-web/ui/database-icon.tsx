@@ -219,7 +219,7 @@ export const ConnectionIcon = ({
         }
         case SqlDatabaseType.CloudflareD1:
         case SqlDatabaseType.WorkersAnalyticsEngine:
-        case SqlDatabaseType.R2Sql:
+        case SqlDatabaseType.BasinSql:
         case KvDatabaseType.CloudflareWorkersKv:
             return (
                 <IconBrandCloudflare

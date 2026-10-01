@@ -134,7 +134,7 @@ export const toBackupConfig = async (conn: Connection): Promise<BackupConfig> =>
         case SqlDatabaseType.EchoLite:
         case SqlDatabaseType.CloudflareD1:
         case SqlDatabaseType.WorkersAnalyticsEngine:
-        case SqlDatabaseType.R2Sql:
+        case SqlDatabaseType.BasinSql:
         case KvDatabaseType.CloudflareWorkersKv:
         case KvDatabaseType.S3: {
             throw `The '${config.type}' database is not currently supported for backup.`

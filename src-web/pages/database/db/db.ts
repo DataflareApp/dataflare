@@ -116,7 +116,7 @@ class Db {
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.CockroachDB:
             case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
@@ -182,7 +182,7 @@ class Db {
                 }
             }
             case SqlDatabaseType.ClickHouse:
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 return {
                     multipleSchemas: true,
                     duplicateTable: false,
@@ -255,7 +255,7 @@ class Db {
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.ManticoreSearch: {
                 throw 'Unsupported'
@@ -290,7 +290,7 @@ class Db {
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.ManticoreSearch: {
                 return false
@@ -343,7 +343,7 @@ class Db {
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.BigQuery:
             case SqlDatabaseType.Databricks:
@@ -383,7 +383,7 @@ class Db {
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.BigQuery:
             case SqlDatabaseType.Databricks:
@@ -408,7 +408,7 @@ class Db {
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
@@ -435,7 +435,7 @@ class Db {
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.ManticoreSearch: {
                 throw 'Unsupported'
@@ -624,7 +624,7 @@ class Db {
             case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             // TODO: Support
             case SqlDatabaseType.QuestDB: {
                 throw 'Unsupported'
@@ -659,7 +659,7 @@ class Db {
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.DuckDB:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.ManticoreSearch: {
@@ -715,7 +715,7 @@ class Db {
             case SqlDatabaseType.DuckDB:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.ManticoreSearch:
             case SqlDatabaseType.QuestDB: {
                 return undefined
@@ -754,7 +754,7 @@ class Db {
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.ManticoreSearch: {
                 throw 'Unsupported'
@@ -779,7 +779,7 @@ class Db {
             case SqlDatabaseType.WorkersAnalyticsEngine: {
                 return { currentSchema: '', schemas: [] }
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 const namespaces = await this.select<[string]>('SHOW NAMESPACES;')
                 const schemas = namespaces.map(([ns]) => ns)
                 // The 'default' namespace is always the default.
@@ -866,7 +866,7 @@ class Db {
                     })
                 }
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 const namespaces = await this.select<[string]>('SHOW NAMESPACES;')
                 const result: Tables = {}
                 for (let i = 0; i < namespaces.length; i++) {
@@ -1244,7 +1244,7 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
                 return struct
             }
             // TODO: Too many requests
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 const tables = await this.tables()
                 struct.schemas = Object.keys(tables)
                 struct.tables = Object.values(tables)
@@ -1437,7 +1437,7 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
             case SqlDatabaseType.WorkersAnalyticsEngine: {
                 return import('./static/workers-analytics-engine-keywords').then((mod) => mod.default)
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 return import('./static/r2sql-keywords').then((mod) => mod.default)
             }
         }
@@ -1459,7 +1459,7 @@ SELECT DISTINCT 'column', column_name FROM INFORMATION_SCHEMA.COLUMNS;`
             case SqlDatabaseType.WorkersAnalyticsEngine: {
                 return (await import('./static/workers-analytics-engine-functions')).default
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 return (await import('./static/r2sql-functions')).default
             }
             case SqlDatabaseType.DuckDB: {
@@ -1600,7 +1600,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.WorkersAnalyticsEngine: {
                 return []
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 return (await import('./static/r2sql-datatypes')).default
             }
         }
@@ -1615,7 +1615,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
@@ -1654,7 +1654,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.MsSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
@@ -1712,7 +1712,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.CloudflareD1:
             // Workers Analytics Engine supports neither, but to avoid special UI handling, they are still returned here
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 return [DeleteTableType.Delete, DeleteTableType.Drop]
             }
             case SqlDatabaseType.DuckDB:
@@ -1765,9 +1765,9 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.QuestDB:
-            // Workers Analytics Engine / R2 SQL not supported
+            // Workers Analytics Engine / Basin SQL not supported
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 const newName = this.escape.entry({
                     schema: entry.schema,
                     table: newTableName
@@ -1797,7 +1797,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.BigQuery:
@@ -1841,7 +1841,7 @@ UNION SELECT DISTINCT name FROM system.user_functions;`
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery:
             case SqlDatabaseType.QuestDB:
@@ -2086,7 +2086,7 @@ WHERE
                     })
                 })
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 const rows = await this.select<[string, string, string]>(
                     `DESCRIBE ${this.escape.entry({ schema: schemaName, table: tableName })};`
                 )
@@ -2154,7 +2154,7 @@ WHERE
                     case SqlDatabaseType.EchoLite:
                     case SqlDatabaseType.CloudflareD1:
                     case SqlDatabaseType.WorkersAnalyticsEngine:
-                    case SqlDatabaseType.R2Sql: {
+                    case SqlDatabaseType.BasinSql: {
                         sql = `SELECT DISTINCT ${column} FROM ${table} LIMIT ${limit};`
                         break
                     }
@@ -2203,7 +2203,7 @@ WHERE
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.BigQuery:
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 sql = `SELECT COUNT(*) AS count FROM ${entry}${whereSql};`
                 break
             }
@@ -2287,9 +2287,9 @@ WHERE
                     return `SELECT ${columnsSql} FROM ${table}${whereSql}${sortSql};`
                 }
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 if (pagination) {
-                    // NOTE: R2 SQL does not support OFFSET
+                    // NOTE: Basin SQL does not support OFFSET
                     // An error will be returned if the SQL statement contains an OFFSET, so currently only the data on the first page can be viewed.
                     const offset = pagination.offset === 0 ? '' : ` OFFSET ${pagination.offset}`
                     return `SELECT ${columnsSql} FROM ${table}${whereSql}${sortSql} LIMIT ${pagination.limit}${offset};`
@@ -2375,7 +2375,7 @@ SELECT column_name, referenced_table_schema, referenced_table_name, referenced_c
             case SqlDatabaseType.BigQuery:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.Presto:
             case SqlDatabaseType.Trino: {
                 return {}
@@ -2519,7 +2519,7 @@ SELECT table_schema, table_name, column_name, referenced_column_name FROM foreig
             case SqlDatabaseType.Trino:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             // D1 could also support this via traversal, but it would require TableCount requests every time a table is opened, so not considered here
             case SqlDatabaseType.CloudflareD1: {
                 return {}
@@ -2687,7 +2687,7 @@ WHERE
             case SqlDatabaseType.Trino:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 return []
             }
         }
@@ -2802,7 +2802,7 @@ WHERE
             case SqlDatabaseType.QuestDB:
             // Workers Analytics Engine not supported
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             // ManticoreSearch supports indexing, but this is not currently being considered.
             case SqlDatabaseType.ManticoreSearch: {
                 return new Map()
@@ -2926,7 +2926,7 @@ WHERE
             case SqlDatabaseType.Trino:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.ManticoreSearch: {
                 return []
             }
@@ -3255,7 +3255,7 @@ ORDER BY c.table_name, c.ordinal_position;`
                     }
                 })
             }
-            case SqlDatabaseType.R2Sql: {
+            case SqlDatabaseType.BasinSql: {
                 const tables = await this.select<[string]>(`SHOW TABLES IN ${this.escape.id(schemaName)};`)
                 const tasks = tables.map(async ([tableName]) => {
                     return {
@@ -3380,7 +3380,7 @@ ORDER BY ROUTINE_NAME;`
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.DuckDB:
             case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
@@ -3444,7 +3444,7 @@ ORDER BY e.name;`
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.ManticoreSearch:
@@ -3619,7 +3619,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.BigQuery:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.ManticoreSearch: {
                 throw 'Unsupported'
             }
@@ -3678,7 +3678,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
@@ -3735,7 +3735,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.SqlCipher:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.ChDb:
             case SqlDatabaseType.ClickHouse:
             case SqlDatabaseType.Databend:
@@ -3805,7 +3805,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.Databricks:
             case SqlDatabaseType.QuestDB:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.Presto:
             case SqlDatabaseType.Trino:
             case SqlDatabaseType.ManticoreSearch: {
@@ -3824,7 +3824,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.ManticoreSearch:
@@ -3858,7 +3858,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.MySql:
             case SqlDatabaseType.MariaDB:
             case SqlDatabaseType.ManticoreSearch:
@@ -3932,7 +3932,7 @@ ORDER BY table_name;`
             case SqlDatabaseType.EchoLite:
             case SqlDatabaseType.CloudflareD1:
             case SqlDatabaseType.WorkersAnalyticsEngine:
-            case SqlDatabaseType.R2Sql:
+            case SqlDatabaseType.BasinSql:
             case SqlDatabaseType.Databend:
             case SqlDatabaseType.BigQuery:
             case SqlDatabaseType.Databricks:
@@ -3967,7 +3967,7 @@ ORDER BY table_name;`
                 case SqlDatabaseType.EchoLite:
                 case SqlDatabaseType.CloudflareD1:
                 case SqlDatabaseType.WorkersAnalyticsEngine:
-                case SqlDatabaseType.R2Sql:
+                case SqlDatabaseType.BasinSql:
                 case SqlDatabaseType.ChDb:
                 case SqlDatabaseType.ClickHouse:
                 case SqlDatabaseType.Databend:
