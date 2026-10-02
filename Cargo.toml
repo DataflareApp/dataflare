@@ -23,7 +23,7 @@ edition = "2024"
 members = ["src-crates/*", "src-cli"]
 
 [build-dependencies]
-tauri-build = { version = "2.7.0", features = [] }
+tauri-build = { version = "2.6.3", features = [] }
 
 [dependencies]
 tauri = { workspace = true, features = [] }
@@ -67,7 +67,7 @@ objc2-app-kit = "0.3.1"
 
 [workspace.dependencies]
 thiserror = "2.0.18"
-tauri = "2.12.0"
+tauri = "2.11.3"
 rand = "0.10.1"
 url = "2.5.4"
 const-hex = "1.19.1"
