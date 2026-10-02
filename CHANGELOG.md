@@ -1,3 +1,12 @@
+## v3.2.4
+
+**Published:** `2026-10-02`
+
+**Changes**
+
+- Rename `R2 SQL` to `Basin SQL` and update the query endpoint
+- Fix context menu actions by reverting the Tauri 2.12 upgrade
+
 ## v3.2.3
 
 **Published:** `2026-10-01`
