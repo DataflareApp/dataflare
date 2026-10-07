@@ -13,6 +13,7 @@ export const defaultBaseURL = (type: ProviderType): string => {
         [ProviderType.Ollama]: 'http://localhost:11434/v1',
         [ProviderType.OpenAI]: 'https://api.openai.com/v1',
         [ProviderType.OpenRouter]: 'https://openrouter.ai/api/v1',
+        [ProviderType.Opper]: 'https://api.opper.ai/v3/compat',
         [ProviderType.Requesty]: 'https://router.requesty.ai/v1',
         [ProviderType.VercelAIGateway]: 'https://ai-gateway.vercel.sh/v1',
         [ProviderType.xAI]: 'https://api.x.ai/v1',
@@ -58,6 +59,7 @@ export const fetchModels = async (config: ProviderConfig): Promise<ProviderModel
         case ProviderType.OpenAI:
         case ProviderType.VercelAIGateway:
         case ProviderType.Ollama:
+        case ProviderType.Opper:
         case ProviderType.Requesty:
         case ProviderType.OpenAICompatible: {
             const schema = z.object({
