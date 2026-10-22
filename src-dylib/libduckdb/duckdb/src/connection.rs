@@ -134,6 +134,152 @@ pub struct Query {
 mod tests {
     use crate::*;
     use bit_vec::BitVec;
+    use chrono::NaiveDate;
+
+    #[test]
+    fn test_duckdb_version() {
+        let query = Database::open_with_memory(Config::new())
+            .unwrap()
+            .connect()
+            .unwrap()
+            .query("select version(), source_id from pragma_version()")
+            .unwrap();
+        assert_eq!(query.columns.len(), 2);
+        assert_eq!(
+            query.rows,
+            vec![vec![
+                Value::Text("v2.0.0".into()),
+                Value::Text("d54cbbe3df".into()),
+            ]]
+        );
+    }
+
+    #[test]
+    fn test_query_multiple_chunks() {
+        let query = Database::open_with_memory(Config::new())
+            .unwrap()
+            .connect()
+            .unwrap()
+            .query(
+                "select i, case when i % 7 = 0 then null else repeat('row-', 8) || i end as t \
+                 from range(5000) as r(i) order by i",
+            )
+            .unwrap();
+        assert_eq!(
+            query.columns,
+            vec![
+                Column {
+                    name: "i".into(),
+                    logical_type: LogicalType::Bigint,
+                    logical_type_alias: None,
+                },
+                Column {
+                    name: "t".into(),
+                    logical_type: LogicalType::Varchar,
+                    logical_type_alias: None,
+                },
+            ]
+        );
+        assert_eq!(query.columns[0].logical_type.to_string(), "int64");
+        assert_eq!(query.columns[1].logical_type.to_string(), "varchar");
+        assert_eq!(query.rows.len(), 5000);
+        assert_eq!(query.rows_affected, 0);
+        for (row, values) in query.rows.iter().enumerate() {
+            let text = if row % 7 == 0 {
+                Value::Null
+            } else {
+                Value::Text(format!("{}{row}", "row-".repeat(8)))
+            };
+            assert_eq!(values.as_slice(), &[Value::I64(row as i64), text]);
+        }
+    }
+
+    #[test]
+    fn test_query_null_columns() {
+        let conn = Database::open_with_memory(Config::new())
+            .unwrap()
+            .connect()
+            .unwrap();
+        for (sql, row_count) in [
+            (
+                "select null as n, null::integer as i from range(5000)",
+                5000,
+            ),
+            (
+                "select null as n, null::integer as i from range(5000) where false",
+                0,
+            ),
+        ] {
+            let query = conn.query(sql).unwrap();
+            assert_eq!(
+                query.columns,
+                vec![
+                    Column {
+                        name: "n".into(),
+                        logical_type: LogicalType::SqlNull,
+                        logical_type_alias: None,
+                    },
+                    Column {
+                        name: "i".into(),
+                        logical_type: LogicalType::Integer,
+                        logical_type_alias: None,
+                    },
+                ]
+            );
+            assert_eq!(query.columns[0].logical_type.to_string(), "null");
+            assert_eq!(query.columns[1].logical_type.to_string(), "int32");
+            assert_eq!(query.rows.len(), row_count);
+            for row in query.rows {
+                assert_eq!(row, vec![Value::Null, Value::Null]);
+            }
+        }
+    }
+
+    #[test]
+    fn test_query_timestamp_tz_ns() {
+        let query = Database::open_with_memory(Config::new())
+            .unwrap()
+            .connect()
+            .unwrap()
+            .query(
+                "select t from (values \
+                 (0, '2026-10-22 12:34:56.123456789+08:00'::timestamptz_ns), \
+                 (1, '1969-12-31 23:59:59.999999999+00:00'::timestamptz_ns), \
+                 (2, 'infinity'::timestamptz_ns), \
+                 (3, '-infinity'::timestamptz_ns), \
+                 (4, null::timestamptz_ns)) as timestamps(i, t) order by i",
+            )
+            .unwrap();
+        assert_eq!(
+            query.columns,
+            vec![Column {
+                name: "t".into(),
+                logical_type: LogicalType::TimestampTzNs,
+                logical_type_alias: None,
+            }]
+        );
+        assert_eq!(query.columns[0].logical_type.to_string(), "timestamptz_ns");
+        assert_eq!(
+            query.rows,
+            vec![
+                vec![Value::Timestamp(
+                    NaiveDate::from_ymd_opt(2026, 10, 22)
+                        .unwrap()
+                        .and_hms_nano_opt(4, 34, 56, 123_456_789)
+                        .unwrap(),
+                )],
+                vec![Value::Timestamp(
+                    NaiveDate::from_ymd_opt(1969, 12, 31)
+                        .unwrap()
+                        .and_hms_nano_opt(23, 59, 59, 999_999_999)
+                        .unwrap(),
+                )],
+                vec![Value::Text("infinity".into())],
+                vec![Value::Text("-infinity".into())],
+                vec![Value::Null],
+            ]
+        );
+    }
 
     #[test]
     fn test_query_column() {
@@ -158,7 +304,7 @@ mod tests {
                     logical_type_alias: None,
                 },
                 Column {
-                    name: "CAST('01' AS BIT(1))".into(),
+                    name: "CAST('01' AS BIT)".into(),
                     logical_type: LogicalType::Bit,
                     logical_type_alias: None,
                 }
@@ -407,18 +553,17 @@ mod tests {
         );
     }
 
-    // TODO: DuckDB 1.5.6 HTTPFS crashes on Windows ARM64 when reading HTTPS.
-    // #[test]
-    // fn test_json_extension() {
-    //     let query = Database::open_with_memory(Config::new())
-    //         .unwrap()
-    //         .connect()
-    //         .unwrap()
-    //         .query("SELECT * FROM 'https://duckdb.org/data/records.json'")
-    //         .unwrap();
-    //     assert_eq!(query.columns.len(), 2);
-    //     assert_eq!(query.rows.len(), 3);
-    // }
+    #[test]
+    fn test_json_extension() {
+        let query = Database::open_with_memory(Config::new())
+            .unwrap()
+            .connect()
+            .unwrap()
+            .query("SELECT * FROM 'https://duckdb.org/data/records.json'")
+            .unwrap();
+        assert_eq!(query.columns.len(), 2);
+        assert_eq!(query.rows.len(), 3);
+    }
 
     #[test]
     fn test_geometry() {

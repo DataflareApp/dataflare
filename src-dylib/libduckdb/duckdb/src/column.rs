@@ -47,9 +47,11 @@ pub enum LogicalType {
     Bit,
     TimeTz,
     TimestampTz,
+    TimestampTzNs,
     BigNum,
     TimeNs,
     Geometry,
+    SqlNull,
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -220,13 +222,12 @@ impl LogicalType {
                 ffi::DUCKDB_TYPE_DUCKDB_TYPE_BIT => Self::Bit,
                 ffi::DUCKDB_TYPE_DUCKDB_TYPE_TIME_TZ => Self::TimeTz,
                 ffi::DUCKDB_TYPE_DUCKDB_TYPE_TIMESTAMP_TZ => Self::TimestampTz,
+                ffi::DUCKDB_TYPE_DUCKDB_TYPE_TIMESTAMP_TZ_NS => Self::TimestampTzNs,
                 ffi::DUCKDB_TYPE_DUCKDB_TYPE_ANY => {
                     return Err(Error::UnsupportedType(type_id, "ANY"));
                 }
                 ffi::DUCKDB_TYPE_DUCKDB_TYPE_BIGNUM => Self::BigNum,
-                ffi::DUCKDB_TYPE_DUCKDB_TYPE_SQLNULL => {
-                    return Err(Error::UnsupportedType(type_id, "SQLNULL"));
-                }
+                ffi::DUCKDB_TYPE_DUCKDB_TYPE_SQLNULL => Self::SqlNull,
                 ffi::DUCKDB_TYPE_DUCKDB_TYPE_STRING_LITERAL => {
                     return Err(Error::UnsupportedType(type_id, "STRING_LITERAL"));
                 }
@@ -338,9 +339,11 @@ impl Display for LogicalType {
             Self::TimeTz => write!(f, "timetz"),
             // DuckDB cli: timestamp with time zone
             Self::TimestampTz => write!(f, "timestamptz"),
+            Self::TimestampTzNs => write!(f, "timestamptz_ns"),
             Self::BigNum => write!(f, "bignum"),
             Self::TimeNs => write!(f, "time_ns"),
             Self::Geometry => write!(f, "geometry"),
+            Self::SqlNull => write!(f, "null"),
         }
     }
 }

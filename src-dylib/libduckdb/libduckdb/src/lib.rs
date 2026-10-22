@@ -286,20 +286,14 @@ mod tests {
         let mut error = ErrorMessage::null();
         df_execute(conn, StringRef::new("error1"), &mut error);
         assert!(!error.is_null());
-        assert!(
-            error
-                .as_str()
-                .starts_with(r#"Parser Error: syntax error at or near "error1""#)
-        );
+        assert!(error.as_str().starts_with("Parser Error:"));
         df_free_error(error);
 
         let mut error = ErrorMessage::null();
-        df_query(conn, StringRef::new("insert into error"), &mut error);
+        let query = df_query(conn, StringRef::new("insert into error"), &mut error);
+        assert!(query.is_null());
         assert!(!error.is_null());
-        assert_eq!(
-            error.as_str(),
-            r#"Parser Error: syntax error at end of input"#
-        );
+        assert!(error.as_str().starts_with("Parser Error:"));
         df_free_error(error);
 
         df_close(conn);

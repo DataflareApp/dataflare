@@ -17,6 +17,7 @@ pub(crate) unsafe fn from_vector(
         let ptr = ffi::duckdb_vector_get_data(vector);
         let validity = ffi::duckdb_vector_get_validity(vector);
         match logical_type {
+            LogicalType::SqlNull => vec![Value::Null; len],
             // TODO: 'Boolean' may not be 1 byte
             // https://github.com/duckdb/duckdb-node-neo/blob/d187454c17c3c47693f5b3df558412e5aa25e769/api/src/DuckDBVector.ts#L142
             LogicalType::Boolean => {
@@ -51,6 +52,13 @@ pub(crate) unsafe fn from_vector(
                 let datetime = DateTime::from_timestamp_nanos(*v).naive_utc();
                 Value::Timestamp(datetime)
             }),
+            LogicalType::TimestampTzNs => {
+                vector_parts::<i64, _>(ptr, validity, len, |v| match *v {
+                    i64::MAX => Value::Text("infinity".into()),
+                    v if v == -i64::MAX => Value::Text("-infinity".into()),
+                    v => Value::Timestamp(DateTime::from_timestamp_nanos(v).naive_utc()),
+                })
+            }
             LogicalType::Date => vector_parts::<i32, _>(ptr, validity, len, |v| {
                 let date = NaiveDate::default() + Duration::days(*v as i64);
                 Value::Date(date)

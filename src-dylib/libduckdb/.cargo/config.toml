@@ -1,0 +1,8 @@
+[env]
+# Preserve the version macros' quotes when cc parses CXXFLAGS.
+CC_SHELL_ESCAPED_FLAGS = { value = "true", force = true }
+# TODO: libduckdb-sys 1.20000.0 bundles the v2.0.0 release commit but reports
+# v2.0.0-dev88614, so official extensions are fetched from the commit directory.
+# Correct the version metadata to use the v2.0.0 extension directory.
+# Recheck these overrides when updating libduckdb-sys; remove once fixed upstream.
+CXXFLAGS = '-DDUCKDB_VERSION=\"v2.0.0\" -DDUCKDB_PATCH_VERSION=\"0\"'
