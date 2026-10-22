@@ -135,6 +135,7 @@ mod tests {
     use crate::*;
     use bit_vec::BitVec;
     use chrono::NaiveDate;
+    use std::rc::Rc;
 
     #[test]
     fn test_duckdb_version() {
@@ -494,12 +495,52 @@ mod tests {
                 Null,
             ],
         );
-        // TODO
-        // Enum(EnumValue),
-        // List(Vec<Self>),
-        // Map(Vec<(Self, Self)>),
-        // Struct(Vec<(Arc<String>, Self)>),
-        // Union(Arc<String>, Box<Self>),
+        let enum_type = crate::Enum {
+            dictionary: Rc::new(vec!["low".into(), "high".into()]),
+            internal_type: crate::column::EnumValueType::UTinyint,
+        };
+        run(
+            "'low'::ENUM('low', 'high'), 'high'::ENUM('low', 'high'), null::ENUM('low', 'high')",
+            &[Enum(enum_type.select(0)), Enum(enum_type.select(1)), Null],
+        );
+        run(
+            "[1, 2, null], []::integer[], null::integer[]",
+            &[List(vec![I32(1), I32(2), Null]), List(vec![]), Null],
+        );
+        run(
+            "MAP(['a', 'b'], [1, null]), MAP([]::varchar[], []::integer[]), null::MAP(varchar, integer)",
+            &[
+                Map(vec![(Text("a".into()), I32(1)), (Text("b".into()), Null)]),
+                Map(vec![]),
+                Null,
+            ],
+        );
+        run(
+            "{'id': 1, 'name': 'duck'}, {'id': null::integer, 'name': null::varchar}, null::STRUCT(id integer, name varchar)",
+            &[
+                Struct(vec![
+                    (Rc::new("id".into()), I32(1)),
+                    (Rc::new("name".into()), Text("duck".into())),
+                ]),
+                Struct(vec![
+                    (Rc::new("id".into()), Null),
+                    (Rc::new("name".into()), Null),
+                ]),
+                Null,
+            ],
+        );
+        run(
+            "union_value(num := 42)::UNION(num integer, str varchar), \
+             union_value(str := 'duck')::UNION(num integer, str varchar), \
+             union_value(num := null::integer)::UNION(num integer, str varchar), \
+             null::UNION(num integer, str varchar)",
+            &[
+                Union(Rc::new("num".into()), Box::new(I32(42))),
+                Union(Rc::new("str".into()), Box::new(Text("duck".into()))),
+                Union(Rc::new("num".into()), Box::new(Null)),
+                Null,
+            ],
+        );
         run(
             "'1'::bit, '0'::bit, '10'::bit, '11'::bit, '0000000000'::bit, null::bit",
             &[
