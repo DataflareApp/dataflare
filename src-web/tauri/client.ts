@@ -200,6 +200,7 @@ export interface ProviderModel {
 
 export const enum ProviderType {
     Anthropic = 'Anthropic',
+    CheaperInference = 'Cheaper Inference',
     DeepSeek = 'DeepSeek',
     GitHubModels = 'GitHub Models',
     GoogleGemini = 'Google Gemini',
@@ -217,6 +218,7 @@ export const enum ProviderType {
 
 export const ALL_PROVIDER_TYPES = [
     ProviderType.Anthropic,
+    ProviderType.CheaperInference,
     ProviderType.DeepSeek,
     ProviderType.GitHubModels,
     ProviderType.GoogleGemini,
@@ -234,6 +236,7 @@ export const ALL_PROVIDER_TYPES = [
 
 export type ProviderConfig =
     | AnthropicConfig
+    | CheaperInferenceConfig
     | DeepSeekConfig
     | GitHubModelsConfig
     | GoogleGeminiConfig
@@ -254,6 +257,7 @@ interface BaseProviderConfig {
 }
 
 export type AnthropicConfig = BaseProviderConfig & { type: ProviderType.Anthropic }
+export type CheaperInferenceConfig = BaseProviderConfig & { type: ProviderType.CheaperInference }
 export type DeepSeekConfig = BaseProviderConfig & { type: ProviderType.DeepSeek }
 export type GitHubModelsConfig = BaseProviderConfig & { type: ProviderType.GitHubModels }
 export type GoogleGeminiConfig = BaseProviderConfig & { type: ProviderType.GoogleGemini }

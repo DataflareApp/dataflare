@@ -5,6 +5,7 @@ import { ClientData, ProviderConfig, ProviderModelConfig, ProviderType } from '.
 export const defaultBaseURL = (type: ProviderType): string => {
     return {
         [ProviderType.Anthropic]: 'https://api.anthropic.com/v1',
+        [ProviderType.CheaperInference]: 'https://api.cheaperinference.com/v1',
         [ProviderType.DeepSeek]: 'https://api.deepseek.com/v1',
         [ProviderType.GitHubModels]: 'https://models.github.ai/inference',
         [ProviderType.GoogleGemini]: 'https://generativelanguage.googleapis.com/v1beta',
@@ -53,6 +54,7 @@ export const fetchModels = async (config: ProviderConfig): Promise<ProviderModel
     }
 
     switch (config.type) {
+        case ProviderType.CheaperInference:
         case ProviderType.DeepSeek:
         case ProviderType.Groq:
         case ProviderType.xAI:
