@@ -6,3 +6,8 @@ CC_SHELL_ESCAPED_FLAGS = { value = "true", force = true }
 # Correct the version metadata to use the v2.0.0 extension directory.
 # Recheck these overrides when updating libduckdb-sys; remove once fixed upstream.
 CXXFLAGS = '-DDUCKDB_VERSION=\"v2.0.0\" -DDUCKDB_PATCH_VERSION=\"0\"'
+
+# libduckdb-sys 1.20000.0 links the extension autoregistration archive after DuckDB.
+# Keep its registration entry point while GNU ld scans the first archive.
+[target.'cfg(all(target_os = "linux", target_env = "gnu"))']
+rustflags = ["-C", "link-arg=-Wl,--undefined=duckdb_register_static_extensions"]
