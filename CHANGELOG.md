@@ -1,6 +1,16 @@
+## v3.2.5
+
+**Published:** `2026-10-23T12:00:00Z`
+
+**Changes**
+
+- Add `Opper` as an AI provider
+- Upgrade `DuckDB` to v2.0.0
+- Add support for DuckDB `TIMESTAMPTZ_NS` and `SQLNULL` types
+
 ## v3.2.4
 
-**Published:** `2026-10-02`
+**Published:** `2026-10-02T12:00:00Z`
 
 **Changes**
 
@@ -9,7 +19,7 @@
 
 ## v3.2.3
 
-**Published:** `2026-10-01`
+**Published:** `2026-10-01T12:00:00Z`
 
 **Changes**
 
