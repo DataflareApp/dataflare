@@ -108,6 +108,7 @@ const createLanguageModel = (config: ProviderConfig, modelID: string): LanguageM
             })
             return googleGemini(modelID)
         }
+        case ProviderType.APIRoute:
         case ProviderType.DeepSeek:
         case ProviderType.GitHubModels:
         case ProviderType.Groq:

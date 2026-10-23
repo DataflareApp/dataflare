@@ -127,6 +127,7 @@ export const ProviderIcon = ({ type, selected }: { type: ProviderType; selected?
         }
         // Requesty is an OpenAI-compatible provider (like OpenRouter); reuse the
         // generic server icon since there is no dedicated Requesty asset imported.
+        case ProviderType.APIRoute:
         case ProviderType.Requesty: {
             return (
                 <IconServer
