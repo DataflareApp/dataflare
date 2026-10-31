@@ -10,7 +10,7 @@ import crypto from 'crypto'
 // src-crates/pglite/src/lib.rs
 
 const name = 'duckdb'
-const version = '20261023'
+const version = '20261031'
 
 const base = 'https://assets.dataflare.app/drivers/'
 const items = [
