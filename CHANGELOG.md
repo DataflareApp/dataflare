@@ -1,3 +1,11 @@
+## v3.2.6
+
+**Published:** `2026-10-31T12:00:00Z`
+
+**Changes**
+
+- Fix DuckDB version
+
 ## v3.2.5
 
 **Published:** `2026-10-23T12:00:00Z`
