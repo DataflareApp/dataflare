@@ -137,6 +137,16 @@ export const ProviderIcon = ({ type, selected }: { type: ProviderType; selected?
                 />
             )
         }
+        case ProviderType.Runcrate: {
+            return (
+                <IconServer
+                    data-selected={selected || undefined}
+                    size={16}
+                    strokeWidth={1.5}
+                    className='shrink-0 text-primary data-[selected]:text-white'
+                />
+            )
+        }
         case ProviderType.VercelAIGateway: {
             return (
                 <svg
