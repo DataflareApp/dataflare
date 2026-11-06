@@ -199,6 +199,7 @@ export interface ProviderModel {
 }
 
 export const enum ProviderType {
+    APIRoute = 'API Route',
     Anthropic = 'Anthropic',
     DeepSeek = 'DeepSeek',
     GitHubModels = 'GitHub Models',
@@ -216,6 +217,7 @@ export const enum ProviderType {
 }
 
 export const ALL_PROVIDER_TYPES = [
+    ProviderType.APIRoute,
     ProviderType.Anthropic,
     ProviderType.DeepSeek,
     ProviderType.GitHubModels,
@@ -233,6 +235,7 @@ export const ALL_PROVIDER_TYPES = [
 ]
 
 export type ProviderConfig =
+    | APIRouteConfig
     | AnthropicConfig
     | DeepSeekConfig
     | GitHubModelsConfig
@@ -253,6 +256,7 @@ interface BaseProviderConfig {
     baseURL: string
 }
 
+export type APIRouteConfig = BaseProviderConfig & { type: ProviderType.APIRoute }
 export type AnthropicConfig = BaseProviderConfig & { type: ProviderType.Anthropic }
 export type DeepSeekConfig = BaseProviderConfig & { type: ProviderType.DeepSeek }
 export type GitHubModelsConfig = BaseProviderConfig & { type: ProviderType.GitHubModels }

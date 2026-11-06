@@ -4,6 +4,7 @@ import { ClientData, ProviderConfig, ProviderModelConfig, ProviderType } from '.
 
 export const defaultBaseURL = (type: ProviderType): string => {
     return {
+        [ProviderType.APIRoute]: 'https://global.api-route.com/v1',
         [ProviderType.Anthropic]: 'https://api.anthropic.com/v1',
         [ProviderType.DeepSeek]: 'https://api.deepseek.com/v1',
         [ProviderType.GitHubModels]: 'https://models.github.ai/inference',
@@ -53,6 +54,7 @@ export const fetchModels = async (config: ProviderConfig): Promise<ProviderModel
     }
 
     switch (config.type) {
+        case ProviderType.APIRoute:
         case ProviderType.DeepSeek:
         case ProviderType.Groq:
         case ProviderType.xAI:
