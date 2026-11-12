@@ -117,6 +117,7 @@ const createLanguageModel = (config: ProviderConfig, modelID: string): LanguageM
         case ProviderType.OpenRouter:
         case ProviderType.Opper:
         case ProviderType.Requesty:
+        case ProviderType.UberLLM:
         case ProviderType.VercelAIGateway:
         case ProviderType.xAI:
         case ProviderType.OpenAICompatible: {
