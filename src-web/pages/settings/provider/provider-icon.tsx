@@ -125,9 +125,10 @@ export const ProviderIcon = ({ type, selected }: { type: ProviderType; selected?
                 </svg>
             )
         }
-        // Requesty is an OpenAI-compatible provider (like OpenRouter); reuse the
-        // generic server icon since there is no dedicated Requesty asset imported.
-        case ProviderType.Requesty: {
+        // Requesty and UberLLM are OpenAI-compatible providers (like OpenRouter); reuse the
+        // generic server icon since there is no dedicated asset imported for them.
+        case ProviderType.Requesty:
+        case ProviderType.UberLLM: {
             return (
                 <IconServer
                     data-selected={selected || undefined}

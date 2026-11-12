@@ -210,6 +210,7 @@ export const enum ProviderType {
     OpenRouter = 'OpenRouter',
     Opper = 'Opper',
     Requesty = 'Requesty',
+    UberLLM = 'UberLLM',
     VercelAIGateway = 'Vercel AI Gateway',
     xAI = 'xAI',
     OpenAICompatible = 'OpenAI Compatible'
@@ -227,6 +228,7 @@ export const ALL_PROVIDER_TYPES = [
     ProviderType.OpenRouter,
     ProviderType.Opper,
     ProviderType.Requesty,
+    ProviderType.UberLLM,
     ProviderType.VercelAIGateway,
     ProviderType.xAI,
     ProviderType.OpenAICompatible
@@ -244,6 +246,7 @@ export type ProviderConfig =
     | OpenRouterConfig
     | OpperConfig
     | RequestyConfig
+    | UberLLMConfig
     | VercelAIGatewayConfig
     | xAIConfig
     | OpenAICompatibleConfig
@@ -264,6 +267,7 @@ export type OpenAIConfig = BaseProviderConfig & { type: ProviderType.OpenAI }
 export type OpenRouterConfig = BaseProviderConfig & { type: ProviderType.OpenRouter }
 export type OpperConfig = BaseProviderConfig & { type: ProviderType.Opper }
 export type RequestyConfig = BaseProviderConfig & { type: ProviderType.Requesty }
+export type UberLLMConfig = BaseProviderConfig & { type: ProviderType.UberLLM }
 export type VercelAIGatewayConfig = BaseProviderConfig & { type: ProviderType.VercelAIGateway }
 export type xAIConfig = BaseProviderConfig & { type: ProviderType.xAI }
 export type OpenAICompatibleConfig = BaseProviderConfig & { type: ProviderType.OpenAICompatible }
